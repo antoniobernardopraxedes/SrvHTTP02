@@ -1,0 +1,4 @@
+praxsoft/SrvHTTP02/SrvHttp02Application.class
+praxsoft/SrvHTTP02/domain/Artigo.class
+praxsoft/SrvHTTP02/resources/ArtigoResources.class
+praxsoft/SrvHTTP02/config/SecurityConfig.class
