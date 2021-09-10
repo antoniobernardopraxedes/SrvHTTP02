@@ -1,4 +1,9 @@
+praxsoft/SrvHTTP02/services/Arquivo.class
+praxsoft/SrvHTTP02/resources/ArtigoResources.class
+praxsoft/SrvHTTP02/resources/SupResources.class
 praxsoft/SrvHTTP02/SrvHttp02Application.class
 praxsoft/SrvHTTP02/domain/Artigo.class
-praxsoft/SrvHTTP02/resources/ArtigoResources.class
+praxsoft/SrvHTTP02/services/exceptions/ArquivoNaoEncontradoException.class
 praxsoft/SrvHTTP02/config/SecurityConfig.class
+praxsoft/SrvHTTP02/services/SupService.class
+praxsoft/SrvHTTP02/services/ArtigosService.class

@@ -1,23 +1,34 @@
 package praxsoft.SrvHTTP02.resources;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.security.Principal;
+import java.util.*;
 
+import org.apache.tomcat.util.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.ServletRequestParameterPropertyValues;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.support.ServletContextResourceLoader;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import praxsoft.SrvHTTP02.domain.Artigo;
+import praxsoft.SrvHTTP02.domain.Dados001;
 import praxsoft.SrvHTTP02.services.ArtigosService;
 import praxsoft.SrvHTTP02.services.SupService;
 import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
-import javax.xml.bind.JAXBException;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
 @RestController
 public class SupResources {
@@ -59,10 +70,33 @@ public class SupResources {
     }
 
     @RequestMapping(value = "/local001.xml", method = RequestMethod.GET)
-    public String atualizaVariaveis() throws JAXBException {
-        String msgXML = "";
-        msgXML = supService.MontaMsg();
-        return msgXML;
+    public ResponseEntity<?> atualizaVariaveis() {
+        String msgXML = null;
+
+        try {
+            msgXML = supService.MontaMsg();
+        } catch (ArquivoNaoEncontradoException e) {
+            return ResponseEntity.notFound().build();
+        }
+        System.out.println(msgXML);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("text/xml"))
+                .body(msgXML);
     }
 
+    //@RequestMapping(value = "/atualiza", method = RequestMethod.POST)
+    //{"application/octet-stream"}
+
+    @PostMapping(value = "/atualiza")
+    public ResponseEntity<?> Atualiza(@RequestBody Dados001 MsgJson) { // @RequestBody String MsgJson
+
+        System.out.println("A comunicação com o Atualizador está " + MsgJson.getComcnv() );
+
+        String RspSrv = " { \"cmd\" : \"ack\" }";
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("text/json"))
+                .body(RspSrv);
+    }
 }

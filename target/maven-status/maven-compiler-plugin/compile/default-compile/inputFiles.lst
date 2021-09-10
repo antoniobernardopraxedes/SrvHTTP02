@@ -1,4 +1,9 @@
+/home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/resources/SupResources.java
+/home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/services/SupService.java
+/home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/services/exceptions/ArquivoNaoEncontradoException.java
 /home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/SrvHttp02Application.java
+/home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/services/ArtigosService.java
 /home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/domain/Artigo.java
 /home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/config/SecurityConfig.java
 /home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/resources/ArtigoResources.java
+/home/antonio/wsintellij/SrvHTTP02/src/main/java/praxsoft/SrvHTTP02/services/Arquivo.java
