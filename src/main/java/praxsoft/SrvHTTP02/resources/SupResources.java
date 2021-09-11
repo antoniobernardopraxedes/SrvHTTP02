@@ -80,17 +80,25 @@ public class SupResources {
                 .body(msgXML);
     }
 
-    //@RequestMapping(value = "/atualiza", method = RequestMethod.POST)
-    //{"application/octet-stream"}
-
     @PostMapping(value = "/atualiza")
     public ResponseEntity<?> Atualiza(@RequestBody Dados001 MsgJson) { // @RequestBody String MsgJson
 
-        System.out.println("A comunicação com o Atualizador está " + MsgJson.getComcnv() );
-        System.out.println("Tensão das Baterias: " + MsgJson.getVbat() );
-        System.out.println("Saúde das Baterias: " + MsgJson.getSdbat() );
-
-        //System.out.println(MsgJson);
+        System.out.println("Comunicação com o Atualizador:  " + MsgJson.getComcnv() );
+        System.out.println("Comunicação com o Concentrador:  " + MsgJson.getComcnc() );
+        System.out.println("Comunicação com a UTR:  " + MsgJson.getComutr() );
+        System.out.println("Comunicação com o Controlador de Carga 1:  " + MsgJson.getComcc1());
+        System.out.println("Comunicação com o Controlador de Carga 2:  " + MsgJson.getComcc2());
+        System.out.println("Data e hora da UTR: " + MsgJson.getData() + " - " + MsgJson.getClk());
+        System.out.println("Modo de Operação: " + MsgJson.getMdop() + "  - Modo de Comando: " + MsgJson.getMdcom());
+        System.out.println("Modo de Controle Carga 1: " + MsgJson.getMdct1());
+        System.out.println("Modo de Controle Cargas 2, 3 e 4: " + MsgJson.getMdct234());
+        System.out.println("Energia Carga 1: " + MsgJson.getEncg1() + " - Energia Carga 2: " + MsgJson.getEncg2());
+        System.out.println("Energia Carga 3: " + MsgJson.getEncg3() + " - Corrente Carga 3: " + MsgJson.getIcg3());
+        System.out.println("Tensão do Barramento: " + MsgJson.getVbat() + " - Tensão da Rede: " + MsgJson.getVrede());
+        System.out.println("Estado da Tensão da Rede: " + MsgJson.getEstvrd()
+                            + " - Temperatura das Baterias: " + MsgJson.getTbat());
+        System.out.println("Temperatura do Trafo Inv 2: " + MsgJson.getTtiv2());
+        System.out.println("Temperatura do Trafo Inv 1: " + MsgJson.getTtiv1());
 
         String RspSrv = " { \"cmd\" : \"ack\" }";
         return ResponseEntity
