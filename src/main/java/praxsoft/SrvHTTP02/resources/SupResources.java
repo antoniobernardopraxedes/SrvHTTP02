@@ -10,14 +10,9 @@ import java.util.*;
 
 import org.apache.tomcat.util.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.JsonObjectDeserializer;
-import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.ServletRequestParameterPropertyValues;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.support.ServletContextResourceLoader;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -92,11 +87,15 @@ public class SupResources {
     public ResponseEntity<?> Atualiza(@RequestBody Dados001 MsgJson) { // @RequestBody String MsgJson
 
         System.out.println("A comunicação com o Atualizador está " + MsgJson.getComcnv() );
+        System.out.println("Tensão das Baterias: " + MsgJson.getVbat() );
+        System.out.println("Saúde das Baterias: " + MsgJson.getSdbat() );
+
+        //System.out.println(MsgJson);
 
         String RspSrv = " { \"cmd\" : \"ack\" }";
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/json"))
+                .contentType(MediaType.valueOf("application/json"))
                 .body(RspSrv);
     }
 }
