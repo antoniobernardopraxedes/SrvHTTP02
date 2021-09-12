@@ -6,7 +6,8 @@
 //
 console.log("Programa Javascript supcloud.js ");
 var ContAtualAuto = 0;
-var ModoComando = "Local";
+var ContEspera = 0;
+var ModoComando = "Remoto";
 //var Comando = "00";
 loadXMLDoc("local001.xml");
 setInterval(loadXMLDoc, 3000, "local001.xml");
@@ -24,9 +25,9 @@ setInterval(loadXMLDoc, 3000, "local001.xml");
 //
 function loadXMLDoc(recurso) {
 
-    ContAtualAuto = ContAtualAuto + 1;
+    //ContAtualAuto = ContAtualAuto + 1;
     
-    ImprimeComando(recurso);
+    //ImprimeComando(recurso);
     var xhttp = new XMLHttpRequest();
     if ((recurso.charAt(0) == "c") && (recurso.charAt(1) == "m") && (recurso.charAt(2) == "d")) {
         xhttp.open("POST", recurso, false);
@@ -82,6 +83,7 @@ function ImprimeComando(recurso) {
               
         if (recurso == "cmd=0004") {
             document.getElementById("cmdex").innerHTML = "Comando Modo Normal";
+            ContEspera = 3;
     	   }
         if (recurso == "cmd=0016") {
       	     document.getElementById("cmdex").innerHTML = "Comando Modo Manual Carga 1";
@@ -127,6 +129,15 @@ function ImprimeComando(recurso) {
     	   }
         if (recurso == "cmd=0014") {
             document.getElementById("cmdex").innerHTML = "Comando Desabilita Carga 4";
+    	   }
+        if (recurso == "ack") {
+         
+          if (ContEspera > 0) {
+            ContEspera = ContEspera - 1;
+          }
+          else {
+            document.getElementById("cmdex").innerHTML = "Atualização Automática";
+          }
     	   }
     }
     else {
@@ -175,7 +186,9 @@ function CarregaVariaveis_GERAL(ArqVarXML) {
     document.getElementById("data").innerHTML = valor;
 
     valor = geral[i].getElementsByTagName("CMDEX")[0].childNodes[0].nodeValue;
-    document.getElementById("cmdex").innerHTML = valor;
+    //document.getElementById("cmdex").innerHTML = valor;
+    
+    ImprimeComando(valor);
 
     valor = geral[i].getElementsByTagName("MDOP")[0].childNodes[0].nodeValue;
     document.getElementById("mdop").innerHTML = valor;
@@ -191,16 +204,21 @@ function CarregaVariaveis_GERAL(ArqVarXML) {
     document.getElementById("encg2").innerHTML = valor;
     valor = geral[i].getElementsByTagName("ENCG3")[0].childNodes[0].nodeValue;
     document.getElementById("encg3").innerHTML = valor;
+    
     valor = geral[i].getElementsByTagName("ICG3")[0].childNodes[0].nodeValue;
-    document.getElementById("icg3").innerHTML = valor;
+    document.getElementById("icg3").innerHTML = valor.concat(" A");
+    
     valor = geral[i].getElementsByTagName("VBAT")[0].childNodes[0].nodeValue;
-    document.getElementById("vbat").innerHTML = valor;
+    document.getElementById("vbat").innerHTML = valor.concat(" Vcc");
+    
     valor = geral[i].getElementsByTagName("VREDE")[0].childNodes[0].nodeValue;
-    document.getElementById("vrede").innerHTML = valor;
+    document.getElementById("vrede").innerHTML = valor.concat(" Vca");
+    
     valor = geral[i].getElementsByTagName("ESTVRD")[0].childNodes[0].nodeValue;
     document.getElementById("estvrd").innerHTML = valor;
+    
     valor = geral[i].getElementsByTagName("TBAT")[0].childNodes[0].nodeValue;
-    document.getElementById("tbat").innerHTML = valor;
+    document.getElementById("tbat").innerHTML = valor.concat("&#176C");
     //valor = geral[i].getElementsByTagName("SDBAT")[0].childNodes[0].nodeValue;
     //document.getElementById("sdbat").innerHTML = valor;
     
@@ -280,6 +298,7 @@ function CarregaVariaveis_GERAL(ArqVarXML) {
     document.getElementById("estdjrb").innerHTML = valor;
     valor = agua[i].getElementsByTagName("ENBMB")[0].childNodes[0].nodeValue;
     document.getElementById("enbmb").innerHTML = valor;
+    
     valor = agua[i].getElementsByTagName("TMPBL")[0].childNodes[0].nodeValue;
     document.getElementById("tmpbl").innerHTML = valor;
       
@@ -325,45 +344,60 @@ function CarregaVariaveis_GERCONS(ArqVarXML) {
 		
       // Controlador de Carga 1 (CC1)
       valor = gercons[i].getElementsByTagName("VP12")[0].childNodes[0].nodeValue;
-      document.getElementById("vp12").innerHTML = valor;
+      document.getElementById("vp12").innerHTML = valor.concat(" Vcc");
+      
       valor = gercons[i].getElementsByTagName("IS12")[0].childNodes[0].nodeValue;
-      document.getElementById("is12").innerHTML = valor;
+      document.getElementById("is12").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("ISCC1")[0].childNodes[0].nodeValue;
-      document.getElementById("iscc1").innerHTML = valor;
+      document.getElementById("iscc1").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("WSCC1")[0].childNodes[0].nodeValue;
-      document.getElementById("wscc1").innerHTML = valor;
+      document.getElementById("wscc1").innerHTML = valor.concat(" W");
+      
       //valor = gercons[i].getElementsByTagName("SDCC1")[0].childNodes[0].nodeValue;
       //document.getElementById("sdcc1").innerHTML = valor;
 		        
       // Controlador de Carga 2 (CC2)
       valor = gercons[i].getElementsByTagName("VP34")[0].childNodes[0].nodeValue;
-      document.getElementById("vp34").innerHTML = valor;
+      document.getElementById("vp34").innerHTML = valor.concat(" Vcc");
+      
       valor = gercons[i].getElementsByTagName("IS34")[0].childNodes[0].nodeValue;
-      document.getElementById("is34").innerHTML = valor;
+      document.getElementById("is34").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("ISCC2")[0].childNodes[0].nodeValue;
-      document.getElementById("iscc2").innerHTML = valor;
+      document.getElementById("iscc2").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("WSCC2")[0].childNodes[0].nodeValue;
-      document.getElementById("wscc2").innerHTML = valor;
+      document.getElementById("wscc2").innerHTML = valor.concat(" W");
+      
       //valor = gercons[i].getElementsByTagName("SDCC2")[0].childNodes[0].nodeValue;
       //document.getElementById("sdcc2").innerHTML = valor;
 		        
       // Geração e Consumo Totais e Cargas CC
       valor = gercons[i].getElementsByTagName("ITOTGER")[0].childNodes[0].nodeValue;
-      document.getElementById("itotger").innerHTML = valor;
+      document.getElementById("itotger").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("WTOTGER")[0].childNodes[0].nodeValue;
-      document.getElementById("wtotger").innerHTML = valor;
+      document.getElementById("wtotger").innerHTML = valor.concat(" W");
+      
       valor = gercons[i].getElementsByTagName("ITOTCG")[0].childNodes[0].nodeValue;
-      document.getElementById("itotcg").innerHTML = valor;
+      document.getElementById("itotcg").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("WTOTCG")[0].childNodes[0].nodeValue;
-      document.getElementById("wtotcg").innerHTML = valor;
+      document.getElementById("wtotcg").innerHTML = valor.concat(" W");
+      
       valor = gercons[i].getElementsByTagName("ESTFT1")[0].childNodes[0].nodeValue;
       document.getElementById("estft1").innerHTML = valor;
+      
       valor = gercons[i].getElementsByTagName("ESTFT2")[0].childNodes[0].nodeValue;
       document.getElementById("estft2").innerHTML = valor;
+      
       valor = gercons[i].getElementsByTagName("ICIRCC")[0].childNodes[0].nodeValue;
-      document.getElementById("icircc").innerHTML = valor;
+      document.getElementById("icircc").innerHTML = valor.concat(" Acc");
+      
       valor = gercons[i].getElementsByTagName("WCIRCC")[0].childNodes[0].nodeValue;
-      document.getElementById("wcircc").innerHTML = valor;
+      document.getElementById("wcircc").innerHTML = valor.concat(" W");
       
 } // Fim da Rotina CarregaVariaveis_GERCONS
     
@@ -425,20 +459,28 @@ function CarregaVariaveis_INV(ArqVarXML) {
     // Inversor 2
     valor = inv[i].getElementsByTagName("ESTIV2")[0].childNodes[0].nodeValue;
     document.getElementById("estiv2").innerHTML = valor;
+    
     valor = inv[i].getElementsByTagName("IEIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("ieiv2").innerHTML = valor;
+    document.getElementById("ieiv2").innerHTML = valor.concat(" Acc");
+    
     valor = inv[i].getElementsByTagName("WEIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("weiv2").innerHTML = valor;
+    document.getElementById("weiv2").innerHTML = valor.concat(" W");
+    
     valor = inv[i].getElementsByTagName("VSIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("vsiv2").innerHTML = valor;
+    document.getElementById("vsiv2").innerHTML = valor.concat(" Vca");
+    
     valor = inv[i].getElementsByTagName("ISIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("isiv2").innerHTML = valor;
+    document.getElementById("isiv2").innerHTML = valor.concat(" Aca");
+    
     valor = inv[i].getElementsByTagName("WSIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("wsiv2").innerHTML = valor;
+    document.getElementById("wsiv2").innerHTML = valor.concat(" W");
+    
     valor = inv[i].getElementsByTagName("TDIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("tdiv2").innerHTML = valor;
+    document.getElementById("tdiv2").innerHTML = valor.concat("&#176C");
+    
     valor = inv[i].getElementsByTagName("TTIV2")[0].childNodes[0].nodeValue;
-    document.getElementById("ttiv2").innerHTML = valor;
+    document.getElementById("ttiv2").innerHTML = valor.concat("&#176C");
+    
     //valor = inv[i].getElementsByTagName("EFIV2")[0].childNodes[0].nodeValue;
     //document.getElementById("efiv2").innerHTML = valor;
     //valor = inv[i].getElementsByTagName("SDIV2")[0].childNodes[0].nodeValue;
@@ -447,20 +489,28 @@ function CarregaVariaveis_INV(ArqVarXML) {
     // Inversor 1
     valor = inv[i].getElementsByTagName("ESTIV1")[0].childNodes[0].nodeValue;
     document.getElementById("estiv1").innerHTML = valor;
+    
     valor = inv[i].getElementsByTagName("IEIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("ieiv1").innerHTML = valor;
+    document.getElementById("ieiv1").innerHTML = valor.concat(" Acc");
+    
     valor = inv[i].getElementsByTagName("WEIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("weiv1").innerHTML = valor;
+    document.getElementById("weiv1").innerHTML = valor.concat(" W");
+    
     valor = inv[i].getElementsByTagName("VSIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("vsiv1").innerHTML = valor;
+    document.getElementById("vsiv1").innerHTML = valor.concat(" Vca");
+    
     valor = inv[i].getElementsByTagName("ISIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("isiv1").innerHTML = valor;
+    document.getElementById("isiv1").innerHTML = valor.concat(" Aca");
+    
     valor = inv[i].getElementsByTagName("WSIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("wsiv1").innerHTML = valor;
+    document.getElementById("wsiv1").innerHTML = valor.concat(" W");
+    
     valor = inv[i].getElementsByTagName("TDIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("tdiv1").innerHTML = valor;
+    document.getElementById("tdiv1").innerHTML = valor.concat("&#176C");
+    
     valor = inv[i].getElementsByTagName("TTIV1")[0].childNodes[0].nodeValue;
-    document.getElementById("ttiv1").innerHTML = valor;
+    document.getElementById("ttiv1").innerHTML = valor.concat("&#176C");
+    
     //valor = inv[i].getElementsByTagName("EFIV1")[0].childNodes[0].nodeValue;
     //document.getElementById("efiv1").innerHTML = valor;
     //valor = inv[i].getElementsByTagName("SDIV1")[0].childNodes[0].nodeValue;

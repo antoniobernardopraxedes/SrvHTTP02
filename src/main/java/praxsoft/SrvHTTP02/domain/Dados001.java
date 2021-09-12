@@ -1,20 +1,15 @@
 package praxsoft.SrvHTTP02.domain;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Dados001 {
 
-    // Estados de Comunicação
+    // Estados de Comunicação (5 Variáveis)
     private static String comcnv;
     private static String comcnc;
     private static String comutr;
     private static String comcc1;
     private static String comcc2;
 
-    // Informação geral
+    // Informação geral (16 Variáveis)
     private static String clk;
     private static String data;
     private static String cmdex;
@@ -32,7 +27,7 @@ public class Dados001 {
     private static String tbat;
     private static String sdbat;
 
-    // Estados e Medidas da Caixa d'água e da Bomba
+    // Estados e Medidas da Caixa d'água e da Bomba (7 Variáveis)
     private static String estcxaz;
     private static String nivcxaz;
     private static String estbmb;
@@ -61,7 +56,7 @@ public class Dados001 {
     private static String icircc;
     private static String wcircc;
 
-    // Inversor 2 (10 Variáveis
+    // Inversor 2 (10 Variáveis)
     private static String estiv2;
     private static String ieiv2;
     private static String weiv2;
@@ -73,7 +68,7 @@ public class Dados001 {
     private static String efiv2;
     private static String sdiv2;
 
-    // Inversor 1 (10 Variáveis
+    // Inversor 1 (10 Variáveis)
     private static String estiv1;
     private static String ieiv1;
     private static String weiv1;
@@ -84,7 +79,6 @@ public class Dados001 {
     private static String ttiv1;
     private static String efiv1;
     private static String sdiv1;
-
 
     public String getClk() {
         return clk;
@@ -614,6 +608,7 @@ public class Dados001 {
         this.sdiv1 = sdiv1;
     }
 
+
     //******************************************************************************************************************
     // Nome do Método: MontaXML()                                                                                      *
     //	                                                                                                               *
@@ -627,7 +622,7 @@ public class Dados001 {
     //	                                                                                                               *
     //******************************************************************************************************************
     //
-    public static String MontaXML() {
+    public static String MontaXML(String comando) {
 
         // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
         String MsgXMLArray[][][][] = new String[1][10][30][2];
@@ -656,7 +651,7 @@ public class Dados001 {
         MsgXMLArray[IdNv0][IdNv1][7][0] = "DATA";
         MsgXMLArray[IdNv0][IdNv1][7][1] = data;
         MsgXMLArray[IdNv0][IdNv1][8][0] = "CMDEX";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = "Atualiza";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = comando; //cmdex;
         MsgXMLArray[IdNv0][IdNv1][9][0] = "MDOP";
         MsgXMLArray[IdNv0][IdNv1][9][1] = mdop;
         MsgXMLArray[IdNv0][IdNv1][10][0] = "MDCOM";
@@ -703,7 +698,7 @@ public class Dados001 {
         MsgXMLArray[IdNv0][IdNv1][7][0] = "TMPBL";
         MsgXMLArray[IdNv0][IdNv1][7][1] = tmpbl;
 
-                IdNv1 = 3; // Grupo de 18 Variáveis de Informação da Geração Solar e do Consumo
+        IdNv1 = 3; // Grupo de 18 Variáveis de Informação da Geração Solar e do Consumo
         MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
         MsgXMLArray[IdNv0][IdNv1][0][1] = "18";
 
@@ -744,7 +739,7 @@ public class Dados001 {
         MsgXMLArray[IdNv0][IdNv1][18][0] = "WCIRCC";
         MsgXMLArray[IdNv0][IdNv1][18][1] = wcircc;
 
-                IdNv1 = 4; // Grupo de 20 Variáveis de Informação dos Inversores 1 e 2
+        IdNv1 = 4; // Grupo de 20 Variáveis de Informação dos Inversores 1 e 2
         MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
         MsgXMLArray[IdNv0][IdNv1][0][1] = "20";
 

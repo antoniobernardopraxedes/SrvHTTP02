@@ -17,6 +17,8 @@ public class SupResources {
     @Autowired
     private SupService supService;
 
+    private String comando;
+
     @RequestMapping(value = "/supervisao", method = RequestMethod.GET)
     public String supHtml() {
         return supService.buscaHtmlSup();
@@ -56,16 +58,31 @@ public class SupResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
-                .body(Dados001.MontaXML());
+                .body(Dados001.MontaXML(comando));
     }
 
     @PostMapping(value = "/atualiza")
-    public ResponseEntity<?> Atualiza(@RequestBody Dados001 dados001) {
+    public String Atualiza(@RequestBody Dados001 dados001) {
 
-        String RspSrv = " { \"cmd\" : \"ack\" }";
+        String RspSrv = " { \"cmd\" : " + comando + " }";
+        comando = "ack";
+
+        System.out.println("Recebida Mensagem de Atualização");
+
+        return RspSrv;
+    }
+
+    @PostMapping(value = "/cmd={id}")
+    public ResponseEntity<?> RecComando(@PathVariable("id") String id) {
+
+        comando = "cmd=" + id;
+
+        System.out.println("Recebido Comando: " + id);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
-                .body(RspSrv);
+                .contentType(MediaType.valueOf("application/xml"))
+                .body(Dados001.MontaXML(comando));
+
     }
 }

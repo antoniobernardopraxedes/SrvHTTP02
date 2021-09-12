@@ -11,9 +11,11 @@ import java.util.Date;
 @Service
 public class SupService {
 
+    String Caminho = "/home/antonio/wsintellij/SrvHTTP02/recursos/sup/";
+
     public String buscaHtmlSup() {
         String arquivoTxt = "";
-        String Caminho = "/home/antonio/Recursos/sup/";
+        //String Caminho = "/home/antonio/Recursos/sup/";
         String NomeArquivo = "supcloud.html";
 
         Arquivo arquivo = new Arquivo();
@@ -30,7 +32,7 @@ public class SupService {
 
     public String buscaCssSup() {
         String arquivoTxt = "";
-        String Caminho = "/home/antonio/Recursos/sup/";
+        //String Caminho = "/home/antonio/Recursos/sup/";
         String NomeArquivo = "supcloud.css";
 
         Arquivo arquivo = new Arquivo();
@@ -46,7 +48,7 @@ public class SupService {
 
     public String buscaJsSup() {
         String arquivoTxt = "";
-        String Caminho = "/home/antonio/Recursos/sup/";
+        //String Caminho = "/home/antonio/Recursos/sup/";
         String NomeArquivo = "supcloud.js";
 
         Arquivo arquivo = new Arquivo();
@@ -59,23 +61,5 @@ public class SupService {
         }
         return arquivoTxt;
     }
-
-    public static String MontaMsg(Dados001 MsgJson) {
-        String arquivoTxt = "";
-        String Caminho = "/home/antonio/Recursos/";
-        String NomeArquivo = "local001.xml";
-
-        Arquivo arquivo = new Arquivo();
-        if (arquivo.Existe(Caminho, NomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(Caminho, NomeArquivo);
-        }
-        else {
-            throw new ArquivoNaoEncontradoException("");
-        }
-
-        return arquivoTxt;
-    }
-
-
 
 }
