@@ -1,7 +1,12 @@
 package praxsoft.SrvHTTP02.services;
 
 import org.springframework.stereotype.Service;
+import praxsoft.SrvHTTP02.domain.Dados001;
 import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class SupService {
@@ -55,7 +60,7 @@ public class SupService {
         return arquivoTxt;
     }
 
-    public String MontaMsg() {
+    public static String MontaMsg(Dados001 MsgJson) {
         String arquivoTxt = "";
         String Caminho = "/home/antonio/Recursos/";
         String NomeArquivo = "local001.xml";
@@ -67,7 +72,10 @@ public class SupService {
         else {
             throw new ArquivoNaoEncontradoException("");
         }
+
         return arquivoTxt;
     }
+
+
 
 }

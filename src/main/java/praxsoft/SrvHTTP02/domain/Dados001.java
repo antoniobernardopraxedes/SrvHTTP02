@@ -1,84 +1,89 @@
 package praxsoft.SrvHTTP02.domain;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Dados001 {
 
     // Estados de Comunicação
-    private String comcnv;
-    private String comcnc;
-    private String comutr;
-    private String comcc1;
-    private String comcc2;
+    private static String comcnv;
+    private static String comcnc;
+    private static String comutr;
+    private static String comcc1;
+    private static String comcc2;
 
     // Informação geral
-    private String clk;
-    private String data;
-    private String cmdex;
-    private String mdop;
-    private String mdcom;
-    private String mdct1;
-    private String mdct234;
-    private String encg1;
-    private String encg2;
-    private String encg3;
-    private String icg3;
-    private String vbat;
-    private String vrede;
-    private String estvrd;
-    private String tbat;
-    private String sdbat;
+    private static String clk;
+    private static String data;
+    private static String cmdex;
+    private static String mdop;
+    private static String mdcom;
+    private static String mdct1;
+    private static String mdct234;
+    private static String encg1;
+    private static String encg2;
+    private static String encg3;
+    private static String icg3;
+    private static String vbat;
+    private static String vrede;
+    private static String estvrd;
+    private static String tbat;
+    private static String sdbat;
 
     // Estados e Medidas da Caixa d'água e da Bomba
-    private String estcxaz;
-    private String nivcxaz;
-    private String estbmb;
-    private String estdjb;
-    private String estdjrb;
-    private String enbmb;
-    private String tmpbl;
+    private static String estcxaz;
+    private static String nivcxaz;
+    private static String estbmb;
+    private static String estdjb;
+    private static String estdjrb;
+    private static String enbmb;
+    private static String tmpbl;
 
     // Geração Solar e Consumo (18 Variáveis)
-    private String vp12;
-    private String is12;
-    private String iscc1;
-    private String wscc1;
-    private String sdcc1;
-    private String vp34;
-    private String is34;
-    private String iscc2;
-    private String wscc2;
-    private String sdcc2;
-    private String itotger;
-    private String wtotger;
-    private String itotcg;
-    private String wtotcg;
-    private String estft1;
-    private String estft2;
-    private String icircc;
-    private String wcircc;
+    private static String vp12;
+    private static String is12;
+    private static String iscc1;
+    private static String wscc1;
+    private static String sdcc1;
+    private static String vp34;
+    private static String is34;
+    private static String iscc2;
+    private static String wscc2;
+    private static String sdcc2;
+    private static String itotger;
+    private static String wtotger;
+    private static String itotcg;
+    private static String wtotcg;
+    private static String estft1;
+    private static String estft2;
+    private static String icircc;
+    private static String wcircc;
 
     // Inversor 2 (10 Variáveis
-    private String estiv2;
-    private String ieiv2;
-    private String weiv2;
-    private String vsiv2;
-    private String isiv2;
-    private String wsiv2;
-    private String tdiv2;
-    private String ttiv2;
-    private String efiv2;
-    private String sdiv2;
+    private static String estiv2;
+    private static String ieiv2;
+    private static String weiv2;
+    private static String isiv2;
+    private static String vsiv2;
+    private static String wsiv2;
+    private static String tdiv2;
+    private static String ttiv2;
+    private static String efiv2;
+    private static String sdiv2;
 
     // Inversor 1 (10 Variáveis
-    private String estiv1;
-    private String ieiv1;
-    private String weiv1;
-    private String vsiv1;
-    private String isiv1;
-    private String wsiv1;
-    private String tdiv1;
-    private String ttiv1;
-    private String efiv1;
-    private String sdiv1;
+    private static String estiv1;
+    private static String ieiv1;
+    private static String weiv1;
+    private static String isiv1;
+    private static String vsiv1;
+    private static String wsiv1;
+    private static String tdiv1;
+    private static String ttiv1;
+    private static String efiv1;
+    private static String sdiv1;
 
 
     public String getClk() {
@@ -608,4 +613,474 @@ public class Dados001 {
     public void setSdiv1(String sdiv1) {
         this.sdiv1 = sdiv1;
     }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXML()                                                                                      *
+    //	                                                                                                               *
+    // Data: 12/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML a partir das variáveis da classe Dados001                                          *
+    //                                                                                                                 *
+    // Entrada: não tem                                                                                                *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public static String MontaXML() {
+
+        // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
+        String MsgXMLArray[][][][] = new String[1][10][30][2];
+        int IdNv0 = 0;
+        int IdNv1 = 0;
+        String MsgXML = "";
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "04";
+
+        IdNv1 = 1; // Grupo de 19 Variáveis de Informação GERAL
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "21";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "COMCNV";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = "Normal";
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "COMCNC";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = comcnc;
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "COMUTR";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = comutr;
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "COMCC1";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = comcc1;
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "COMCC2";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = comcc2;
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "CLK";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = clk;
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "DATA";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = data;
+        MsgXMLArray[IdNv0][IdNv1][8][0] = "CMDEX";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = "Atualiza";
+        MsgXMLArray[IdNv0][IdNv1][9][0] = "MDOP";
+        MsgXMLArray[IdNv0][IdNv1][9][1] = mdop;
+        MsgXMLArray[IdNv0][IdNv1][10][0] = "MDCOM";
+        MsgXMLArray[IdNv0][IdNv1][10][1] = mdcom;
+        MsgXMLArray[IdNv0][IdNv1][11][0] = "MDCT1";
+        MsgXMLArray[IdNv0][IdNv1][11][1] = mdct1;
+        MsgXMLArray[IdNv0][IdNv1][12][0] = "MDCT234";
+        MsgXMLArray[IdNv0][IdNv1][12][1] =mdct234;
+        MsgXMLArray[IdNv0][IdNv1][13][0] = "ENCG1";
+        MsgXMLArray[IdNv0][IdNv1][13][1] = encg1;
+        MsgXMLArray[IdNv0][IdNv1][14][0] = "ENCG2";
+        MsgXMLArray[IdNv0][IdNv1][14][1] = encg2;
+        MsgXMLArray[IdNv0][IdNv1][15][0] = "ENCG3";
+        MsgXMLArray[IdNv0][IdNv1][15][1] = encg3;
+        MsgXMLArray[IdNv0][IdNv1][16][0] = "ICG3";
+        MsgXMLArray[IdNv0][IdNv1][16][1] = icg3;
+        MsgXMLArray[IdNv0][IdNv1][17][0] = "VBAT";
+        MsgXMLArray[IdNv0][IdNv1][17][1] = vbat;
+        MsgXMLArray[IdNv0][IdNv1][18][0] = "VREDE";
+        MsgXMLArray[IdNv0][IdNv1][18][1] = vrede;
+        MsgXMLArray[IdNv0][IdNv1][19][0] = "ESTVRD";
+        MsgXMLArray[IdNv0][IdNv1][19][1] = estvrd;
+        MsgXMLArray[IdNv0][IdNv1][20][0] = "TBAT";
+        MsgXMLArray[IdNv0][IdNv1][20][1] = tbat;
+        MsgXMLArray[IdNv0][IdNv1][21][0] = "SDBAT";
+        MsgXMLArray[IdNv0][IdNv1][21][1] = sdbat;
+
+        IdNv1 = 2; // Grupo de 07 Variáveis de Informação da Bomba do Poço e da Caixa Azul
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "AGUA";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "07";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTCXAZ";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = estcxaz;
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "NIVCXAZ";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = nivcxaz;
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "ESTBMB";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = estbmb;
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "ESTDJB";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = estdjb;
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "ESTDJRB";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = estdjrb;
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "ENBMB";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = enbmb;
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "TMPBL";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = tmpbl;
+
+                IdNv1 = 3; // Grupo de 18 Variáveis de Informação da Geração Solar e do Consumo
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "18";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "VP12";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = vp12;
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "IS12";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = is12;
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "ISCC1";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = iscc1;
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "WSCC1";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = wscc1;
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "SDCC1";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = sdcc1;
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "VP34";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = vp34;
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "IS34";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = is34;
+        MsgXMLArray[IdNv0][IdNv1][8][0] = "ISCC2";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = iscc2;
+        MsgXMLArray[IdNv0][IdNv1][9][0] = "WSCC2";
+        MsgXMLArray[IdNv0][IdNv1][9][1] = wscc2;
+        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDCC2";
+        MsgXMLArray[IdNv0][IdNv1][10][1] = sdcc2;
+        MsgXMLArray[IdNv0][IdNv1][11][0] = "ITOTGER";
+        MsgXMLArray[IdNv0][IdNv1][11][1] = itotger;
+        MsgXMLArray[IdNv0][IdNv1][12][0] = "WTOTGER";
+        MsgXMLArray[IdNv0][IdNv1][12][1] = wtotger;
+        MsgXMLArray[IdNv0][IdNv1][13][0] = "ITOTCG";
+        MsgXMLArray[IdNv0][IdNv1][13][1] = itotcg;
+        MsgXMLArray[IdNv0][IdNv1][14][0] = "WTOTCG";
+        MsgXMLArray[IdNv0][IdNv1][14][1] = wtotcg;
+        MsgXMLArray[IdNv0][IdNv1][15][0] = "ESTFT1";
+        MsgXMLArray[IdNv0][IdNv1][15][1] = estft1;
+        MsgXMLArray[IdNv0][IdNv1][16][0] = "ESTFT2";
+        MsgXMLArray[IdNv0][IdNv1][16][1] = estft2;
+        MsgXMLArray[IdNv0][IdNv1][17][0] = "ICIRCC";
+        MsgXMLArray[IdNv0][IdNv1][17][1] = icircc;
+        MsgXMLArray[IdNv0][IdNv1][18][0] = "WCIRCC";
+        MsgXMLArray[IdNv0][IdNv1][18][1] = wcircc;
+
+                IdNv1 = 4; // Grupo de 20 Variáveis de Informação dos Inversores 1 e 2
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "20";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTIV2";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = estiv2;
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "IEIV2";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = ieiv2;
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "WEIV2";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = weiv2;
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "VSIV2";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = vsiv2;
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "ISIV2";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = isiv2;
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "WSIV2";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = wsiv2;
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "TDIV2";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = tdiv2;
+        MsgXMLArray[IdNv0][IdNv1][8][0] = "TTIV2";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = ttiv2;
+        MsgXMLArray[IdNv0][IdNv1][9][0] = "EFIV2";
+        MsgXMLArray[IdNv0][IdNv1][9][1] = efiv2;
+        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDIV2";
+        MsgXMLArray[IdNv0][IdNv1][10][1] = sdiv2;
+
+        MsgXMLArray[IdNv0][IdNv1][11][0] = "ESTIV1";
+        MsgXMLArray[IdNv0][IdNv1][11][1] = estiv1;
+        MsgXMLArray[IdNv0][IdNv1][12][0] = "IEIV1";
+        MsgXMLArray[IdNv0][IdNv1][12][1] = ieiv1;
+        MsgXMLArray[IdNv0][IdNv1][13][0] = "WEIV1";
+        MsgXMLArray[IdNv0][IdNv1][13][1] = weiv1;
+        MsgXMLArray[IdNv0][IdNv1][14][0] = "VSIV1";
+        MsgXMLArray[IdNv0][IdNv1][14][1] = vsiv1;
+        MsgXMLArray[IdNv0][IdNv1][15][0] = "ISIV1";
+        MsgXMLArray[IdNv0][IdNv1][15][1] = isiv1;
+        MsgXMLArray[IdNv0][IdNv1][16][0] = "WSIV1";
+        MsgXMLArray[IdNv0][IdNv1][16][1] = wsiv1;
+        MsgXMLArray[IdNv0][IdNv1][17][0] = "TDIV1";
+        MsgXMLArray[IdNv0][IdNv1][17][1] = tdiv1;
+        MsgXMLArray[IdNv0][IdNv1][18][0] = "TTIV1";
+        MsgXMLArray[IdNv0][IdNv1][18][1] = ttiv1;
+        MsgXMLArray[IdNv0][IdNv1][19][0] = "EFIV1";
+        MsgXMLArray[IdNv0][IdNv1][19][1] = efiv1;
+        MsgXMLArray[IdNv0][IdNv1][20][0] = "SDIV1";
+        MsgXMLArray[IdNv0][IdNv1][20][1] = sdiv1;
+
+        // Retorna a Mensagem XML completa em formato de String
+        MsgXML = StringXML(MsgXMLArray) + " ";
+        return(MsgXML);
+
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLFalha()                                                                                 *
+    //	                                                                                                               *
+    // Data: 10/01/2020                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML indicando falha                                                                    *
+    // Entrada: int: 0 = COMCNC = "----------" / 1 = COMCNC = "Falha"                                                  *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public static String MontaXMLFalha(int Opcao) {
+
+        // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
+        String MsgXMLArray[][][][] = new String[1][10][30][2];
+        int IdNv0 = 0;
+        int IdNv1 = 0;
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "04";
+
+        IdNv1 = 1; // Grupo de 19 Variáveis de Informação GERAL
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "21";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "COMCNV";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = "Falha";
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "COMCNC";
+        if (Opcao == 0) {
+            MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
+        }
+        else {
+            MsgXMLArray[IdNv0][IdNv1][2][1] = "Falha";
+        }
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "COMUTR";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "COMCC1";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "COMCC2";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "CLK";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "DATA";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][8][0] = "CMDEX";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][9][0] = "MDOP";
+        MsgXMLArray[IdNv0][IdNv1][9][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][10][0] = "MDCOM";
+        MsgXMLArray[IdNv0][IdNv1][10][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][11][0] = "MDCT1";
+        MsgXMLArray[IdNv0][IdNv1][11][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][12][0] = "MDCT234";
+        MsgXMLArray[IdNv0][IdNv1][12][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][13][0] = "ENCG1";
+        MsgXMLArray[IdNv0][IdNv1][13][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][14][0] = "ENCG2";
+        MsgXMLArray[IdNv0][IdNv1][14][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][15][0] = "ENCG3";
+        MsgXMLArray[IdNv0][IdNv1][15][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][16][0] = "ICG3";
+        MsgXMLArray[IdNv0][IdNv1][16][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][17][0] = "VBAT";
+        MsgXMLArray[IdNv0][IdNv1][17][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][18][0] = "VREDE";
+        MsgXMLArray[IdNv0][IdNv1][18][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][19][0] = "ESTVRD";
+        MsgXMLArray[IdNv0][IdNv1][19][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][20][0] = "TBAT";
+        MsgXMLArray[IdNv0][IdNv1][20][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][21][0] = "SDBAT";
+        MsgXMLArray[IdNv0][IdNv1][21][1] = "----------";
+
+        IdNv1 = 2; // Grupo de 07 Variáveis de Informação da Bomba do Poço e da Caixa Azul
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "AGUA";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "07";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTCXAZ";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "NIVCXAZ";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "ESTBMB";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "ESTDJB";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "ESTDJRB";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "ENBMB";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "TMPBL";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
+
+        IdNv1 = 3; // Grupo de 18 Variáveis de Informação da Geração Solar e do Consumo
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "18";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "VP12";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "IS12";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "ISCC1";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "WSCC1";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "SDCC1";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "VP34";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "IS34";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][8][0] = "ISCC2";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][9][0] = "WSCC2";
+        MsgXMLArray[IdNv0][IdNv1][9][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDCC2";
+        MsgXMLArray[IdNv0][IdNv1][10][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][11][0] = "ITOTGER";
+        MsgXMLArray[IdNv0][IdNv1][11][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][12][0] = "WTOTGER";
+        MsgXMLArray[IdNv0][IdNv1][12][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][13][0] = "ITOTCG";
+        MsgXMLArray[IdNv0][IdNv1][13][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][14][0] = "WTOTCG";
+        MsgXMLArray[IdNv0][IdNv1][14][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][15][0] = "ESTFT1";
+        MsgXMLArray[IdNv0][IdNv1][15][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][16][0] = "ESTFT2";
+        MsgXMLArray[IdNv0][IdNv1][16][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][17][0] = "ICIRCC";
+        MsgXMLArray[IdNv0][IdNv1][17][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][18][0] = "WCIRCC";
+        MsgXMLArray[IdNv0][IdNv1][18][1] = "----------";
+
+        IdNv1 = 4; // Grupo de 20 Variáveis de Informação dos Inversores 1 e 2
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "20";
+
+        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTIV2";
+        MsgXMLArray[IdNv0][IdNv1][1][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][2][0] = "IEIV2";
+        MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][3][0] = "WEIV2";
+        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][4][0] = "VSIV2";
+        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][5][0] = "ISIV2";
+        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][6][0] = "WSIV2";
+        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][7][0] = "TDIV2";
+        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][8][0] = "TTIV2";
+        MsgXMLArray[IdNv0][IdNv1][8][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][9][0] = "EFIV2";
+        MsgXMLArray[IdNv0][IdNv1][9][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDIV2";
+        MsgXMLArray[IdNv0][IdNv1][10][1] = "----------";
+
+        MsgXMLArray[IdNv0][IdNv1][11][0] = "ESTIV1";
+        MsgXMLArray[IdNv0][IdNv1][11][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][12][0] = "IEIV1";
+        MsgXMLArray[IdNv0][IdNv1][12][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][13][0] = "WEIV1";
+        MsgXMLArray[IdNv0][IdNv1][13][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][14][0] = "VSIV1";
+        MsgXMLArray[IdNv0][IdNv1][14][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][15][0] = "ISIV1";
+        MsgXMLArray[IdNv0][IdNv1][15][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][16][0] = "WSIV1";
+        MsgXMLArray[IdNv0][IdNv1][16][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][17][0] = "TDIV1";
+        MsgXMLArray[IdNv0][IdNv1][17][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][18][0] = "TTIV1";
+        MsgXMLArray[IdNv0][IdNv1][18][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][19][0] = "EFIV1";
+        MsgXMLArray[IdNv0][IdNv1][19][1] = "----------";
+        MsgXMLArray[IdNv0][IdNv1][20][0] = "SDIV1";
+        MsgXMLArray[IdNv0][IdNv1][20][1] = "----------";
+
+        // Retorna a Mensagem XML completa em formato de String
+        return(StringXML(MsgXMLArray));
+
+    }
+
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: StringXML()                                                                                     *
+    //	                                                                                                               *
+    // Funcao: monta uma String com a mensagem XML de resposta inserindo o valor das variáveis                         *
+    //                                                                                                                 *
+    // Entrada: array String com as Tags dos Níveis 0, 1 e 2 e os valores das variáveis de supervisão                  *
+    //                                                                                                                 *
+    // Saida: String com a mensagem XML                                                                                *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    private static String StringXML(String MsgXMLArray[][][][]) {
+        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
+
+        char Dezena = MsgXMLArray[0][0][0][1].charAt(0);
+        char Unidade = MsgXMLArray[0][0][0][1].charAt(1);
+
+        // Obtem o Numero de Tags de Nivel 1
+        int NmTagNv1 = TwoCharToInt(Dezena, Unidade);
+
+        // Repete até imprimir todas as Tags de Nível 1 e Nível 2
+        for (int i = 1; i <= NmTagNv1; i++) {
+
+            // Imprime a Tag de Nivel 1 de Início do Grupo
+            MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
+            char DzNumVar = MsgXMLArray[0][i][0][1].charAt(0);
+            char UnNumVar = MsgXMLArray[0][i][0][1].charAt(1);
+
+            // Obtém o Número de Variáveis do Grupo
+            int NumVar = TwoCharToInt(DzNumVar, UnNumVar);
+
+            // Repeta até imprimir todas as Tags de Nível 2 e suas variáveis
+            for (int j = 1; j <= NumVar; j++) {
+
+                // Imprime as Tags de Nível 2 e os Valores das Variáveis
+                MsgXML = MsgXML + "    <"+MsgXMLArray[0][i][j][0]+">"
+                         + MsgXMLArray[0][i][j][1]
+                         + "</"+MsgXMLArray[0][i][j][0]+">\n";
+            }
+
+            // Imprime a Tag de Nivel 1 de Fim de Grupo
+            MsgXML = MsgXML + "  </" + MsgXMLArray[0][i][0][0] + ">\n";
+        }
+
+        // Imprime a Tag de Nivel 0 de Fim
+        MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">\n";
+
+        return(MsgXML);
+
+    }
+
+    //*****************************************************************************************************************
+    // Nome do Método: CharToByte                                                                                     *
+    //                                                                                                                *
+    // Funcao: converte um caracter numerico em um valor numerico de 0 a 9                                            *
+    // Entrada: caracter: '0' a '9'                                                                                   *
+    // Saida: byte (valor numerico de 0 a 9)                                                                          *
+    //                                                                                                                *
+    //*****************************************************************************************************************
+    //
+    static int CharToByte(char caracter) {
+        byte Num = 10;
+        switch (caracter) {
+            case '0': Num = 0;
+                break;
+            case '1': Num = 1;
+                break;
+            case '2': Num = 2;
+                break;
+            case '3': Num = 3;
+                break;
+            case '4': Num = 4;
+                break;
+            case '5': Num = 5;
+                break;
+            case '6': Num = 6;
+                break;
+            case '7': Num = 7;
+                break;
+            case '8': Num = 8;
+                break;
+            case '9': Num = 9;
+                break;
+        }
+        return (Num);
+    }
+
+    //*****************************************************************************************************************
+    // Nome do Método: TwoCharToInt                                                                                  *
+    //                                                                                                                *
+    // Funcao: converte dois caracteres numericos em um valor numerico de 00 a 99                                     *
+    // Entrada: caracteres dezena e unidade ('0' a '9')                                                               *
+    // Saida: int (valor numerico de 00 a 99)                                                                        *
+    //                                                                                                                *
+    //*****************************************************************************************************************
+    //
+    static int TwoCharToInt(char Ch10, char Ch1) {
+        int Num = 10*CharToByte(Ch10) + CharToByte(Ch1);
+        return (Num);
+    }
+
 }
