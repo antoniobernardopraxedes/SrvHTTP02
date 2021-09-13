@@ -1,5 +1,19 @@
 package praxsoft.SrvHTTP02.domain;
 
+import praxsoft.SrvHTTP02.services.SupService;
+
+//**********************************************************************************************************************
+// Nome da Classe: Dados001                                                                                            *
+//	                                                                                                                   *
+// Data: 13/09/2021                                                                                                    *
+//                                                                                                                     *
+// Funções: contém todos os atributos e métodos referentes ao Sistema de Supervisão, Controle e Monitoramento de       *
+//          condição da Usina Solar Fotovoltaica. Os atributos referem-se às variáveis do sistema, que podem ser       *
+//          atualizadas de duas maneiras: em modo local (Intranet) pelo método LeEstMedsPayload; em modo remoto        *
+//          (nuvem) através de mensagem em formato Json enviada pelo software Atualizador.                             *
+//                                                                                                                     *
+//**********************************************************************************************************************
+//
 public class Dados001 {
 
     // Estados de Comunicação (5 Variáveis)
@@ -612,17 +626,17 @@ public class Dados001 {
     //******************************************************************************************************************
     // Nome do Método: MontaXML()                                                                                      *
     //	                                                                                                               *
-    // Data: 12/09/2021                                                                                                *
+    // Data: 13/09/2021                                                                                                *
     //                                                                                                                 *
     // Funcao: monta uma string XML a partir das variáveis da classe Dados001                                          *
     //                                                                                                                 *
-    // Entrada: não tem                                                                                                *
+    // Entrada: a string com o comando recebido do navegador e a flag normal: se normal = true monta a mensagem XML    *
+    //           normalmente. Se normal = false indica falha e monta a mensagem XML com os campos Value = ----------   *
     //                                                                                                                 *
     // Saida: string com a mensagem XML                                                                                *
-    //	                                                                                                               *
     //******************************************************************************************************************
     //
-    public static String MontaXML(String comando) {
+    public static java.lang.String MontaXML(String comando, boolean normal) {
 
         // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
         String MsgXMLArray[][][][] = new String[1][10][30][2];
@@ -632,450 +646,433 @@ public class Dados001 {
         MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
         MsgXMLArray[IdNv0][IdNv1][0][1] = "04";
 
-        IdNv1 = 1; // Grupo de 19 Variáveis de Informação GERAL
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "21";
+        IdNv1 = 1; // Grupo 1: 19 Variáveis de Informação GERAL
+        int i = 0;
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";    // Carrega a Tag do Grupo 0
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCNV", "Normal", normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCNC", comcnc, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMUTR", comutr, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCC1", comcc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCC2", comcc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("CLK", clk, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("DATA", data, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("CMDEX", comando, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDOP", mdop, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDCOM", mdcom, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDCT1", mdct1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDCT234", mdct234, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENCG1", encg1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENCG2", encg2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENCG3", encg3, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ICG3", icg3, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VBAT", vbat, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VREDE", vrede, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTVRD", estvrd, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TBAT", tbat, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDBAT", sdbat, normal);
 
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "COMCNV";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = "Normal";
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "COMCNC";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = comcnc;
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "COMUTR";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = comutr;
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "COMCC1";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = comcc1;
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "COMCC2";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = comcc2;
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "CLK";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = clk;
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "DATA";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = data;
-        MsgXMLArray[IdNv0][IdNv1][8][0] = "CMDEX";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = comando; //cmdex;
-        MsgXMLArray[IdNv0][IdNv1][9][0] = "MDOP";
-        MsgXMLArray[IdNv0][IdNv1][9][1] = mdop;
-        MsgXMLArray[IdNv0][IdNv1][10][0] = "MDCOM";
-        MsgXMLArray[IdNv0][IdNv1][10][1] = mdcom;
-        MsgXMLArray[IdNv0][IdNv1][11][0] = "MDCT1";
-        MsgXMLArray[IdNv0][IdNv1][11][1] = mdct1;
-        MsgXMLArray[IdNv0][IdNv1][12][0] = "MDCT234";
-        MsgXMLArray[IdNv0][IdNv1][12][1] =mdct234;
-        MsgXMLArray[IdNv0][IdNv1][13][0] = "ENCG1";
-        MsgXMLArray[IdNv0][IdNv1][13][1] = encg1;
-        MsgXMLArray[IdNv0][IdNv1][14][0] = "ENCG2";
-        MsgXMLArray[IdNv0][IdNv1][14][1] = encg2;
-        MsgXMLArray[IdNv0][IdNv1][15][0] = "ENCG3";
-        MsgXMLArray[IdNv0][IdNv1][15][1] = encg3;
-        MsgXMLArray[IdNv0][IdNv1][16][0] = "ICG3";
-        MsgXMLArray[IdNv0][IdNv1][16][1] = icg3;
-        MsgXMLArray[IdNv0][IdNv1][17][0] = "VBAT";
-        MsgXMLArray[IdNv0][IdNv1][17][1] = vbat;
-        MsgXMLArray[IdNv0][IdNv1][18][0] = "VREDE";
-        MsgXMLArray[IdNv0][IdNv1][18][1] = vrede;
-        MsgXMLArray[IdNv0][IdNv1][19][0] = "ESTVRD";
-        MsgXMLArray[IdNv0][IdNv1][19][1] = estvrd;
-        MsgXMLArray[IdNv0][IdNv1][20][0] = "TBAT";
-        MsgXMLArray[IdNv0][IdNv1][20][1] = tbat;
-        MsgXMLArray[IdNv0][IdNv1][21][0] = "SDBAT";
-        MsgXMLArray[IdNv0][IdNv1][21][1] = sdbat;
+        // Carrega o número de elementos do Grupo 1
+        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);
 
-        IdNv1 = 2; // Grupo de 07 Variáveis de Informação da Bomba do Poço e da Caixa Azul
+        // -------------------------------------------------------------------------------------------------------------
+        // Grupo 2: Variáveis de Informação da Bomba do Poço e da Caixa Azul
+        IdNv1 = 2;
+        i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "AGUA";
         MsgXMLArray[IdNv0][IdNv1][0][1] = "07";
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTCXAZ", estcxaz, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("NIVCXAZ", nivcxaz, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTBMB", estbmb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTDJB", estdjb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTDJRB", estdjrb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENBMB", enbmb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TMPBL", tmpbl, normal);
 
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTCXAZ";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = estcxaz;
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "NIVCXAZ";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = nivcxaz;
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "ESTBMB";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = estbmb;
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "ESTDJB";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = estdjb;
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "ESTDJRB";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = estdjrb;
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "ENBMB";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = enbmb;
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "TMPBL";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = tmpbl;
+        // Carrega o número de elementos do Grupo 2
+        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);  // Carrega o número de elementos do Grupo 1
 
-        IdNv1 = 3; // Grupo de 18 Variáveis de Informação da Geração Solar e do Consumo
+        // -------------------------------------------------------------------------------------------------------------
+        // Grupo 3: 18 Variáveis de Informação da Geração Solar e do Consumo
+        IdNv1 = 3;
+        i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "18";
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VP12", vp12, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IS12", is12, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISCC1", iscc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSCC1", wscc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDCC1", sdcc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VP34", vp34, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IS34", is34, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISCC2", iscc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSCC2", wscc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDCC2", sdcc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ITOTGER", itotger, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WTOTGER", wtotger, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ITOTCG", itotcg, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WTOTCG", wtotcg, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTFT1", estft1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTFT2", estft2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ICIRCC", icircc, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WCIRCC", wcircc, normal);
 
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "VP12";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = vp12;
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "IS12";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = is12;
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "ISCC1";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = iscc1;
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "WSCC1";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = wscc1;
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "SDCC1";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = sdcc1;
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "VP34";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = vp34;
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "IS34";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = is34;
-        MsgXMLArray[IdNv0][IdNv1][8][0] = "ISCC2";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = iscc2;
-        MsgXMLArray[IdNv0][IdNv1][9][0] = "WSCC2";
-        MsgXMLArray[IdNv0][IdNv1][9][1] = wscc2;
-        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDCC2";
-        MsgXMLArray[IdNv0][IdNv1][10][1] = sdcc2;
-        MsgXMLArray[IdNv0][IdNv1][11][0] = "ITOTGER";
-        MsgXMLArray[IdNv0][IdNv1][11][1] = itotger;
-        MsgXMLArray[IdNv0][IdNv1][12][0] = "WTOTGER";
-        MsgXMLArray[IdNv0][IdNv1][12][1] = wtotger;
-        MsgXMLArray[IdNv0][IdNv1][13][0] = "ITOTCG";
-        MsgXMLArray[IdNv0][IdNv1][13][1] = itotcg;
-        MsgXMLArray[IdNv0][IdNv1][14][0] = "WTOTCG";
-        MsgXMLArray[IdNv0][IdNv1][14][1] = wtotcg;
-        MsgXMLArray[IdNv0][IdNv1][15][0] = "ESTFT1";
-        MsgXMLArray[IdNv0][IdNv1][15][1] = estft1;
-        MsgXMLArray[IdNv0][IdNv1][16][0] = "ESTFT2";
-        MsgXMLArray[IdNv0][IdNv1][16][1] = estft2;
-        MsgXMLArray[IdNv0][IdNv1][17][0] = "ICIRCC";
-        MsgXMLArray[IdNv0][IdNv1][17][1] = icircc;
-        MsgXMLArray[IdNv0][IdNv1][18][0] = "WCIRCC";
-        MsgXMLArray[IdNv0][IdNv1][18][1] = wcircc;
+        // Carrega o número de elementos do Grupo 3
+        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);
 
-        IdNv1 = 4; // Grupo de 20 Variáveis de Informação dos Inversores 1 e 2
+        // -------------------------------------------------------------------------------------------------------------
+        // Grupo 4: 20 Variáveis de Informação dos Inversores 1 e 2
+        IdNv1 = 4;
+        i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "20";
 
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTIV2";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = estiv2;
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "IEIV2";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = ieiv2;
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "WEIV2";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = weiv2;
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "VSIV2";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = vsiv2;
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "ISIV2";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = isiv2;
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "WSIV2";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = wsiv2;
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "TDIV2";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = tdiv2;
-        MsgXMLArray[IdNv0][IdNv1][8][0] = "TTIV2";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = ttiv2;
-        MsgXMLArray[IdNv0][IdNv1][9][0] = "EFIV2";
-        MsgXMLArray[IdNv0][IdNv1][9][1] = efiv2;
-        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDIV2";
-        MsgXMLArray[IdNv0][IdNv1][10][1] = sdiv2;
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTIV2", estiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IEIV2", ieiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WEIV2", weiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VSIV2", vsiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISIV2", isiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSIV2", wsiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TDIV2", tdiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TTIV2", ttiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("EFIV2", efiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDIV2", sdiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTIV1", estiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IEIV1", ieiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WEIV1", weiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VSIV1", vsiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISIV1", isiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSIV1", wsiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TDIV1", tdiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TTIV1", ttiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("EFIV1", efiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WCIRCC", sdiv1, normal);
 
-        MsgXMLArray[IdNv0][IdNv1][11][0] = "ESTIV1";
-        MsgXMLArray[IdNv0][IdNv1][11][1] = estiv1;
-        MsgXMLArray[IdNv0][IdNv1][12][0] = "IEIV1";
-        MsgXMLArray[IdNv0][IdNv1][12][1] = ieiv1;
-        MsgXMLArray[IdNv0][IdNv1][13][0] = "WEIV1";
-        MsgXMLArray[IdNv0][IdNv1][13][1] = weiv1;
-        MsgXMLArray[IdNv0][IdNv1][14][0] = "VSIV1";
-        MsgXMLArray[IdNv0][IdNv1][14][1] = vsiv1;
-        MsgXMLArray[IdNv0][IdNv1][15][0] = "ISIV1";
-        MsgXMLArray[IdNv0][IdNv1][15][1] = isiv1;
-        MsgXMLArray[IdNv0][IdNv1][16][0] = "WSIV1";
-        MsgXMLArray[IdNv0][IdNv1][16][1] = wsiv1;
-        MsgXMLArray[IdNv0][IdNv1][17][0] = "TDIV1";
-        MsgXMLArray[IdNv0][IdNv1][17][1] = tdiv1;
-        MsgXMLArray[IdNv0][IdNv1][18][0] = "TTIV1";
-        MsgXMLArray[IdNv0][IdNv1][18][1] = ttiv1;
-        MsgXMLArray[IdNv0][IdNv1][19][0] = "EFIV1";
-        MsgXMLArray[IdNv0][IdNv1][19][1] = efiv1;
-        MsgXMLArray[IdNv0][IdNv1][20][0] = "SDIV1";
-        MsgXMLArray[IdNv0][IdNv1][20][1] = sdiv1;
+        // Carrega o número de elementos do Grupo 4
+        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);
 
         // Retorna a Mensagem XML completa em formato de String
-        MsgXML = StringXML(MsgXMLArray) + " ";
+        MsgXML = SupService.StringXML(MsgXMLArray);
         return(MsgXML);
-
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLFalha()                                                                                 *
-    //	                                                                                                               *
-    // Data: 10/01/2020                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML indicando falha                                                                    *
-    // Entrada: int: 0 = COMCNC = "----------" / 1 = COMCNC = "Falha"                                                  *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    public static String MontaXMLFalha(int Opcao) {
-
-        // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
-        String MsgXMLArray[][][][] = new String[1][10][30][2];
-        int IdNv0 = 0;
-        int IdNv1 = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "04";
-
-        IdNv1 = 1; // Grupo de 19 Variáveis de Informação GERAL
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "21";
-
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "COMCNV";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = "Falha";
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "COMCNC";
-        if (Opcao == 0) {
-            MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
-        }
-        else {
-            MsgXMLArray[IdNv0][IdNv1][2][1] = "Falha";
-        }
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "COMUTR";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "COMCC1";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "COMCC2";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "CLK";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "DATA";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][8][0] = "CMDEX";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][9][0] = "MDOP";
-        MsgXMLArray[IdNv0][IdNv1][9][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][10][0] = "MDCOM";
-        MsgXMLArray[IdNv0][IdNv1][10][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][11][0] = "MDCT1";
-        MsgXMLArray[IdNv0][IdNv1][11][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][12][0] = "MDCT234";
-        MsgXMLArray[IdNv0][IdNv1][12][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][13][0] = "ENCG1";
-        MsgXMLArray[IdNv0][IdNv1][13][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][14][0] = "ENCG2";
-        MsgXMLArray[IdNv0][IdNv1][14][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][15][0] = "ENCG3";
-        MsgXMLArray[IdNv0][IdNv1][15][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][16][0] = "ICG3";
-        MsgXMLArray[IdNv0][IdNv1][16][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][17][0] = "VBAT";
-        MsgXMLArray[IdNv0][IdNv1][17][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][18][0] = "VREDE";
-        MsgXMLArray[IdNv0][IdNv1][18][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][19][0] = "ESTVRD";
-        MsgXMLArray[IdNv0][IdNv1][19][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][20][0] = "TBAT";
-        MsgXMLArray[IdNv0][IdNv1][20][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][21][0] = "SDBAT";
-        MsgXMLArray[IdNv0][IdNv1][21][1] = "----------";
-
-        IdNv1 = 2; // Grupo de 07 Variáveis de Informação da Bomba do Poço e da Caixa Azul
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "AGUA";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "07";
-
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTCXAZ";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "NIVCXAZ";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "ESTBMB";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "ESTDJB";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "ESTDJRB";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "ENBMB";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "TMPBL";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
-
-        IdNv1 = 3; // Grupo de 18 Variáveis de Informação da Geração Solar e do Consumo
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "18";
-
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "VP12";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "IS12";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "ISCC1";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "WSCC1";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "SDCC1";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "VP34";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "IS34";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][8][0] = "ISCC2";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][9][0] = "WSCC2";
-        MsgXMLArray[IdNv0][IdNv1][9][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDCC2";
-        MsgXMLArray[IdNv0][IdNv1][10][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][11][0] = "ITOTGER";
-        MsgXMLArray[IdNv0][IdNv1][11][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][12][0] = "WTOTGER";
-        MsgXMLArray[IdNv0][IdNv1][12][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][13][0] = "ITOTCG";
-        MsgXMLArray[IdNv0][IdNv1][13][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][14][0] = "WTOTCG";
-        MsgXMLArray[IdNv0][IdNv1][14][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][15][0] = "ESTFT1";
-        MsgXMLArray[IdNv0][IdNv1][15][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][16][0] = "ESTFT2";
-        MsgXMLArray[IdNv0][IdNv1][16][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][17][0] = "ICIRCC";
-        MsgXMLArray[IdNv0][IdNv1][17][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][18][0] = "WCIRCC";
-        MsgXMLArray[IdNv0][IdNv1][18][1] = "----------";
-
-        IdNv1 = 4; // Grupo de 20 Variáveis de Informação dos Inversores 1 e 2
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "20";
-
-        MsgXMLArray[IdNv0][IdNv1][1][0] = "ESTIV2";
-        MsgXMLArray[IdNv0][IdNv1][1][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][2][0] = "IEIV2";
-        MsgXMLArray[IdNv0][IdNv1][2][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][3][0] = "WEIV2";
-        MsgXMLArray[IdNv0][IdNv1][3][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][4][0] = "VSIV2";
-        MsgXMLArray[IdNv0][IdNv1][4][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][5][0] = "ISIV2";
-        MsgXMLArray[IdNv0][IdNv1][5][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][6][0] = "WSIV2";
-        MsgXMLArray[IdNv0][IdNv1][6][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][7][0] = "TDIV2";
-        MsgXMLArray[IdNv0][IdNv1][7][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][8][0] = "TTIV2";
-        MsgXMLArray[IdNv0][IdNv1][8][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][9][0] = "EFIV2";
-        MsgXMLArray[IdNv0][IdNv1][9][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][10][0] = "SDIV2";
-        MsgXMLArray[IdNv0][IdNv1][10][1] = "----------";
-
-        MsgXMLArray[IdNv0][IdNv1][11][0] = "ESTIV1";
-        MsgXMLArray[IdNv0][IdNv1][11][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][12][0] = "IEIV1";
-        MsgXMLArray[IdNv0][IdNv1][12][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][13][0] = "WEIV1";
-        MsgXMLArray[IdNv0][IdNv1][13][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][14][0] = "VSIV1";
-        MsgXMLArray[IdNv0][IdNv1][14][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][15][0] = "ISIV1";
-        MsgXMLArray[IdNv0][IdNv1][15][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][16][0] = "WSIV1";
-        MsgXMLArray[IdNv0][IdNv1][16][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][17][0] = "TDIV1";
-        MsgXMLArray[IdNv0][IdNv1][17][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][18][0] = "TTIV1";
-        MsgXMLArray[IdNv0][IdNv1][18][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][19][0] = "EFIV1";
-        MsgXMLArray[IdNv0][IdNv1][19][1] = "----------";
-        MsgXMLArray[IdNv0][IdNv1][20][0] = "SDIV1";
-        MsgXMLArray[IdNv0][IdNv1][20][1] = "----------";
-
-        // Retorna a Mensagem XML completa em formato de String
-        return(StringXML(MsgXMLArray));
-
-    }
-
-    //******************************************************************************************************************
-    //                                                                                                                 *
-    // Nome do Método: StringXML()                                                                                     *
-    //	                                                                                                               *
-    // Funcao: monta uma String com a mensagem XML de resposta inserindo o valor das variáveis                         *
-    //                                                                                                                 *
-    // Entrada: array String com as Tags dos Níveis 0, 1 e 2 e os valores das variáveis de supervisão                  *
-    //                                                                                                                 *
-    // Saida: String com a mensagem XML                                                                                *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    private static String StringXML(String MsgXMLArray[][][][]) {
-        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
-
-        char Dezena = MsgXMLArray[0][0][0][1].charAt(0);
-        char Unidade = MsgXMLArray[0][0][0][1].charAt(1);
-
-        // Obtem o Numero de Tags de Nivel 1
-        int NmTagNv1 = TwoCharToInt(Dezena, Unidade);
-
-        // Repete até imprimir todas as Tags de Nível 1 e Nível 2
-        for (int i = 1; i <= NmTagNv1; i++) {
-
-            // Imprime a Tag de Nivel 1 de Início do Grupo
-            MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
-            char DzNumVar = MsgXMLArray[0][i][0][1].charAt(0);
-            char UnNumVar = MsgXMLArray[0][i][0][1].charAt(1);
-
-            // Obtém o Número de Variáveis do Grupo
-            int NumVar = TwoCharToInt(DzNumVar, UnNumVar);
-
-            // Repeta até imprimir todas as Tags de Nível 2 e suas variáveis
-            for (int j = 1; j <= NumVar; j++) {
-
-                // Imprime as Tags de Nível 2 e os Valores das Variáveis
-                MsgXML = MsgXML + "    <"+MsgXMLArray[0][i][j][0]+">"
-                         + MsgXMLArray[0][i][j][1]
-                         + "</"+MsgXMLArray[0][i][j][0]+">\n";
-            }
-
-            // Imprime a Tag de Nivel 1 de Fim de Grupo
-            MsgXML = MsgXML + "  </" + MsgXMLArray[0][i][0][0] + ">\n";
-        }
-
-        // Imprime a Tag de Nivel 0 de Fim
-        MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">\n";
-
-        return(MsgXML);
-
     }
 
     //*****************************************************************************************************************
-    // Nome do Método: CharToByte                                                                                     *
+    // Nome do Método: LeEstMedsPayload()                                                                             *
     //                                                                                                                *
-    // Funcao: converte um caracter numerico em um valor numerico de 0 a 9                                            *
-    // Entrada: caracter: '0' a '9'                                                                                   *
-    // Saida: byte (valor numerico de 0 a 9)                                                                          *
+    // Data: 13/09/2021                                                                                               *
+    //                                                                                                                *
+    // Funcao: em operação local (Intranet), lê as informações dos estados e medidas recebidas do Concentrador        *
+    //          usando mensagem em formato CoAP-OSA-CBM e carrega nas variáveis (atributos da classe).                *
+    //                                                                                                                *
+    // Medidas (64): bytes 160 a 288 - 2 bytes por medida                                                             *
+    //                                                                                                                *
+    // Entrada: array de bytes com a mensagem binária recebida em protocolo CoAP/UDP.                                 *
+    //                                                                                                                *
+    // Saida: não tem                                                                                                 *
     //                                                                                                                *
     //*****************************************************************************************************************
     //
-    static int CharToByte(char caracter) {
-        byte Num = 10;
-        switch (caracter) {
-            case '0': Num = 0;
-                break;
-            case '1': Num = 1;
-                break;
-            case '2': Num = 2;
-                break;
-            case '3': Num = 3;
-                break;
-            case '4': Num = 4;
-                break;
-            case '5': Num = 5;
-                break;
-            case '6': Num = 6;
-                break;
-            case '7': Num = 7;
-                break;
-            case '8': Num = 8;
-                break;
-            case '9': Num = 9;
-                break;
+    public static void LeEstMedsPayload(byte[] MsgRecCoAP) {
+
+        int TamMsgSrv = MsgRecCoAP.length;
+
+        // Lê as Informações de Data e Hora
+        byte Hora = MsgRecCoAP[21] ;
+        byte Minuto = MsgRecCoAP[22];
+        byte Segundo = MsgRecCoAP[23];
+        byte Dia = MsgRecCoAP[24];
+        byte Mes = MsgRecCoAP[25];
+        byte Ano = MsgRecCoAP[26];
+
+        // Lê os estados de comunicação
+        boolean EstComUTR = MsgRecCoAP[27] > 0;
+        boolean EstComCC1 = MsgRecCoAP[28] > 0;
+        boolean EstComCC2 = MsgRecCoAP[29] > 0;
+        boolean EstCom1 = MsgRecCoAP[30] > 0;
+
+        // Le os Estados Digitais
+        boolean DJEINV1 = MsgRecCoAP[37] > 0;
+        boolean EstRede = MsgRecCoAP[42] > 0;
+        boolean MdOp = MsgRecCoAP[43] > 0;
+        boolean MdCom = MsgRecCoAP[44] > 0;
+        boolean MdCtrl1 = MsgRecCoAP[55] > 0;
+        boolean MdCtrl = MsgRecCoAP[45] > 0;
+        boolean Carga1 = MsgRecCoAP[46] > 0;
+        boolean Carga2 = MsgRecCoAP[47] > 0;
+        boolean Carga3 = MsgRecCoAP[48] > 0;
+        boolean Carga4 = MsgRecCoAP[49] > 0;
+        boolean HabCom = MsgRecCoAP[50] > 0;
+        boolean EstadoInversor1 = MsgRecCoAP[51] > 0;
+        boolean EstadoInversor2 = MsgRecCoAP[52] > 0;
+        boolean EstadoCarga3 = MsgRecCoAP[53] > 0;
+        boolean CDBat = MsgRecCoAP[68] > 0;
+        boolean FonteCC2Ligada = MsgRecCoAP[71] > 0;
+        boolean FonteCC1Ligada = MsgRecCoAP[73] > 0;
+
+        // Lê os estados da Caixa Azul e da Bomba
+        byte EstadoCxAz = MsgRecCoAP[72];           // O estado da Caixa Azul tem 5 valores
+        boolean CircBoia = MsgRecCoAP[38] > 0;
+        boolean BoiaCxAzul = MsgRecCoAP[39] > 0;
+        boolean CxAzNvBx = MsgRecCoAP[69] > 0;
+        boolean EdCxAzCheia = MsgRecCoAP[70] > 0;
+        boolean CircBomba = MsgRecCoAP[40] > 0;
+        boolean AlRedeBomba = MsgRecCoAP[41] > 0;
+        boolean BombaLigada = MsgRecCoAP[54] > 0;
+
+        // Le os Alarmes
+        boolean FalhaIv1 = MsgRecCoAP[56] > 0;
+        boolean SubTensaoInv1 = MsgRecCoAP[57] > 0;
+        boolean SobreTensaoInv1 = MsgRecCoAP[58] > 0;
+        boolean SobreTempDrInv1 = MsgRecCoAP[59] > 0;
+        boolean SobreTempTrInv1 = MsgRecCoAP[60] > 0;
+        boolean DjAbIv1 = MsgRecCoAP[61] > 0;
+        boolean FalhaIv2 = MsgRecCoAP[62] > 0;
+        boolean SubTensaoInv2 = MsgRecCoAP[63] > 0;
+        boolean SobreTensaoInv2 = MsgRecCoAP[64] > 0;
+        boolean SobreTempDrInv2 = MsgRecCoAP[65] > 0;
+        boolean SobreTempTrInv2 = MsgRecCoAP[66] > 0;
+        boolean DjAbIv2 = MsgRecCoAP[67] > 0;
+        boolean SobreCorrInv1 = MsgRecCoAP[74] > 0;
+        boolean SobreCorrInv2 = MsgRecCoAP[75] > 0;
+
+        // Carrega as variaveis com os valores das saidas digitais
+        int k = 112;
+        boolean  CT1Inv = MsgRecCoAP[k] > 0;
+        boolean  Iv1Lig = MsgRecCoAP[k + 1] > 0;
+        boolean  CT3Inv = MsgRecCoAP[k + 2] > 0;
+        boolean  Iv2Lig = MsgRecCoAP[k + 10] > 0;
+        boolean  EstFonteCC = MsgRecCoAP[k + 16] > 0;
+        boolean  CT2Inv = MsgRecCoAP[k + 17] > 0;
+
+        // Le as Medidas da mensagem recebida do Concentrador Arduino Mega (medidas 0 a 47)
+        k = 160;
+        int[] Med = new int[256];
+        for (byte i = 0; i < 48; i++){
+            Med[i] = SupService.DoisBytesInt(MsgRecCoAP[k], MsgRecCoAP[k + 1]);
+            k = k + 2;
         }
-        return (Num);
-    }
 
-    //*****************************************************************************************************************
-    // Nome do Método: TwoCharToInt                                                                                  *
-    //                                                                                                                *
-    // Funcao: converte dois caracteres numericos em um valor numerico de 00 a 99                                     *
-    // Entrada: caracteres dezena e unidade ('0' a '9')                                                               *
-    // Saida: int (valor numerico de 00 a 99)                                                                        *
-    //                                                                                                                *
-    //*****************************************************************************************************************
-    //
-    static int TwoCharToInt(char Ch10, char Ch1) {
-        int Num = 10*CharToByte(Ch10) + CharToByte(Ch1);
-        return (Num);
-    }
+        // Carrega as medidas lidas do Concentrador Arduino Mega nas variaveis
+        int VBat = Med[0];           // Tensão do Banco de Baterias
+        int VMBat = Med[16];         // Tensão Média Estendida do Banco de Baterias
+        int VRede = Med[5];          // Tensão da Rede
+        int Icarga3 = Med[14];       // Corrente Carga 3 (Geladeira)
+        int ICircCC = Med[3];        // Corrente Total dos Circuitos CC
+        int IFonteCC = Med[11];      // Corrente de Saída da Fonte CC
 
+        int TmpBmbLig = Med[17];     // Tempo da Bomba Ligada
+        int TmpCxAzNvBx = Med[46];   // Tempo da Caixa Azul em Nivel Baixo
+
+        // Leitura e Cálculo das Medidas referentes à Geração e Consumo
+        int VP12 = Med[18];          // 0x3100 - PV array voltage 1
+        int IS12 = Med[19];          // 0x3101 - PV array current 1
+        int WS12 = Med[20];          // 0x3102 - PV array power 1
+        int VBat1 = Med[21];         // 0x3104 - Battery voltage 1
+        int ISCC1 = Med[22];         // 0x3105 - Battery charging current 1
+        int WSCC1 = Med[23];         // 0x3106 - Battery charging power 1
+        int TBat =  Med[24];         // 0x3110 - Battery Temperature 1
+
+        int VP34 = Med[26];          // 0x3100 - PV array voltage 2
+        int IS34 = Med[27];          // 0x3101 - PV array current 2
+        int WS34 = Med[28];          // 0x3102 - PV array power 2
+        int VBat2 = Med[29];         // 0x3104 - Battery voltage 2
+        int ISCC2 = Med[30];         // 0x3105 - Battery charging current 2
+        int WSCC2 = Med[31];         // 0x3106 - Battery charging power 2
+
+        // Leitura e Cálculo das Medidas referentes ao Inversor 1
+        int IEIv1 = Med[12];         		    // Corrente de Entrada do Inversor 1
+        int WEIv1 = (VBat * IEIv1) / 100;		// Potência de Entrada do Inversor 1
+        int VSIv1 = Med[4];          			// Tensão de Saída do Inversor 1
+        int ISInv1 = (7 * Med[10]) / 10;        // Corrente de Saída do Inversor 1
+        int WSInv1 = (VSIv1 * ISInv1) / 1000;	// Potencia de Saida do Inversor 1
+        int TDInv1 = Med[8];         			// Temperatura do Driver do Inversor 1
+        int TTInv1 = Med[9];         			// Temperatura do Transformador do Inversor 1
+        int EfIv1 = SupService.CalcEficienciaInversor(WEIv1, WSInv1);
+        int SDIv1 = 0;
+
+        // Leitura e Cálculo das Medidas referentes ao Inversor 2
+        double IEInversor2 = 838 * Med[15];
+        int IEIv2 = (int)(IEInversor2 / 1000);		// Corrente de Entrada do Inversor 2
+        int WEIv2 = (VBat * IEIv2) / 100;         	// Potencia de Entrada do Inversor 2
+        int VSIv2 = Med[6];          				// Tensão de Saída do Inversor 2
+        int ISInv2 = Med[13];
+        int WSInv2 = (VSIv2 * ISInv2) / 1000;      	// Potencia de Saida do Inversor 2
+        int TDInv2 = Med[2];         				// Temperatura do Driver do Inversor 2
+        int TTInv2 = Med[7];         				// Temperatura do Transformador do Inversor 2
+        int EfIv2 = SupService.CalcEficienciaInversor(WEIv2, WSInv2);
+        int SDIv2 = 0;
+
+        int ITotGer = Med[33];       				// Corrente Total Gerada
+        int WCircCC = Med[35];       				// Potencia Consumida pelos Circuitos de 24Vcc
+        int WFonteCC = Med[36];      				// Potencia Fornecida pela Fonte 24Vcc
+        int IBat = Med[37];          				// Corrente de Carga ou Descarga do Banco de Baterias
+        int WBat = (VBat * IBat) / 100;				// Potência de Carga/Descarga do Banco de Baterias
+        ITotGer = ISCC1 + ISCC2;				    // Corrente Total Gerada
+        int WTotGer = WSCC1 + WSCC2;				// Potência Total Gerada
+        int ITotCg = IEIv1 + IEIv2 + (ICircCC/10);	// Corrente Total Consumida pelas Cargas
+        int WTotCg =  WEIv1 + WEIv2 + WCircCC;		// Potência Total Consumida pelas Cargas
+
+        int SDCC1 = 0;
+        int SDCC2 = 0;
+        int SDBat = 0;
+
+        //--------------------------------------------------------------------------------------------------------------
+        //                   Carrega os valores das variáveis nos atributos em formato String
+        //--------------------------------------------------------------------------------------------------------------
+
+        // Estados de Comunicacao
+        comcnc = SupService.EstadoSimples(EstCom1, "Normal", "Falha");
+        comutr = SupService.EstadoSimples(EstComUTR, "Normal", "Falha");
+        comcc1 = SupService.EstadoSimples(EstComCC1, "Normal", "Falha");
+        comcc2 = SupService.EstadoSimples(EstComCC2, "Normal", "Falha");
+
+        // Hora e Data da UTR
+        clk = SupService.ImpHora(Hora, Minuto, Segundo);
+        data = SupService.ImpData(Dia, Mes, Ano);
+
+        // Estados Gerais
+        mdop = SupService.EstadoSimples(MdOp, "Normal", "Economia");
+        mdcom = SupService.EstadoSimples(MdCom, "Remoto", "Local");
+        mdct1 = SupService.EstadoSimples(EstComCC2, "Automatico", "Manual");
+        mdct234 = SupService.EstadoSimples(MdCtrl, "Automatico", "Manual");
+
+        // Estado da Fonte de Energia das Cargas 1, 2, 3 e 4
+        encg1 = SupService.EstFonteEnergia(CT2Inv, Carga1, "Inversor 2", "Rede", "Rede (Hab)");
+        encg2 = SupService.EstFonteEnergia(CT1Inv, Carga2, "Inversor 2", "Rede", "Rede (Hab)");
+        encg3 = SupService.EstFonteEnergia(CT3Inv, Carga3, "Inversor 2", "Rede", "Rede (Hab)");
+        enbmb = SupService.EstFonteEnergia(Iv1Lig, Carga4, "Inversor 1", "Rede", "Rede (Hab)");
+
+        // Medida da Corrente da Carga 3 (Geladeira)
+        icg3 = SupService.FrmAna3(Icarga3);
+
+        // Medidas do Banco de Baterias
+        vbat = SupService.FrmAna(VBat);
+        tbat = SupService.FrmAna(TBat);
+        sdbat = SupService.FrmAnaInt(SDBat);
+
+        // Medida e Estado da Tensão da Rede
+        vrede = SupService.FrmAna(VRede);
+        estvrd = SupService.EstadoRede(EstRede, VRede, 19000);
+
+        // Estados e Medidas da Caixa d'Água e da Bomba
+        estcxaz = SupService.EstadoCaixaAzul(EstadoCxAz);
+        nivcxaz = SupService.NivelCaixaAzul(EstadoCxAz);
+        estbmb = SupService.EstadoSimples(CircBomba, "Ligada", "Desligada");
+        estdjb = SupService.EstadoSimples(CircBoia, "Ligado", "Desligado");
+        estdjrb = SupService.EstadoDepRede(EstRede, AlRedeBomba, "Ligado", "Desligado");
+        tmpbl = SupService.FormAnaHora(TmpBmbLig);
+
+        // Medidas da Geração Solar e Consumo
+        vp12 = SupService.FrmAna(VP12);
+        is12 = SupService.FrmAna(IS12);
+        iscc1 = SupService.FrmAna(ISCC1);
+        wscc1 = SupService.FrmAna(WSCC1);
+        sdcc1 = SupService.FrmAnaInt(SDCC1);
+
+        vp34 = SupService.FrmAna(VP34);
+        is34 = SupService.FrmAna(IS34);
+        iscc2 = SupService.FrmAna(ISCC2);
+        wscc2 = SupService.FrmAna(WSCC2);
+        sdcc2 = SupService.FrmAnaInt(SDCC2);
+
+        itotger = SupService.FrmAna(ITotGer);
+        wtotger = SupService.FrmAna(WTotGer);
+        itotcg = SupService.FrmAna(ITotCg);
+        wtotcg = SupService.FrmAna(WTotCg);
+
+        // Estado das Fontes CC1 e CC2
+        estft1 = SupService.EstadoDepRede(EstRede, FonteCC1Ligada, "Ligada", "Desligada");
+        estft2 = SupService.EstadoDepRede(EstRede, FonteCC2Ligada, "Ligada", "Desligada");
+
+        // Medidas dos Circuitos de Corrente Continua
+        icircc = SupService.FrmAna3(ICircCC);
+        wcircc = SupService.FrmAna(WCircCC);
+
+        // Estados e Medidas do Inversor 2
+        estiv2 = SupService.EstadoSimples(Iv2Lig, "Ligado", "Desligado");
+        ieiv2 = SupService.FrmAna(IEIv2);
+        weiv2 = SupService.FrmAna(WEIv2);
+        vsiv2 = SupService.FrmAna(VSIv2);
+        isiv2 = SupService.FrmAna(ISInv2);
+        wsiv2 = SupService.FrmAna(WSInv2);
+        tdiv2 = SupService.FrmAna(TDInv2);
+        ttiv2 = SupService.FrmAna(TTInv2);
+        efiv2 = SupService.FrmAna(EfIv2);
+        sdiv2 = SupService.FrmAna(SDIv2);
+
+        // Estados e Medidas do Inversor 2
+        estiv1 = SupService.EstadoSimples(Iv1Lig, "Ligado", "Desligado");
+        ieiv1 = SupService.FrmAna(IEIv1);
+        weiv1 = SupService.FrmAna(WEIv1);
+        vsiv1 = SupService.FrmAna(VSIv1);
+        isiv1 = SupService.FrmAna(ISInv1);
+        wsiv1 = SupService.FrmAna(WSInv1);
+        tdiv1 = SupService.FrmAna(TDInv1);
+        ttiv1 = SupService.FrmAna(TTInv1);
+        efiv1 = SupService.FrmAna(EfIv1);
+        sdiv1 = SupService.FrmAna(SDIv1);
+    }
 }

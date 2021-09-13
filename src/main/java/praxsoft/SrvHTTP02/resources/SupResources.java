@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Artigo;
 import praxsoft.SrvHTTP02.domain.Dados001;
 import praxsoft.SrvHTTP02.services.ArtigosService;
+import praxsoft.SrvHTTP02.services.Inicia;
 import praxsoft.SrvHTTP02.services.SupService;
 import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
@@ -16,11 +17,18 @@ public class SupResources {
 
     @Autowired
     private SupService supService;
+    //boolean local = true;
+    boolean Verbose = true;
+    //private String IPConcArd = "192.168.0.150";
+    private int ContMsgCoAP = 0;
+    private int TamMsgCoAP = 320;
 
-    private String comando;
+    private int numComando;
+    private String strComando;
 
     @RequestMapping(value = "/supervisao", method = RequestMethod.GET)
     public String supHtml() {
+        Verbose = Inicia.isVerbose();
         return supService.buscaHtmlSup();
     }
 
@@ -55,34 +63,45 @@ public class SupResources {
     @RequestMapping(value = "/local001.xml", method = RequestMethod.GET)
     public ResponseEntity<?> atualizaVariaveis() {
 
+        if (Inicia.isOpLocal()) {
+            String IPConcArd = Inicia.getEndIpConc();
+            byte[] MsgRec = SupService.ClienteCoAPUDP(IPConcArd, "estados", ContMsgCoAP, numComando, Verbose);
+            Dados001.LeEstMedsPayload(MsgRec);
+        }
+
+        SupService.Terminal("Recebida Requisição de Atualização do Cliente", false, Verbose);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
-                .body(Dados001.MontaXML(comando));
+                .body(Dados001.MontaXML(strComando, true));
     }
 
     @PostMapping(value = "/atualiza")
-    public String Atualiza(@RequestBody Dados001 dados001) {
+    public ResponseEntity<?> Atualiza(@RequestBody Dados001 dados001) {
 
-        String RspSrv = " { \"cmd\" : " + comando + " }";
-        comando = "ack";
+        String RspSrv = " { \"cmd\" : " + strComando + " }";
+        strComando = "cmd=0000";
 
-        System.out.println("Recebida Mensagem de Atualização");
+        SupService.Terminal("Recebida Mensagem de Atualização", false, Verbose);
 
-        return RspSrv;
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/json"))
+                .body(RspSrv);
     }
 
     @PostMapping(value = "/cmd={id}")
     public ResponseEntity<?> RecComando(@PathVariable("id") String id) {
 
-        comando = "cmd=" + id;
-
-        System.out.println("Recebido Comando: " + id);
+        strComando = "cmd=" + id;
+        numComando = SupService.StringToInt(id);
+        SupService.Terminal("Comando Recebido do Cliente: " + strComando, false, Verbose);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
-                .body(Dados001.MontaXML(comando));
+                .body(Dados001.MontaXML(strComando, true));
 
     }
 }
