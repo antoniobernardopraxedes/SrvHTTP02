@@ -52,7 +52,8 @@ public class Inicia {
 
         System.out.println("");
         SupService.Terminal("Procedimentos de Inicialização Completados", true, true);
-        System.out.println("Modo Op: " + modoOp + " - Verbose: " + verbose + " - End IP: " + endIp);
+        System.out.println("Operação Local = : " + OpLocal + " - Verbose = " + Verbose
+                           + " - End IP Concentrador = " + EndIpConc);
 
     }
 }
