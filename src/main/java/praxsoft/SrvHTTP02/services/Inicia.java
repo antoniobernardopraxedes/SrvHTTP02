@@ -1,6 +1,7 @@
 package praxsoft.SrvHTTP02.services;
 
 import org.springframework.stereotype.Component;
+import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
 import javax.annotation.PostConstruct;
 import java.util.StringTokenizer;
@@ -8,52 +9,72 @@ import java.util.StringTokenizer;
 @Component
 public class Inicia {
 
-    private static boolean OpLocal;
-    private static boolean Verbose;
-    private static String EndIpConc;
+    private static boolean opLocal;
+    private static boolean verbose;
+    private static String endIpConc;
 
     public static boolean isOpLocal() {
-        return OpLocal;
+        return opLocal;
     }
 
     public static boolean isVerbose() {
-        return Verbose;
+        return verbose;
     }
 
     public static String getEndIpConc() {
-        return EndIpConc;
+        return endIpConc;
     }
 
     @PostConstruct
     public void ProcedimentosInicializacao() {
 
-        String ArquivoConf = SupService.BuscaArquivoConfiguracao();
-
-        StringTokenizer parseArqConf = new StringTokenizer(ArquivoConf);
-        String modoOp = parseArqConf.nextToken();
-        String verbose = parseArqConf.nextToken();
-        String endIp = parseArqConf.nextToken();
-
-        if (modoOp.equals("local")) {
-            OpLocal = true;
-        }
-        else {
-            OpLocal = false;
-        }
-
-        if (verbose.equals("true")) {
-            Verbose = true;
-        }
-        else {
-            Verbose = false;
-        }
-
-        EndIpConc = endIp;
-
         System.out.println("");
-        SupService.Terminal("Procedimentos de Inicialização Completados", true, true);
-        System.out.println("Operação Local = : " + OpLocal + " - Verbose = " + Verbose
-                           + " - End IP Concentrador = " + EndIpConc);
+        SupService.Terminal("Procedimentos de Inicialização Servidor HTTP 02 V 1.0", true, true);
 
-    }
+        try {
+            String ArquivoConf = SupService.LeArquivoConfiguracao();
+            int IndiceF = ArquivoConf.length() - 1;
+
+            String ModoOp = LeParametroArqConf(ArquivoConf, "ModoOp:");
+            String Verbose = LeParametroArqConf(ArquivoConf, "Verbose:");
+            String EndIpConcArduino = LeParametroArqConf(ArquivoConf, "EndIpConcArduino:");
+
+            if (ModoOp.equals("local")) {
+                opLocal = true;
+            } else {
+                opLocal = false;
+            }
+
+            if (Verbose.equals("true")) {
+                verbose = true;
+            } else {
+                verbose = false;
+            }
+
+            endIpConc = EndIpConcArduino;
+
+            System.out.println("\nLido Arquivo de Configuração\n");
+            System.out.println("Modo de Operação Local: " + opLocal);
+            System.out.println("Verbose: " + verbose);
+            System.out.println("Endereço IP do Concentrador Arduino: " + endIpConc);
+            System.out.println("");
+        } catch (ArquivoNaoEncontradoException e) {
+            System.out.println("\nArquivo de Configuração não Encontrado\n");
+        }
+
+        }
+
+        private String LeParametroArqConf (String arquivo, String token){
+            int Indice = arquivo.lastIndexOf(token);
+            int indiceF = arquivo.length() - 1;
+            String parametro = null;
+            if (Indice >= 0) {
+                Indice = Indice + token.length() + 1;
+                String Substring = arquivo.substring(Indice, indiceF);
+                StringTokenizer parseToken = new StringTokenizer(Substring);
+                parametro = parseToken.nextToken();
+            }
+            return parametro;
+        }
+
 }

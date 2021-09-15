@@ -12,63 +12,108 @@ import java.time.LocalDateTime;
 @Service
 public class SupService {
 
-    private static String Caminho = "/home/antonio/wsintellij/SrvHTTP02/recursos/sup/";
-
-    public static String BuscaArquivoConfiguracao() {
-        String arquivoTxt = "";
-        //String Caminho = "/home/antonio/Recursos/sup/";
-        String NomeArquivo = "srvhttp02.cnf";
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: LeArquivoConfiguracao()                                                                         *
+    //	                                                                                                               *
+    // Funcao: lê o arquivo de configuração                                                                            *
+    //                                                                                                                 *
+    // Entrada: não tem                                                                                                *
+    //                                                                                                                 *
+    // Saida: String com o arquivo de configuração                                                                     *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public static String LeArquivoConfiguracao() {
+        String arquivoTxt;
+        String caminho = "recursos/";
+        String nomeArquivo = "srvhttp02.cnf";
 
         Arquivo arquivo = new Arquivo();
 
-        if (arquivo.Existe(Caminho, NomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(Caminho, NomeArquivo);
+        if (arquivo.Existe(caminho, nomeArquivo)) {
+            arquivoTxt = arquivo.LeTexto(caminho, nomeArquivo);
         } else {
             throw new ArquivoNaoEncontradoException("");
         }
         return arquivoTxt;
     }
 
-    public String buscaHtmlSup() {
-        String arquivoTxt = "";
-        //String Caminho = "/home/antonio/Recursos/sup/";
-        String NomeArquivo = "supcloud.html";
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: LeArquivoHtmlSup()                                                                              *
+    //	                                                                                                               *
+    // Funcao: lê o arquivo principal de supervisão em formato HTML (supcloud.html)                                    *
+    //                                                                                                                 *
+    // Entrada: não tem                                                                                                *
+    //                                                                                                                 *
+    // Saida: String com o arquivo                                                                                     *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public String LeArquivoHtmlSup() {
+        String arquivoTxt;
+        String caminhoSup = "recursos/sup/";
+        String nomeArquivo = "supcloud.html";
 
         Arquivo arquivo = new Arquivo();
 
-        if (arquivo.Existe(Caminho, NomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(Caminho, NomeArquivo);
+        if (arquivo.Existe(caminhoSup, nomeArquivo)) {
+            arquivoTxt = arquivo.LeTexto(caminhoSup, nomeArquivo);
         } else {
             throw new ArquivoNaoEncontradoException("");
         }
         return arquivoTxt;
     }
 
-
-    public String buscaCssSup() {
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: LeArquivoCssSup()                                                                               *
+    //	                                                                                                               *
+    // Funcao: lê o arquivo com a folha de estilos da página principal de supervisão em formato CSS (supcloud.css)     *
+    //                                                                                                                 *
+    // Entrada: não tem                                                                                                *
+    //                                                                                                                 *
+    // Saida: String com o arquivo                                                                                     *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public String LeArquivoCssSup() {
         String arquivoTxt = "";
-        //String Caminho = "/home/antonio/Recursos/sup/";
+        String caminhoSup = "recursos/sup/";
         String NomeArquivo = "supcloud.css";
 
         Arquivo arquivo = new Arquivo();
 
-        if (arquivo.Existe(Caminho, NomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(Caminho, NomeArquivo);
+        if (arquivo.Existe(caminhoSup, NomeArquivo)) {
+            arquivoTxt = arquivo.LeTexto(caminhoSup, NomeArquivo);
         } else {
             throw new ArquivoNaoEncontradoException("");
         }
         return arquivoTxt;
     }
 
-    public String buscaJsSup() {
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: LeArquivoJsSup()                                                                                *
+    //	                                                                                                               *
+    // Funcao: lê o arquivo com o programa javascript da página principal de supervisão em formato js (supcloud.js)    *
+    //                                                                                                                 *
+    // Entrada: não tem                                                                                                *
+    //                                                                                                                 *
+    // Saida: String com o arquivo                                                                                     *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public String LeArquivoJsSup() {
         String arquivoTxt = "";
-        //String Caminho = "/home/antonio/Recursos/sup/";
-        String NomeArquivo = "supcloud.js";
+        String caminhoSup = "recursos/sup/";
+        String nomeArquivo = "supcloud.js";
 
         Arquivo arquivo = new Arquivo();
 
-        if (arquivo.Existe(Caminho, NomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(Caminho, NomeArquivo);
+        if (arquivo.Existe(caminhoSup, nomeArquivo)) {
+            arquivoTxt = arquivo.LeTexto(caminhoSup, nomeArquivo);
         } else {
             throw new ArquivoNaoEncontradoException("");
         }

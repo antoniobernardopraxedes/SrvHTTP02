@@ -21,22 +21,20 @@ public class SupResources {
     boolean Verbose = true;
     //private String IPConcArd = "192.168.0.150";
     private int ContMsgCoAP = 0;
-    private int TamMsgCoAP = 320;
-
     private int numComando;
     private String strComando;
 
     @RequestMapping(value = "/supervisao", method = RequestMethod.GET)
     public String supHtml() {
         Verbose = Inicia.isVerbose();
-        return supService.buscaHtmlSup();
+        return supService.LeArquivoHtmlSup();
     }
 
     @RequestMapping(value = "/sup/supcloud.css", method = RequestMethod.GET)
     public ResponseEntity<?> supCss() {
         String arquivoCss = null;
         try {
-            arquivoCss = supService.buscaCssSup();
+            arquivoCss = supService.LeArquivoCssSup();
         } catch (ArquivoNaoEncontradoException e) {
             return ResponseEntity.notFound().build();
         }
@@ -50,7 +48,7 @@ public class SupResources {
     public ResponseEntity<?> supJs() {
         String arquivoJs = null;
         try {
-            arquivoJs = supService.buscaJsSup();
+            arquivoJs = supService.LeArquivoJsSup();
         } catch (ArquivoNaoEncontradoException e) {
             return ResponseEntity.notFound().build();
         }
@@ -64,8 +62,8 @@ public class SupResources {
     public ResponseEntity<?> atualizaVariaveis() {
 
         if (Inicia.isOpLocal()) {
-            String IPConcArd = Inicia.getEndIpConc();
-            byte[] MsgRec = SupService.ClienteCoAPUDP(IPConcArd, "estados", ContMsgCoAP, numComando, Verbose);
+            String EndConcArd = Inicia.getEndIpConc();
+            byte[] MsgRec = SupService.ClienteCoAPUDP(EndConcArd, "estados", ContMsgCoAP, numComando, Verbose);
             Dados001.LeEstMedsPayload(MsgRec);
         }
 

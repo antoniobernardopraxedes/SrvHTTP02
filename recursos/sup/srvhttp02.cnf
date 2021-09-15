@@ -1,3 +1,5 @@
-remoto
-true
-192.168.0.150
+ModoOp remoto
+Verbose true
+EndIpConcArduino 192.168.0.150
+CaminhoLocal: ../Recursos/
+CaminhoRemoto: ../Recursos/
