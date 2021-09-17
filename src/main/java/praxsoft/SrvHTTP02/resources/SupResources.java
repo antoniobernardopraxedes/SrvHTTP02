@@ -5,69 +5,54 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import praxsoft.SrvHTTP02.domain.Artigo;
 import praxsoft.SrvHTTP02.domain.Dados001;
-import praxsoft.SrvHTTP02.services.ArtigosService;
-import praxsoft.SrvHTTP02.services.Inicia;
 import praxsoft.SrvHTTP02.services.SupService;
-import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
 @RestController
 public class SupResources {
 
     @Autowired
     private SupService supService;
-    //boolean local = true;
-    boolean Verbose = true;
-    //private String IPConcArd = "192.168.0.150";
-    private int ContMsgCoAP = 0;
-    private int numComando;
-    private String strComando;
+    private static String strComando;
+    private static int numComando;
 
-    @RequestMapping(value = "/supervisao", method = RequestMethod.GET)
-    public String supHtml() {
-        Verbose = Inicia.isVerbose();
-        return supService.LeArquivoHtmlSup();
+    @GetMapping(value = "/sup")
+    public ResponseEntity<?> supHtml() {
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("text/html"))
+                .body(supService.LeArquivoTxt("sup/supcloud.html"));
     }
 
-    @RequestMapping(value = "/sup/supcloud.css", method = RequestMethod.GET)
+    @GetMapping(value = "sup.css")
     public ResponseEntity<?> supCss() {
-        String arquivoCss = null;
-        try {
-            arquivoCss = supService.LeArquivoCssSup();
-        } catch (ArquivoNaoEncontradoException e) {
-            return ResponseEntity.notFound().build();
-        }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/css"))
-                .body(arquivoCss);
+                .body(supService.LeArquivoTxt("sup/supcloud.css"));
     }
 
-    @RequestMapping(value = "/sup/supcloud.js", method = RequestMethod.GET)
+    @GetMapping(value = "sup.js")
     public ResponseEntity<?> supJs() {
-        String arquivoJs = null;
-        try {
-            arquivoJs = supService.LeArquivoJsSup();
-        } catch (ArquivoNaoEncontradoException e) {
-            return ResponseEntity.notFound().build();
-        }
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/javascript"))
-                .body(arquivoJs);
+                .body(supService.LeArquivoTxt("sup/supcloud.js"));
     }
 
-    @RequestMapping(value = "/local001.xml", method = RequestMethod.GET)
+    @GetMapping(value = "/local001.xml")
     public ResponseEntity<?> atualizaVariaveis() {
 
-        if (Inicia.isOpLocal()) {
-            String EndConcArd = Inicia.getEndIpConc();
-            byte[] MsgRec = SupService.ClienteCoAPUDP(EndConcArd, "estados", ContMsgCoAP, numComando, Verbose);
-            Dados001.LeEstMedsPayload(MsgRec);
+        if (SupService.isOpLocal()) {
+            String EndConcArd = SupService.getEndIpConc();
+            byte[] MsgRec = supService.ClienteCoAPUDP(EndConcArd, "estados", numComando);
+            numComando = 0;
         }
 
-        SupService.Terminal("Recebida Requisição de Atualização do Cliente", false, Verbose);
+        supService.Terminal("Recebida Requisição de Atualização", false);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -81,7 +66,7 @@ public class SupResources {
         String RspSrv = " { \"cmd\" : " + strComando + " }";
         strComando = "cmd=0000";
 
-        SupService.Terminal("Recebida Mensagem de Atualização", false, Verbose);
+        supService.Terminal("Recebida Mensagem de Atualização", false);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -94,7 +79,7 @@ public class SupResources {
 
         strComando = "cmd=" + id;
         numComando = SupService.StringToInt(id);
-        SupService.Terminal("Comando Recebido do Cliente: " + strComando, false, Verbose);
+        supService.Terminal("Comando Recebido do Cliente: " + strComando, false);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

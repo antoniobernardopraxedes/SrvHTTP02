@@ -1,6 +1,7 @@
 package praxsoft.SrvHTTP02.services;
 
 import org.springframework.stereotype.Service;
+import praxsoft.SrvHTTP02.domain.Dados001;
 import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
 import java.io.IOException;
@@ -8,9 +9,26 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
+import java.util.StringTokenizer;
 
 @Service
 public class SupService {
+
+    private static boolean opLocal;
+    private static boolean verbose;
+    private static String endIpConc;
+
+    public static boolean isOpLocal() {
+        return opLocal;
+    }
+    public static boolean isVerbose() {
+        return verbose;
+    }
+    public static String getEndIpConc() {
+        return endIpConc;
+    }
+
+    private static int ContMsgCoAP = 0;
 
     //******************************************************************************************************************
     //                                                                                                                 *
@@ -24,19 +42,75 @@ public class SupService {
     //	                                                                                                               *
     //******************************************************************************************************************
     //
-    public static String LeArquivoConfiguracao() {
-        String arquivoTxt;
+    public boolean LeArquivoConfiguracao() {
+        boolean lidoArqConf = true;
+        String ArquivoConf = null;
         String caminho = "recursos/";
         String nomeArquivo = "srvhttp02.cnf";
 
-        Arquivo arquivo = new Arquivo();
+        try {
+            Arquivo arquivo = new Arquivo();
+            ArquivoConf = arquivo.LeTexto(caminho, nomeArquivo);
 
-        if (arquivo.Existe(caminho, nomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(caminho, nomeArquivo);
-        } else {
-            throw new ArquivoNaoEncontradoException("");
+            String ModoOp = LeParametroArqConf(ArquivoConf, "ModoOp:");
+            String Verbose = LeParametroArqConf(ArquivoConf, "Verbose:");
+            String EndIpConcArduino = LeParametroArqConf(ArquivoConf, "EndIpConcArduino:");
+
+            if (ModoOp.equals("local")) { opLocal = true; } else { opLocal = false; }
+            if (Verbose.equals("true")) { verbose = true; } else { verbose = false; }
+            endIpConc = EndIpConcArduino;
+
+            System.out.println("\nLido Arquivo de Configuração\n");
+            if (opLocal) { System.out.println("Modo de Operação Local"); }
+            else { System.out.println("Modo de Operação Remoto (Nuvem)"); }
+            System.out.println("Verbose: " + verbose);
+            System.out.println("Endereço IP do Concentrador Arduino: " + endIpConc);
+            System.out.println("");
+
+        } catch (Exception e) {
+            Terminal("Arquivo de Configuração nao encontrado.", false);
+            lidoArqConf = false;
         }
-        return arquivoTxt;
+
+        return lidoArqConf;
+    }
+
+    private static String LeParametroArqConf (String arquivo, String token){
+        int Indice = arquivo.lastIndexOf(token);
+        int indiceF = arquivo.length() - 1;
+        String parametro = null;
+        if (Indice >= 0) {
+            Indice = Indice + token.length() + 1;
+            String Substring = arquivo.substring(Indice, indiceF);
+            StringTokenizer parseToken = new StringTokenizer(Substring);
+            parametro = parseToken.nextToken();
+        }
+        return parametro;
+    }
+
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: LeArquivoTxtSup()                                                                               *
+    //	                                                                                                               *
+    // Funcao: lê os arquivos do tipo texto do sistema de supervisao nos formatos HTML (.html), CSS (.css)             *
+    //         e Javascript (.js). Os arquivos do sistema de supervisão estão no diretório /sup/                       *
+    //                                                                                                                 *
+    // Entrada: string com o nome do arquivo                                                                           *
+    //                                                                                                                 *
+    // Saida: String com o arquivo                                                                                     *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public String LeArquivoTxt(String nomeArquivo) {
+        String arquivoTxt = null;
+        String caminhoSup = "recursos/";
+        try {
+            Arquivo arquivo = new Arquivo();
+            arquivoTxt = arquivo.LeTexto(caminhoSup, nomeArquivo);
+        } catch (Exception e) {
+            Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
+        }
+            return arquivoTxt;
     }
 
     //******************************************************************************************************************
@@ -153,7 +227,7 @@ public class SupService {
     // Option (Opções) = 0000 0000 (não é usado) / Identificador de Início do Payload: 1111 1111                       *
     //******************************************************************************************************************
     //
-    public static byte[] ClienteCoAPUDP(String EndIP, String URI, int ContMsgCoAP, int Comando, boolean Verbose) {
+    public byte[] ClienteCoAPUDP(String EndIP, String URI, int Comando) {
 
         int Porta = 5683; // Porta padrão para conexões CoAP em UDP
 
@@ -172,9 +246,9 @@ public class SupService {
 
             MsgReqCoAP[0] = 0x40;                       // Versão = 01 / Tipo = 00 / Token = 0000
             MsgReqCoAP[1] = 0x01;                       // Código de Solicitação: 0.01 GET
-            ContMsgCoAP = ContMsgCoAP + 1;              // Incrementa o Identificador de mensagens
             MsgReqCoAP[2] = ByteHigh(ContMsgCoAP); // Byte Mais Significativo do Identificador da Mensagem
             MsgReqCoAP[3] = ByteLow(ContMsgCoAP);  // Byte Menos Significativo do Identificador da Mensagem
+            ContMsgCoAP = ContMsgCoAP + 1;              // Incrementa o Identificador de mensagens
             MsgReqCoAP[4] = (byte) (0xB0 + TamURI);     // Delta: 11 - Primeira Opcao 11: Uri-path e Núm. Bytes da URI
             int j = 5;
             for (int i = 0; i < TamURI; i++) {          // Carrega os codigos ASCII da URI
@@ -212,23 +286,23 @@ public class SupService {
             DatagramPacket receivePacket = new DatagramPacket(MsgRecCoAP, TamMsgRspCoAP);
 
             clientSocket.send(sendPacket);
-            Terminal("Enviada Requisicao CoAP para o Concentrador", false, Verbose);
+            Terminal("Enviada Requisicao CoAP para o Concentrador", false);
 
             // Espera a Mensagem CoAP de Resposta. Se a mensagem de resposta  for recebida, carrega nas variáveis
             try {
                 clientSocket.receive(receivePacket);
                 MsgRecCoAP[30] = 1;
-                //Dados001.LeEstMedsPayload(MsgRecCoAP, TamMsgRspCoAP);
-                Terminal("Recebida Mensagem CoAP do Concentrador", false, Verbose);
+                Dados001.LeEstMedsPayload(MsgRecCoAP);
+                Terminal("Recebida Mensagem CoAP do Concentrador", false);
             } catch (java.net.SocketTimeoutException e) {
                 MsgRecCoAP[0] = 0x40;
                 MsgRecCoAP[1] = 1;
                 MsgRecCoAP[30] = 0;
-                Terminal(" - Erro: o Concentrador nao Respondeu " + MsgRecCoAP[14], false, Verbose);
+                Terminal(" - Erro: o Concentrador nao Respondeu " + MsgRecCoAP[14], false);
             }
             clientSocket.close();
         } catch (IOException err) {
-            Terminal("Erro na Rotina EnvRecMsgSrv: " + err, false, Verbose);
+            Terminal("Erro na Rotina EnvRecMsgSrv: " + err, false);
         }
         return (MsgRecCoAP);
     }
@@ -298,7 +372,7 @@ public class SupService {
     //                                                                                                                 *
     //******************************************************************************************************************
     //
-    public static byte[] LeDataHora() {
+    public byte[] LeDataHora() {
 
         LocalDateTime datahora = LocalDateTime.now();
         int Dia = datahora.getDayOfMonth();
@@ -377,8 +451,8 @@ public class SupService {
     //                                                                                                                 *
     //******************************************************************************************************************
     //
-    public static void Terminal(String Msg, boolean Opcao, boolean Verbose) {
-        if (Verbose) {
+    public void Terminal(String Msg, boolean Opcao) {
+        if (verbose) {
             System.out.println(ImprimeHoraData(LeDataHora(), Opcao) + " - " + Msg);
         }
     }

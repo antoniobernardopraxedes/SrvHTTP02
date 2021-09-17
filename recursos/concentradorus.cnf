@@ -1,0 +1,4 @@
+Verbose: true
+EndIpServidor: 200.98.140.180
+EndIpConcArduino: 192.168.0.150
+EndIPHost: 192.168.0.49

@@ -1,9 +1,4 @@
 ModoOp: local
-ModoIDE: true
-ModoTeste: false
 Verbose: true
 EndIpConcArduino: 192.168.0.150
-CaminhoLocalIDE: /home/antonio/wsintellij/SrvHTTP02/recursos/
-CaminhoLocalTeste: /home/antonio/SrvHTTP02/recursos/
-CaminhoLocalServidor: /home/pi/servidor/recursos/
-CaminhoRemotoNuvem: /home/bernardo/servidor/recursos/
+
