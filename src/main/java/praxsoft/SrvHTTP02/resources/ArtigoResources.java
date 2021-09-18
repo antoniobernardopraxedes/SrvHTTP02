@@ -20,41 +20,104 @@ public class ArtigoResources {
 
     @Autowired
     private SupService supService;
+    private static final String dirSite = "site/";
 
     @GetMapping(value = "/")
     public ResponseEntity<?> inicio() {
+        String nomeArquivo = "index.html";
+        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/html"))
-                .body(supService.LeArquivoTxt("index.html"));
+        if (arquivo != null) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
     }
 
-    @GetMapping(value = "/artigo000")
-    public ResponseEntity<?> EnviaArtigo() {
+    @GetMapping(value = "/{nomeArq}.html")
+    public ResponseEntity<?> EnviaArtigo(@PathVariable String nomeArq) {
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/html"))
-                .body(supService.LeArquivoTxt("site/artigo000.html"));
+        String nomeArquivo = nomeArq + ".html";
+        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        if (arquivo != null) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
     }
 
-    @GetMapping(value = "/artigo000.css")
-    public ResponseEntity<?> EnviaCSS() {
+    @GetMapping(value = "/{nomeArq}.css")
+    public ResponseEntity<?> EnviaCSSArquivo(@PathVariable String nomeArq) {
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/css"))
-                .body(supService.LeArquivoTxt("site/artigo000.css"));
+        String nomeArquivo = nomeArq + ".css";
+        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        if (arquivo != null ) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/css"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
     }
 
-    @GetMapping(value = "/artigo000.js")
-    public ResponseEntity<?> EnviaJS() {
+    @GetMapping(value = "/{nomeArq}.js")
+    public ResponseEntity<?> EnviaJS(@PathVariable String nomeArq) {
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/javascript"))
-                .body(supService.LeArquivoTxt("site/artigo000.js"));
+        String nomeArquivo = nomeArq + ".js";
+        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        if (arquivo != null) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/javascript"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
+    }
+
+    @GetMapping(value = "/{nomeArq}.jpg")
+    public ResponseEntity<?> EnviaImagem(@PathVariable String nomeArq) {
+        String nomeArquivo = nomeArq + ".jpg";
+        byte[] arquivo = supService.LeArquivoByte(dirSite, nomeArquivo);
+        if (arquivo.length > 0) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("image/jpeg"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
+    }
+
+    private String msgArqNaoEncontrado(String nomeArquivo) {
+        return ("<h3>File not found: " + nomeArquivo + "</h3>");
     }
 
 

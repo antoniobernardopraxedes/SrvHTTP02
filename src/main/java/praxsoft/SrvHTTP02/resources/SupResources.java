@@ -13,6 +13,7 @@ public class SupResources {
 
     @Autowired
     private SupService supService;
+    private static final String dirSup = "sup/";
     private static String strComando;
     private static int numComando;
 
@@ -22,7 +23,7 @@ public class SupResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/html"))
-                .body(supService.LeArquivoTxt("sup/supcloud.html"));
+                .body(supService.LeArquivoTxt(dirSup, "supcloud.html"));
     }
 
     @GetMapping(value = "sup.css")
@@ -31,7 +32,7 @@ public class SupResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/css"))
-                .body(supService.LeArquivoTxt("sup/supcloud.css"));
+                .body(supService.LeArquivoTxt(dirSup, "supcloud.css"));
     }
 
     @GetMapping(value = "sup.js")
@@ -40,7 +41,7 @@ public class SupResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/javascript"))
-                .body(supService.LeArquivoTxt("sup/supcloud.js"));
+                .body(supService.LeArquivoTxt(dirSup, "supcloud.js"));
     }
 
     @GetMapping(value = "/local001.xml")

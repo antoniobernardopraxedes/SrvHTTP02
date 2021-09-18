@@ -2,8 +2,10 @@ package praxsoft.SrvHTTP02.services;
 
 import org.springframework.stereotype.Service;
 import praxsoft.SrvHTTP02.domain.Dados001;
-import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -31,7 +33,6 @@ public class SupService {
     private static int ContMsgCoAP = 0;
 
     //******************************************************************************************************************
-    //                                                                                                                 *
     // Nome do Método: LeArquivoConfiguracao()                                                                         *
     //	                                                                                                               *
     // Funcao: lê o arquivo de configuração                                                                            *
@@ -89,109 +90,59 @@ public class SupService {
     }
 
     //******************************************************************************************************************
-    //                                                                                                                 *
-    // Nome do Método: LeArquivoTxtSup()                                                                               *
+    // Nome do Método: LeArquivoTxt                                                                                    *
     //	                                                                                                               *
-    // Funcao: lê os arquivos do tipo texto do sistema de supervisao nos formatos HTML (.html), CSS (.css)             *
-    //         e Javascript (.js). Os arquivos do sistema de supervisão estão no diretório /sup/                       *
+    // Funcao: lê um arquivo texto (sequência de caracteres) do diretório recursos dentro do diretŕorio principal do   *
+    //         servidor.                                                                                               *
     //                                                                                                                 *
-    // Entrada: string com o nome do arquivo                                                                           *
+    // Entrada: string com o caminho do arquivo e string com o nome do arquivo                                         *
     //                                                                                                                 *
-    // Saida: String com o arquivo                                                                                     *
-    //	                                                                                                               *
+    // Saida: String com o arquivo texto lido. Se ocorrer falha na leitura, o método retorna null                      *
     //******************************************************************************************************************
     //
-    public String LeArquivoTxt(String nomeArquivo) {
-        String arquivoTxt = null;
-        String caminhoSup = "recursos/";
+    public String LeArquivoTxt(String caminhoSite, String nomeArquivo) {
+        String caminho = "recursos/" + caminhoSite;
+        File Arquivo = new File(caminho + nomeArquivo);
+        String arquivoLido = "";
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(Arquivo));
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                arquivoLido = arquivoLido + linha + "\n";
+            }
+            Terminal("Lido Arquivo " + nomeArquivo, false);
+            return arquivoLido;
+
+        } catch (IOException e) {
+            Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
+            return null;
+        }
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: LeArquivoByte                                                                                   *
+    //	                                                                                                               *
+    // Funcao: lê um arquivo binário (sequência de bytes) do diretório recursos dentro do diretŕorio principal do      *
+    //         servidor.                                                                                               *
+    //                                                                                                                 *
+    // Entrada: string com o caminho do arquivo e string com o nome do arquivo                                         *
+    //                                                                                                                 *
+    // Saida: array com a sequência de bytes do arquivo lido. Se ocorrer falha na leitura, o método retorna null.      *
+    //******************************************************************************************************************
+    //
+    public byte[] LeArquivoByte(String caminhoSite, String nomeArquivo) {
+        String caminho = "recursos/" + caminhoSite;
         try {
             Arquivo arquivo = new Arquivo();
-            arquivoTxt = arquivo.LeTexto(caminhoSup, nomeArquivo);
+            byte[] arquivoByte = arquivo.LeByte(caminho, nomeArquivo);
+            Terminal("Lido Arquivo " + nomeArquivo, false);
+            return arquivoByte;
         } catch (Exception e) {
             Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
+            byte[] arrayErro = new byte[0];
+            return arrayErro;
         }
-            return arquivoTxt;
-    }
 
-    //******************************************************************************************************************
-    //                                                                                                                 *
-    // Nome do Método: LeArquivoHtmlSup()                                                                              *
-    //	                                                                                                               *
-    // Funcao: lê o arquivo principal de supervisão em formato HTML (supcloud.html)                                    *
-    //                                                                                                                 *
-    // Entrada: não tem                                                                                                *
-    //                                                                                                                 *
-    // Saida: String com o arquivo                                                                                     *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    public String LeArquivoHtmlSup() {
-        String arquivoTxt;
-        String caminhoSup = "recursos/sup/";
-        String nomeArquivo = "supcloud.html";
-
-        Arquivo arquivo = new Arquivo();
-
-        if (arquivo.Existe(caminhoSup, nomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(caminhoSup, nomeArquivo);
-        } else {
-            throw new ArquivoNaoEncontradoException("");
-        }
-        return arquivoTxt;
-    }
-
-    //******************************************************************************************************************
-    //                                                                                                                 *
-    // Nome do Método: LeArquivoCssSup()                                                                               *
-    //	                                                                                                               *
-    // Funcao: lê o arquivo com a folha de estilos da página principal de supervisão em formato CSS (supcloud.css)     *
-    //                                                                                                                 *
-    // Entrada: não tem                                                                                                *
-    //                                                                                                                 *
-    // Saida: String com o arquivo                                                                                     *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    public String LeArquivoCssSup() {
-        String arquivoTxt = "";
-        String caminhoSup = "recursos/sup/";
-        String NomeArquivo = "supcloud.css";
-
-        Arquivo arquivo = new Arquivo();
-
-        if (arquivo.Existe(caminhoSup, NomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(caminhoSup, NomeArquivo);
-        } else {
-            throw new ArquivoNaoEncontradoException("");
-        }
-        return arquivoTxt;
-    }
-
-    //******************************************************************************************************************
-    //                                                                                                                 *
-    // Nome do Método: LeArquivoJsSup()                                                                                *
-    //	                                                                                                               *
-    // Funcao: lê o arquivo com o programa javascript da página principal de supervisão em formato js (supcloud.js)    *
-    //                                                                                                                 *
-    // Entrada: não tem                                                                                                *
-    //                                                                                                                 *
-    // Saida: String com o arquivo                                                                                     *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    public String LeArquivoJsSup() {
-        String arquivoTxt = "";
-        String caminhoSup = "recursos/sup/";
-        String nomeArquivo = "supcloud.js";
-
-        Arquivo arquivo = new Arquivo();
-
-        if (arquivo.Existe(caminhoSup, nomeArquivo)) {
-            arquivoTxt = arquivo.LeTexto(caminhoSup, nomeArquivo);
-        } else {
-            throw new ArquivoNaoEncontradoException("");
-        }
-        return arquivoTxt;
     }
 
     //******************************************************************************************************************
@@ -244,14 +195,14 @@ public class SupService {
 
             DH = LeDataHora();
 
-            MsgReqCoAP[0] = 0x40;                       // Versão = 01 / Tipo = 00 / Token = 0000
-            MsgReqCoAP[1] = 0x01;                       // Código de Solicitação: 0.01 GET
-            MsgReqCoAP[2] = ByteHigh(ContMsgCoAP); // Byte Mais Significativo do Identificador da Mensagem
-            MsgReqCoAP[3] = ByteLow(ContMsgCoAP);  // Byte Menos Significativo do Identificador da Mensagem
-            ContMsgCoAP = ContMsgCoAP + 1;              // Incrementa o Identificador de mensagens
-            MsgReqCoAP[4] = (byte) (0xB0 + TamURI);     // Delta: 11 - Primeira Opcao 11: Uri-path e Núm. Bytes da URI
+            MsgReqCoAP[0] = 0x40;                     // Versão = 01 / Tipo = 00 / Token = 0000
+            MsgReqCoAP[1] = 0x01;                     // Código de Solicitação: 0.01 GET
+            MsgReqCoAP[2] = ByteHigh(ContMsgCoAP);    // Byte Mais Significativo do Identificador da Mensagem
+            MsgReqCoAP[3] = ByteLow(ContMsgCoAP);     // Byte Menos Significativo do Identificador da Mensagem
+            ContMsgCoAP = ContMsgCoAP + 1;            // Incrementa o Identificador de mensagens
+            MsgReqCoAP[4] = (byte) (0xB0 + TamURI);   // Delta: 11 - Primeira Opcao 11: Uri-path e Núm. Bytes da URI
             int j = 5;
-            for (int i = 0; i < TamURI; i++) {          // Carrega os codigos ASCII da URI
+            for (int i = 0; i < TamURI; i++) {        // Carrega os codigos ASCII da URI
                 char Char = URI.charAt(i);
                 int ASCII = (int) Char;
                 MsgReqCoAP[i + 5] = (byte) ASCII;
@@ -829,30 +780,6 @@ public class SupService {
 
         return (Msg);
     }
-
-    //******************************************************************************************************************
-    // Nome da Rotina: FormAna                                                                                         *
-    //                                                                                                                 *
-    // Funcao: converte um inteiro positivo em formato x100 para uma string com parte inteira e duas casas decimais    *
-    // Entrada: valor inteiro no formato x100                                                                          *
-    // Saida: string do numero no formato "parte inteira","duas casas decimais"                                        *
-    //                                                                                                                 *
-    //******************************************************************************************************************
-    //
-    //public static String FormAna(int valor) {
-    //    int inteiro;
-    //    int decimal;
-    //    inteiro = valor / 100;
-    //    decimal = valor - 100*inteiro;
-    //    String Valor = (inteiro + ".");
-    //    if (decimal > 9) {
-    //        Valor = Valor + decimal;
-    //    }
-    //    else {
-    //        Valor = Valor + "0" + decimal;
-    //    }
-    //    return (Valor);
-    //}
 
     //******************************************************************************************************************
     // Nome da Rotina: FrmAna                                                                                          *
