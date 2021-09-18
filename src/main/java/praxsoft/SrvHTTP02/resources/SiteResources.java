@@ -1,33 +1,29 @@
 package praxsoft.SrvHTTP02.resources;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
+import org.springframework.boot.autoconfigure.webservices.WebServicesProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import praxsoft.SrvHTTP02.services.ArtigosService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import praxsoft.SrvHTTP02.services.SupService;
-import praxsoft.SrvHTTP02.services.exceptions.ArquivoNaoEncontradoException;
 
 @RestController
-public class ArtigoResources {
+public class SiteResources {
 
     @Autowired
     private SupService supService;
     private static final String dirSite = "site/";
 
-    @GetMapping(value = "/")
-    public ResponseEntity<?> inicio() {
-        String nomeArquivo = "index.html";
-        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+    @GetMapping(value = "/site")
+    public ResponseEntity<?> InicioSite() {
 
+        String nomeArquivo = "siteindex.html";
+        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
         if (arquivo != null) {
+
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentType(MediaType.valueOf("text/html"))
@@ -41,11 +37,11 @@ public class ArtigoResources {
         }
     }
 
-    @GetMapping(value = "/{nomeArq}.html")
-    public ResponseEntity<?> EnviaArtigo(@PathVariable String nomeArq) {
+    @GetMapping(value = "/site{nomeArq}.html")
+    public ResponseEntity<?> EnviaHtmlSite(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".html";
-        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        String arquivo = supService.LeArquivoTxt("site/", nomeArquivo);
         if (arquivo != null) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -60,11 +56,11 @@ public class ArtigoResources {
         }
     }
 
-    @GetMapping(value = "/{nomeArq}.css")
-    public ResponseEntity<?> EnviaCSSArquivo(@PathVariable String nomeArq) {
+    @GetMapping(value = "/site{nomeArq}.css")
+    public ResponseEntity<?> EnviaCSSSite(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".css";
-        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        String arquivo = supService.LeArquivoTxt("site/css/", nomeArquivo);
         if (arquivo != null ) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -79,11 +75,11 @@ public class ArtigoResources {
         }
     }
 
-    @GetMapping(value = "/{nomeArq}.js")
-    public ResponseEntity<?> EnviaJS(@PathVariable String nomeArq) {
+    @GetMapping(value = "/site{nomeArq}.js")
+    public ResponseEntity<?> EnviaJSSite(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".js";
-        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        String arquivo = supService.LeArquivoTxt("site/js/", nomeArquivo);
         if (arquivo != null) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -98,10 +94,11 @@ public class ArtigoResources {
         }
     }
 
-    @GetMapping(value = "/{nomeArq}.jpg")
-    public ResponseEntity<?> EnviaImagem(@PathVariable String nomeArq) {
+    @GetMapping(value = "/site{nomeArq}.jpg")
+    public ResponseEntity<?> EnviaImagemSite(@PathVariable String nomeArq) {
+
         String nomeArquivo = nomeArq + ".jpg";
-        byte[] arquivo = supService.LeArquivoByte(dirSite, nomeArquivo);
+        byte[] arquivo = supService.LeArquivoByte("site/img/", nomeArquivo);
         if (arquivo.length > 0) {
             return ResponseEntity
                     .status(HttpStatus.OK)
