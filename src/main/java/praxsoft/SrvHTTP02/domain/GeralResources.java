@@ -6,7 +6,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+
 import praxsoft.SrvHTTP02.services.SupService;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Map;
 
 @RestController
 public class GeralResources {
@@ -20,6 +33,7 @@ public class GeralResources {
         String arquivo = supService.LeArquivoTxt("", nomeArquivo);
 
         if (arquivo != null) {
+
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .contentType(MediaType.valueOf("text/html"))

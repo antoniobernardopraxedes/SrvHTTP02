@@ -13,7 +13,6 @@ public class SupResources {
 
     @Autowired
     private SupService supService;
-    private static final String dirSup = "sup/";
     private static String strComando;
     private static int numComando;
 
@@ -23,25 +22,64 @@ public class SupResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/html"))
-                .body(supService.LeArquivoTxt(dirSup, "supcloud.html"));
+                .body(supService.LeArquivoTxt("sup/", "tabela.html"));
     }
 
-    @GetMapping(value = "sup.css")
-    public ResponseEntity<?> supCss() {
+    @GetMapping(value = "/sup.{nomeArq}.css")
+    public ResponseEntity<?> EnviaCSSSup(@PathVariable String nomeArq) {
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/css"))
-                .body(supService.LeArquivoTxt(dirSup, "supcloud.css"));
+        String nomeArquivo = nomeArq + ".css";
+        String arquivo = supService.LeArquivoTxt("sup/", nomeArquivo);
+        if (arquivo != null ) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/css"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
     }
 
-    @GetMapping(value = "sup.js")
-    public ResponseEntity<?> supJs() {
+    @GetMapping(value = "/sup.{nomeArq}.js")
+    public ResponseEntity<?> EnviaJSSup(@PathVariable String nomeArq) {
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/javascript"))
-                .body(supService.LeArquivoTxt(dirSup, "supcloud.js"));
+        String nomeArquivo = nomeArq + ".js";
+        String arquivo = supService.LeArquivoTxt("sup/", nomeArquivo);
+        if (arquivo != null) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/javascript"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
+    }
+
+    @GetMapping(value = "/sup.{nomeArq}.ico")
+    public ResponseEntity<?> EnviaImagemSup(@PathVariable String nomeArq) {
+
+        String nomeArquivo = nomeArq + ".ico";
+        byte[] arquivo = supService.LeArquivoByte("sup/", nomeArquivo);
+        if (arquivo.length > 0) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("image/ico"))
+                    .body(arquivo);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body(msgArqNaoEncontrado(nomeArquivo));
+        }
     }
 
     @GetMapping(value = "/local001.xml")
@@ -53,7 +91,7 @@ public class SupResources {
             numComando = 0;
         }
 
-        supService.Terminal("Recebida Requisição de Atualização", false);
+        supService.Terminal("Recebida Requisição de Atualização do Cliente", false);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -87,5 +125,10 @@ public class SupResources {
                 .contentType(MediaType.valueOf("application/xml"))
                 .body(Dados001.MontaXML(strComando, true));
 
+    }
+
+    private String msgArqNaoEncontrado(String nomeArquivo) {
+
+        return ("<h3>File not found: " + nomeArquivo + "</h3>");
     }
 }

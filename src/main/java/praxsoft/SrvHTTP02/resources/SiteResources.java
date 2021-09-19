@@ -1,13 +1,10 @@
 package praxsoft.SrvHTTP02.resources;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
-import org.springframework.boot.autoconfigure.webservices.WebServicesProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import praxsoft.SrvHTTP02.services.SupService;
 
 @RestController
@@ -15,13 +12,15 @@ public class SiteResources {
 
     @Autowired
     private SupService supService;
-    private static final String dirSite = "site/";
+    private boolean mobile;
 
     @GetMapping(value = "/site")
-    public ResponseEntity<?> InicioSite() {
+    public ResponseEntity<?> InicioSite(@RequestHeader(value = "User-Agent") String userAgent) {
+        String nomeArquivo = "indice";
 
-        String nomeArquivo = "siteindex.html";
-        String arquivo = supService.LeArquivoTxt(dirSite, nomeArquivo);
+        nomeArquivo = VerificaMobile(userAgent, nomeArquivo, "html");
+
+        String arquivo = supService.LeArquivoTxt("site/", nomeArquivo);
         if (arquivo != null) {
 
             return ResponseEntity
@@ -37,10 +36,12 @@ public class SiteResources {
         }
     }
 
-    @GetMapping(value = "/site{nomeArq}.html")
-    public ResponseEntity<?> EnviaHtmlSite(@PathVariable String nomeArq) {
+    @GetMapping(value = "/site.{nomeArquivo}.html")
+    public ResponseEntity<?> EnviaHtmlSite(@PathVariable("nomeArquivo") String nomeArquivo,
+                                           @RequestHeader(value = "User-Agent") String userAgent) {
 
-        String nomeArquivo = nomeArq + ".html";
+        nomeArquivo = VerificaMobile(userAgent, nomeArquivo, "html");
+
         String arquivo = supService.LeArquivoTxt("site/", nomeArquivo);
         if (arquivo != null) {
             return ResponseEntity
@@ -56,7 +57,7 @@ public class SiteResources {
         }
     }
 
-    @GetMapping(value = "/site{nomeArq}.css")
+    @GetMapping(value = "/site.{nomeArq}.css")
     public ResponseEntity<?> EnviaCSSSite(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".css";
@@ -75,7 +76,7 @@ public class SiteResources {
         }
     }
 
-    @GetMapping(value = "/site{nomeArq}.js")
+    @GetMapping(value = "/site.{nomeArq}.js")
     public ResponseEntity<?> EnviaJSSite(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".js";
@@ -94,7 +95,7 @@ public class SiteResources {
         }
     }
 
-    @GetMapping(value = "/site{nomeArq}.jpg")
+    @GetMapping(value = "/site.{nomeArq}.jpg")
     public ResponseEntity<?> EnviaImagemSite(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".jpg";
@@ -113,9 +114,20 @@ public class SiteResources {
         }
     }
 
-    private String msgArqNaoEncontrado(String nomeArquivo) {
-        return ("<h3>File not found: " + nomeArquivo + "</h3>");
+    private String VerificaMobile(String userAgent, String nomeArquivo, String extensao) {
+        if (userAgent.toLowerCase().contains("mobile")) {
+            nomeArquivo = nomeArquivo + ".m." + extensao;
+            supService.Terminal("Acesso por Dispositivo Móvel", false);
+        }
+        else {
+            nomeArquivo = nomeArquivo + "." + extensao;
+        }
+        return nomeArquivo;
     }
 
+    private String msgArqNaoEncontrado(String nomeArquivo) {
+
+        return ("<h3>File not found: " + nomeArquivo + "</h3>");
+    }
 
 }
