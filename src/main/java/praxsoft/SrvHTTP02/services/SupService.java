@@ -100,8 +100,8 @@ public class SupService {
     // Saida: String com o arquivo texto lido. Se ocorrer falha na leitura, o método retorna null                      *
     //******************************************************************************************************************
     //
-    public String LeArquivoTxt(String caminhoSite, String nomeArquivo) {
-        String caminho = "recursos/" + caminhoSite;
+    public String LeArquivoTxt(String caminho, String nomeArquivo) {
+
         File Arquivo = new File(caminho + nomeArquivo);
         String arquivoLido = "";
         try {
@@ -130,8 +130,8 @@ public class SupService {
     // Saida: array com a sequência de bytes do arquivo lido. Se ocorrer falha na leitura, o método retorna null.      *
     //******************************************************************************************************************
     //
-    public byte[] LeArquivoByte(String caminhoSite, String nomeArquivo) {
-        String caminho = "recursos/" + caminhoSite;
+    public byte[] LeArquivoByte(String caminho, String nomeArquivo) {
+
         try {
             Arquivo arquivo = new Arquivo();
             byte[] arquivoByte = arquivo.LeByte(caminho, nomeArquivo);

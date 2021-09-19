@@ -22,14 +22,14 @@ public class SupResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("text/html"))
-                .body(supService.LeArquivoTxt("sup/", "tabela.html"));
+                .body(supService.LeArquivoTxt("recursos/sup/", "tabela.html"));
     }
 
     @GetMapping(value = "/sup.{nomeArq}.css")
     public ResponseEntity<?> EnviaCSSSup(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".css";
-        String arquivo = supService.LeArquivoTxt("sup/", nomeArquivo);
+        String arquivo = supService.LeArquivoTxt("recursos/sup/", nomeArquivo);
         if (arquivo != null ) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -48,7 +48,7 @@ public class SupResources {
     public ResponseEntity<?> EnviaJSSup(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".js";
-        String arquivo = supService.LeArquivoTxt("sup/", nomeArquivo);
+        String arquivo = supService.LeArquivoTxt("recursos/sup/", nomeArquivo);
         if (arquivo != null) {
             return ResponseEntity
                     .status(HttpStatus.OK)
@@ -67,7 +67,7 @@ public class SupResources {
     public ResponseEntity<?> EnviaImagemSup(@PathVariable String nomeArq) {
 
         String nomeArquivo = nomeArq + ".ico";
-        byte[] arquivo = supService.LeArquivoByte("sup/", nomeArquivo);
+        byte[] arquivo = supService.LeArquivoByte("recursos/sup/", nomeArquivo);
         if (arquivo.length > 0) {
             return ResponseEntity
                     .status(HttpStatus.OK)
