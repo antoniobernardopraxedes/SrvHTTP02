@@ -1,11 +1,11 @@
 package praxsoft.SrvHTTP02.domain;
 
-import praxsoft.SrvHTTP02.services.SupService;
+import praxsoft.SrvHTTP02.services.Auxiliar;
 
 //**********************************************************************************************************************
 // Nome da Classe: Dados001                                                                                            *
 //	                                                                                                                   *
-// Data: 13/09/2021                                                                                                    *
+// Data: 20/09/2021                                                                                                    *
 //                                                                                                                     *
 // Funções: contém todos os atributos e métodos referentes ao Sistema de Supervisão, Controle e Monitoramento de       *
 //          condição da Usina Solar Fotovoltaica. Os atributos referem-se às variáveis do sistema, que podem ser       *
@@ -622,203 +622,6 @@ public class Dados001 {
         this.sdiv1 = sdiv1;
     }
 
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXML()                                                                                      *
-    //	                                                                                                               *
-    // Data: 13/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML a partir das variáveis da classe Dados001                                          *
-    //                                                                                                                 *
-    // Entrada: a string com o comando recebido do navegador e a flag normal: se normal = true monta a mensagem XML    *
-    //           normalmente. Se normal = false indica falha e monta a mensagem XML com os campos Value = ----------   *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public static java.lang.String MontaXML(String comando, boolean normal) {
-
-        // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
-        String MsgXMLArray[][][][] = new String[1][10][30][2];
-        int IdNv0 = 0;
-        int IdNv1 = 0;
-        String MsgXML = "";
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "04";
-
-        IdNv1 = 1; // Grupo 1: 19 Variáveis de Informação GERAL
-        int i = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";    // Carrega a Tag do Grupo 0
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCNV", "Normal", normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCNC", comcnc, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMUTR", comutr, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCC1", comcc1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("COMCC2", comcc2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("CLK", clk, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("DATA", data, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("CMDEX", comando, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDOP", mdop, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDCOM", mdcom, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDCT1", mdct1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("MDCT234", mdct234, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENCG1", encg1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENCG2", encg2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENCG3", encg3, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ICG3", icg3, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VBAT", vbat, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VREDE", vrede, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTVRD", estvrd, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TBAT", tbat, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDBAT", sdbat, normal);
-
-        // Carrega o número de elementos do Grupo 1
-        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);
-
-        // -------------------------------------------------------------------------------------------------------------
-        // Grupo 2: Variáveis de Informação da Bomba do Poço e da Caixa Azul
-        IdNv1 = 2;
-        i = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "AGUA";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "07";
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTCXAZ", estcxaz, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("NIVCXAZ", nivcxaz, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTBMB", estbmb, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTDJB", estdjb, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTDJRB", estdjrb, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ENBMB", enbmb, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TMPBL", tmpbl, normal);
-
-        // Carrega o número de elementos do Grupo 2
-        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);  // Carrega o número de elementos do Grupo 1
-
-        // -------------------------------------------------------------------------------------------------------------
-        // Grupo 3: 18 Variáveis de Informação da Geração Solar e do Consumo
-        IdNv1 = 3;
-        i = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VP12", vp12, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IS12", is12, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISCC1", iscc1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSCC1", wscc1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDCC1", sdcc1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VP34", vp34, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IS34", is34, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISCC2", iscc2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSCC2", wscc2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDCC2", sdcc2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ITOTGER", itotger, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WTOTGER", wtotger, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ITOTCG", itotcg, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WTOTCG", wtotcg, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTFT1", estft1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTFT2", estft2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ICIRCC", icircc, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WCIRCC", wcircc, normal);
-
-        // Carrega o número de elementos do Grupo 3
-        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);
-
-        // -------------------------------------------------------------------------------------------------------------
-        // Grupo 4: 20 Variáveis de Informação dos Inversores 1 e 2
-        IdNv1 = 4;
-        i = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
-
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTIV2", estiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IEIV2", ieiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WEIV2", weiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VSIV2", vsiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISIV2", isiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSIV2", wsiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TDIV2", tdiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TTIV2", ttiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("EFIV2", efiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("SDIV2", sdiv2, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ESTIV1", estiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("IEIV1", ieiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WEIV1", weiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("VSIV1", vsiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("ISIV1", isiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WSIV1", wsiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TDIV1", tdiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("TTIV1", ttiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("EFIV1", efiv1, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = SupService.EntTagValue("WCIRCC", sdiv1, normal);
-
-        // Carrega o número de elementos do Grupo 4
-        MsgXMLArray[IdNv0][IdNv1][0][1] = SupService.IntToStr2(i);
-
-        // Retorna a Mensagem XML completa em formato de String
-        MsgXML = SupService.StringXML(MsgXMLArray);
-        return(MsgXML);
-    }
-
     //*****************************************************************************************************************
     // Nome do Método: LeEstMedsPayload()                                                                             *
     //                                                                                                                *
@@ -911,7 +714,7 @@ public class Dados001 {
         k = 160;
         int[] Med = new int[256];
         for (byte i = 0; i < 48; i++){
-            Med[i] = SupService.DoisBytesInt(MsgRecCoAP[k], MsgRecCoAP[k + 1]);
+            Med[i] = Auxiliar.DoisBytesInt(MsgRecCoAP[k], MsgRecCoAP[k + 1]);
             k = k + 2;
         }
 
@@ -950,7 +753,7 @@ public class Dados001 {
         int WSInv1 = (VSIv1 * ISInv1) / 1000;	// Potencia de Saida do Inversor 1
         int TDInv1 = Med[8];         			// Temperatura do Driver do Inversor 1
         int TTInv1 = Med[9];         			// Temperatura do Transformador do Inversor 1
-        int EfIv1 = SupService.CalcEficienciaInversor(WEIv1, WSInv1);
+        int EfIv1 = CalcEficienciaInversor(WEIv1, WSInv1);
         int SDIv1 = 0;
 
         // Leitura e Cálculo das Medidas referentes ao Inversor 2
@@ -962,7 +765,7 @@ public class Dados001 {
         int WSInv2 = (VSIv2 * ISInv2) / 1000;      	// Potencia de Saida do Inversor 2
         int TDInv2 = Med[2];         				// Temperatura do Driver do Inversor 2
         int TTInv2 = Med[7];         				// Temperatura do Transformador do Inversor 2
-        int EfIv2 = SupService.CalcEficienciaInversor(WEIv2, WSInv2);
+        int EfIv2 = CalcEficienciaInversor(WEIv2, WSInv2);
         int SDIv2 = 0;
 
         int ITotGer = Med[33];       				// Corrente Total Gerada
@@ -984,95 +787,489 @@ public class Dados001 {
         //--------------------------------------------------------------------------------------------------------------
 
         // Estados de Comunicacao
-        comcnc = SupService.EstadoSimples(EstCom1, "Normal", "Falha");
-        comutr = SupService.EstadoSimples(EstComUTR, "Normal", "Falha");
-        comcc1 = SupService.EstadoSimples(EstComCC1, "Normal", "Falha");
-        comcc2 = SupService.EstadoSimples(EstComCC2, "Normal", "Falha");
+        comcnc = EstadoSimples(EstCom1, "Normal", "Falha");
+        comutr = EstadoSimples(EstComUTR, "Normal", "Falha");
+        comcc1 = EstadoSimples(EstComCC1, "Normal", "Falha");
+        comcc2 = EstadoSimples(EstComCC2, "Normal", "Falha");
 
         // Hora e Data da UTR
-        clk = SupService.ImpHora(Hora, Minuto, Segundo);
-        data = SupService.ImpData(Dia, Mes, Ano);
+        clk = Auxiliar.ImpHora(Hora, Minuto, Segundo);
+        data = Auxiliar.ImpData(Dia, Mes, Ano);
 
         // Estados Gerais
-        mdop = SupService.EstadoSimples(MdOp, "Normal", "Economia");
-        mdcom = SupService.EstadoSimples(MdCom, "Remoto", "Local");
-        mdct1 = SupService.EstadoSimples(EstComCC2, "Automatico", "Manual");
-        mdct234 = SupService.EstadoSimples(MdCtrl, "Automatico", "Manual");
+        mdop = EstadoSimples(MdOp, "Normal", "Economia");
+        mdcom = EstadoSimples(MdCom, "Remoto", "Local");
+        mdct1 = EstadoSimples(EstComCC2, "Automatico", "Manual");
+        mdct234 = EstadoSimples(MdCtrl, "Automatico", "Manual");
 
         // Estado da Fonte de Energia das Cargas 1, 2, 3 e 4
-        encg1 = SupService.EstFonteEnergia(CT2Inv, Carga1, "Inversor 2", "Rede", "Rede (Hab)");
-        encg2 = SupService.EstFonteEnergia(CT1Inv, Carga2, "Inversor 2", "Rede", "Rede (Hab)");
-        encg3 = SupService.EstFonteEnergia(CT3Inv, Carga3, "Inversor 2", "Rede", "Rede (Hab)");
-        enbmb = SupService.EstFonteEnergia(Iv1Lig, Carga4, "Inversor 1", "Rede", "Rede (Hab)");
+        encg1 = EstFonteEnergia(CT2Inv, Carga1, "Inversor 2", "Rede", "Rede (Hab)");
+        encg2 = EstFonteEnergia(CT1Inv, Carga2, "Inversor 2", "Rede", "Rede (Hab)");
+        encg3 = EstFonteEnergia(CT3Inv, Carga3, "Inversor 2", "Rede", "Rede (Hab)");
+        enbmb = EstFonteEnergia(Iv1Lig, Carga4, "Inversor 1", "Rede", "Rede (Hab)");
 
         // Medida da Corrente da Carga 3 (Geladeira)
-        icg3 = SupService.FrmAna3(Icarga3);
+        icg3 = Auxiliar.FrmAna3(Icarga3);
 
         // Medidas do Banco de Baterias
-        vbat = SupService.FrmAna(VBat);
-        tbat = SupService.FrmAna(TBat);
-        sdbat = SupService.FrmAnaInt(SDBat);
+        vbat = Auxiliar.FrmAna(VBat);
+        tbat = Auxiliar.FrmAna(TBat);
+        sdbat = Auxiliar.FrmAnaInt(SDBat);
 
         // Medida e Estado da Tensão da Rede
-        vrede = SupService.FrmAna(VRede);
-        estvrd = SupService.EstadoRede(EstRede, VRede, 19000);
+        vrede = Auxiliar.FrmAna(VRede);
+        estvrd = EstadoRede(EstRede, VRede, 19000);
 
         // Estados e Medidas da Caixa d'Água e da Bomba
-        estcxaz = SupService.EstadoCaixaAzul(EstadoCxAz);
-        nivcxaz = SupService.NivelCaixaAzul(EstadoCxAz);
-        estbmb = SupService.EstadoSimples(CircBomba, "Ligada", "Desligada");
-        estdjb = SupService.EstadoSimples(CircBoia, "Ligado", "Desligado");
-        estdjrb = SupService.EstadoDepRede(EstRede, AlRedeBomba, "Ligado", "Desligado");
-        tmpbl = SupService.FormAnaHora(TmpBmbLig);
+        estcxaz = EstadoCaixaAzul(EstadoCxAz);
+        nivcxaz = NivelCaixaAzul(EstadoCxAz);
+        estbmb = EstadoSimples(CircBomba, "Ligada", "Desligada");
+        estdjb = EstadoSimples(CircBoia, "Ligado", "Desligado");
+        estdjrb = EstadoDepRede(EstRede, AlRedeBomba, "Ligado", "Desligado");
+        tmpbl = Auxiliar.FormAnaHora(TmpBmbLig);
 
         // Medidas da Geração Solar e Consumo
-        vp12 = SupService.FrmAna(VP12);
-        is12 = SupService.FrmAna(IS12);
-        iscc1 = SupService.FrmAna(ISCC1);
-        wscc1 = SupService.FrmAna(WSCC1);
-        sdcc1 = SupService.FrmAnaInt(SDCC1);
+        vp12 = Auxiliar.FrmAna(VP12);
+        is12 = Auxiliar.FrmAna(IS12);
+        iscc1 = Auxiliar.FrmAna(ISCC1);
+        wscc1 = Auxiliar.FrmAna(WSCC1);
+        sdcc1 = Auxiliar.FrmAnaInt(SDCC1);
 
-        vp34 = SupService.FrmAna(VP34);
-        is34 = SupService.FrmAna(IS34);
-        iscc2 = SupService.FrmAna(ISCC2);
-        wscc2 = SupService.FrmAna(WSCC2);
-        sdcc2 = SupService.FrmAnaInt(SDCC2);
+        vp34 = Auxiliar.FrmAna(VP34);
+        is34 = Auxiliar.FrmAna(IS34);
+        iscc2 = Auxiliar.FrmAna(ISCC2);
+        wscc2 = Auxiliar.FrmAna(WSCC2);
+        sdcc2 = Auxiliar.FrmAnaInt(SDCC2);
 
-        itotger = SupService.FrmAna(ITotGer);
-        wtotger = SupService.FrmAna(WTotGer);
-        itotcg = SupService.FrmAna(ITotCg);
-        wtotcg = SupService.FrmAna(WTotCg);
+        itotger = Auxiliar.FrmAna(ITotGer);
+        wtotger = Auxiliar.FrmAna(WTotGer);
+        itotcg = Auxiliar.FrmAna(ITotCg);
+        wtotcg = Auxiliar.FrmAna(WTotCg);
 
         // Estado das Fontes CC1 e CC2
-        estft1 = SupService.EstadoDepRede(EstRede, FonteCC1Ligada, "Ligada", "Desligada");
-        estft2 = SupService.EstadoDepRede(EstRede, FonteCC2Ligada, "Ligada", "Desligada");
+        estft1 = EstadoDepRede(EstRede, FonteCC1Ligada, "Ligada", "Desligada");
+        estft2 = EstadoDepRede(EstRede, FonteCC2Ligada, "Ligada", "Desligada");
 
         // Medidas dos Circuitos de Corrente Continua
-        icircc = SupService.FrmAna3(ICircCC);
-        wcircc = SupService.FrmAna(WCircCC);
+        icircc = Auxiliar.FrmAna3(ICircCC);
+        wcircc = Auxiliar.FrmAna(WCircCC);
 
         // Estados e Medidas do Inversor 2
-        estiv2 = SupService.EstadoSimples(Iv2Lig, "Ligado", "Desligado");
-        ieiv2 = SupService.FrmAna(IEIv2);
-        weiv2 = SupService.FrmAna(WEIv2);
-        vsiv2 = SupService.FrmAna(VSIv2);
-        isiv2 = SupService.FrmAna(ISInv2);
-        wsiv2 = SupService.FrmAna(WSInv2);
-        tdiv2 = SupService.FrmAna(TDInv2);
-        ttiv2 = SupService.FrmAna(TTInv2);
-        efiv2 = SupService.FrmAna(EfIv2);
-        sdiv2 = SupService.FrmAna(SDIv2);
+        estiv2 = EstadoSimples(Iv2Lig, "Ligado", "Desligado");
+        ieiv2 = Auxiliar.FrmAna(IEIv2);
+        weiv2 = Auxiliar.FrmAna(WEIv2);
+        vsiv2 = Auxiliar.FrmAna(VSIv2);
+        isiv2 = Auxiliar.FrmAna(ISInv2);
+        wsiv2 = Auxiliar.FrmAna(WSInv2);
+        tdiv2 = Auxiliar.FrmAna(TDInv2);
+        ttiv2 = Auxiliar.FrmAna(TTInv2);
+        efiv2 = Auxiliar.FrmAna(EfIv2);
+        sdiv2 = Auxiliar.FrmAna(SDIv2);
 
         // Estados e Medidas do Inversor 2
-        estiv1 = SupService.EstadoSimples(Iv1Lig, "Ligado", "Desligado");
-        ieiv1 = SupService.FrmAna(IEIv1);
-        weiv1 = SupService.FrmAna(WEIv1);
-        vsiv1 = SupService.FrmAna(VSIv1);
-        isiv1 = SupService.FrmAna(ISInv1);
-        wsiv1 = SupService.FrmAna(WSInv1);
-        tdiv1 = SupService.FrmAna(TDInv1);
-        ttiv1 = SupService.FrmAna(TTInv1);
-        efiv1 = SupService.FrmAna(EfIv1);
-        sdiv1 = SupService.FrmAna(SDIv1);
+        estiv1 = EstadoSimples(Iv1Lig, "Ligado", "Desligado");
+        ieiv1 = Auxiliar.FrmAna(IEIv1);
+        weiv1 = Auxiliar.FrmAna(WEIv1);
+        vsiv1 = Auxiliar.FrmAna(VSIv1);
+        isiv1 = Auxiliar.FrmAna(ISInv1);
+        wsiv1 = Auxiliar.FrmAna(WSInv1);
+        tdiv1 = Auxiliar.FrmAna(TDInv1);
+        ttiv1 = Auxiliar.FrmAna(TTInv1);
+        efiv1 = Auxiliar.FrmAna(EfIv1);
+        sdiv1 = Auxiliar.FrmAna(SDIv1);
     }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXML()                                                                                      *
+    //	                                                                                                               *
+    // Data: 13/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML a partir das variáveis da classe Dados001                                          *
+    //                                                                                                                 *
+    // Entrada: a string com o comando recebido do navegador e a flag normal: se normal = true monta a mensagem XML    *
+    //           normalmente. Se normal = false indica falha e monta a mensagem XML com os campos Value = ----------   *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public static java.lang.String MontaXML(String comando, boolean normal) {
+
+        // Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis de supervisão
+        String MsgXMLArray[][][][] = new String[1][10][30][2];
+        int IdNv0 = 0;
+        int IdNv1 = 0;
+        String MsgXML = "";
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "04";
+
+        IdNv1 = 1; // Grupo 1: 19 Variáveis de Informação GERAL
+        int i = 0;
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERAL";    // Carrega a Tag do Grupo 0
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("COMCNV", "Normal", normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("COMCNC", comcnc, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("COMUTR", comutr, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("COMCC1", comcc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("COMCC2", comcc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("CLK", clk, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("DATA", data, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("CMDEX", comando, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("MDOP", mdop, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("MDCOM", mdcom, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("MDCT1", mdct1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("MDCT234", mdct234, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ENCG1", encg1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ENCG2", encg2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ENCG3", encg3, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ICG3", icg3, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("VBAT", vbat, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("VREDE", vrede, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTVRD", estvrd, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("TBAT", tbat, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("SDBAT", sdbat, normal);
+
+        // Carrega o número de elementos do Grupo 1
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Grupo 2: Variáveis de Informação da Bomba do Poço e da Caixa Azul
+        IdNv1 = 2;
+        i = 0;
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "AGUA";
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "07";
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTCXAZ", estcxaz, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("NIVCXAZ", nivcxaz, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTBMB", estbmb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTDJB", estdjb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTDJRB", estdjrb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ENBMB", enbmb, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("TMPBL", tmpbl, normal);
+
+        // Carrega o número de elementos do Grupo 2
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);  // Carrega o número de elementos do Grupo 1
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Grupo 3: 18 Variáveis de Informação da Geração Solar e do Consumo
+        IdNv1 = 3;
+        i = 0;
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "GERCONS";
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("VP12", vp12, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("IS12", is12, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ISCC1", iscc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WSCC1", wscc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("SDCC1", sdcc1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("VP34", vp34, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("IS34", is34, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ISCC2", iscc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WSCC2", wscc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("SDCC2", sdcc2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ITOTGER", itotger, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WTOTGER", wtotger, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ITOTCG", itotcg, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WTOTCG", wtotcg, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTFT1", estft1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTFT2", estft2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ICIRCC", icircc, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WCIRCC", wcircc, normal);
+
+        // Carrega o número de elementos do Grupo 3
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
+
+        // -------------------------------------------------------------------------------------------------------------
+        // Grupo 4: 20 Variáveis de Informação dos Inversores 1 e 2
+        IdNv1 = 4;
+        i = 0;
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "INV";
+
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTIV2", estiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("IEIV2", ieiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WEIV2", weiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("VSIV2", vsiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ISIV2", isiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WSIV2", wsiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("TDIV2", tdiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("TTIV2", ttiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("EFIV2", efiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("SDIV2", sdiv2, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ESTIV1", estiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("IEIV1", ieiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WEIV1", weiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("VSIV1", vsiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("ISIV1", isiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WSIV1", wsiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("TDIV1", tdiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("TTIV1", ttiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("EFIV1", efiv1, normal);
+        i = i + 1;
+        MsgXMLArray[IdNv0][IdNv1][i] = EntTagValue("WCIRCC", sdiv1, normal);
+
+        // Carrega o número de elementos do Grupo 4
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
+
+        // Retorna a Mensagem XML completa em formato de String
+        MsgXML = StringXML(MsgXMLArray);
+        return(MsgXML);
+    }
+
+    //******************************************************************************************************************
+    //                                                                                                                 *
+    // Nome do Método: StringXML()                                                                                     *
+    //	                                                                                                               *
+    // Funcao: monta uma String com a mensagem XML de resposta inserindo o valor das variáveis                         *
+    //                                                                                                                 *
+    // Entrada: array String com as Tags dos Níveis 0, 1 e 2 e os valores das variáveis de supervisão                  *
+    //                                                                                                                 *
+    // Saida: String com a mensagem XML                                                                                *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
+    public static String StringXML(String MsgXMLArray[][][][]) {
+        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
+
+        char Dezena = MsgXMLArray[0][0][0][1].charAt(0);
+        char Unidade = MsgXMLArray[0][0][0][1].charAt(1);
+
+        // Obtem o Numero de Tags de Nivel 1
+        int NmTagNv1 = Auxiliar.TwoCharToInt(Dezena, Unidade);
+
+        // Repete até imprimir todas as Tags de Nível 1 e Nível 2
+        for (int i = 1; i <= NmTagNv1; i++) {
+
+            // Imprime a Tag de Nivel 1 de Início do Grupo
+            MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
+            char DzNumVar = MsgXMLArray[0][i][0][1].charAt(0);
+            char UnNumVar = MsgXMLArray[0][i][0][1].charAt(1);
+
+            // Obtém o Número de Variáveis do Grupo
+            int NumVar = Auxiliar.TwoCharToInt(DzNumVar, UnNumVar);
+
+            // Repeta até imprimir todas as Tags de Nível 2 e suas variáveis
+            for (int j = 1; j <= NumVar; j++) {
+
+                // Imprime as Tags de Nível 2 e os Valores das Variáveis
+                MsgXML = MsgXML + "    <" + MsgXMLArray[0][i][j][0] + ">"
+                        + MsgXMLArray[0][i][j][1]
+                        + "</" + MsgXMLArray[0][i][j][0] + ">\n";
+            }
+
+            // Imprime a Tag de Nivel 1 de Fim de Grupo
+            MsgXML = MsgXML + "  </" + MsgXMLArray[0][i][0][0] + ">\n";
+        }
+
+        // Imprime a Tag de Nivel 0 de Fim
+        MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">";
+
+        return (MsgXML);
+
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EntTagValue                                                                                     *
+    //                                                                                                                 *
+    // Funcao: monta um array de duas strings a partir de duas strings (Tag e Value). Se a flag falha = true,          *
+    //         preenche o campo Value com ---------- indicando falha.                                                  *
+    //                                                                                                                 *
+    // Entrada: string com a Tag, string com o Value e boolean falha                                                   *
+    //                                                                                                                 *
+    // Saida: array[2] com a string Tag na posição 0 e a string Values na posição 1.                                   *
+    //                                                                                                                 *
+    //******************************************************************************************************************
+    //
+    public static String[] EntTagValue(String tag, String value, boolean normal) {
+        String[] tagvalue = new String[2];
+        tagvalue[0] = tag;
+        if (normal) {
+            tagvalue[1] = value;
+        } else {
+            tagvalue[1] = "----------";
+        }
+        return (tagvalue);
+    }
+
+    public static String EstadoSimples(boolean estado, String estadoTrue, String estadoFalse) {
+        String strEstado = "";
+        if (estado) {
+            strEstado = estadoTrue;
+        } else {
+            strEstado = estadoFalse;
+        }
+        return strEstado;
+    }
+
+    public static String EstFonteEnergia(boolean fonte, boolean habCg, String feTrue, String feFalse, String feStby) {
+        String strFe = feFalse;
+        if (fonte) {
+            strFe = feTrue;
+        } else {
+            if (habCg) {
+                strFe = feStby;
+            }
+        }
+        return strFe;
+    }
+
+    public static String EstadoCaixaAzul(byte estado) {
+        String estcxaz = "";
+        switch (estado) {
+
+            case 0:  //  EstadoCxAz = 0 => Estado da Caixa Azul = Indefinido
+                estcxaz = "Indefinido";
+                break;
+
+            case 1:  //  EstadoCxAz = 1 => Estado da Caixa Azul = Precisa Encher Nivel Baixo
+                estcxaz = "Precisa Encher";
+                break;
+
+            case 2:  //  EstadoCxAz = 2 => Estado da Caixa Azul = Precisa Encher Nivel Normal
+                estcxaz = "Precisa Encher";
+                break;
+
+            case 3:  //  EstadoCxAz = 3 => Estado da Caixa Azul = Cheia
+                estcxaz = "Cheia";
+                break;
+
+            case 4:  //  EstadoCxAz = 4 => Estado da Caixa Azul = Falha de Sinalizacao 1
+
+            case 5:  // EstadoCxAz = 5 => Estado da Caixa Azul = Falha de Sinalizacao 2
+                estcxaz = "Falha Boia";
+                break;
+        }
+        return estcxaz;
+    }
+
+    public static String NivelCaixaAzul(byte estado) {
+        String nivcxaz = "";
+        switch (estado) {
+
+            case 0:  //  EstadoCxAz = 0 => Estado da Caixa Azul = Indefinido
+                nivcxaz = "Indefinido";
+                break;
+
+            case 1:  //  EstadoCxAz = 1 => Estado da Caixa Azul = Precisa Encher Nivel Baixo
+                nivcxaz = "Baixo";
+                break;
+
+            case 2:  //  EstadoCxAz = 2 => Estado da Caixa Azul = Precisa Encher Nivel Normal
+                nivcxaz = "Normal";
+                break;
+
+            case 3:  //  EstadoCxAz = 3 => Estado da Caixa Azul = Cheia
+                nivcxaz = "Normal";
+                break;
+
+            case 4:  //  EstadoCxAz = 4 => Estado da Caixa Azul = Falha de Sinalizacao 1
+
+            case 5:  // EstadoCxAz = 5 => Estado da Caixa Azul = Falha de Sinalizacao 2
+                nivcxaz = "";
+                break;
+        }
+        return nivcxaz;
+    }
+
+    public static String EstadoDepRede(boolean estRede, boolean estado, String strTrue, String strFalse) {
+        String strEst = "";
+        if (estRede) {
+            if (estado) {
+                strEst = strTrue;
+            } else {
+                strEst = strFalse;
+            }
+        } else {
+            strEst = "Falta CA";
+        }
+        return strEst;
+    }
+
+    public static String EstadoRede(boolean estRede, int tensaoRede, int limite) {
+        String estVrd = "";
+        if(estRede) {
+            if (tensaoRede > 19000) {
+                estVrd = "Normal";
+            } else {
+                estVrd = "(Baixa)";
+            }
+        }
+        else {
+            estVrd = "Falta CA";
+        }
+        return estVrd;
+    }
+
+    public static int CalcEficienciaInversor(int weInv, int wsInv) {
+        int EfIv2 = 0;
+        if (weInv > 2000) {
+            EfIv2 = (100 * wsInv) / weInv;
+        }
+        else {
+            EfIv2 = 0;
+        }
+        return EfIv2;
+    }
+
+
 }

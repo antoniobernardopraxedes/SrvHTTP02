@@ -1,0 +1,26 @@
+body{
+    font-family: serif;
+    font-size: 20px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border-collapse: collapse;
+  align-self: center;
+}
+
+.titulo {
+  font-size: 60px;
+}
+
+.botao {
+  height: 70px;
+  width: 300px;
+  align-content: center;
+  font-size: 40px;
+  background-color: #33ff71; 
+}

@@ -15,18 +15,14 @@ public class VlglResources {
     public ResponseEntity<?> InicioVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
         String nomeArquivo = "indice.html";
 
-        nomeArquivo = siteService.VerificaMobile(userAgent, nomeArquivo);
-
-        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo);
+        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/vlgl.{nomeArquivo}")
     public ResponseEntity<?> EnviaArquivoVlgl(@PathVariable("nomeArquivo") String nomeArquivo,
                                            @RequestHeader(value = "User-Agent") String userAgent) {
 
-        nomeArquivo = siteService.VerificaMobile(userAgent, nomeArquivo);
-
-        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo);
+        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
 }

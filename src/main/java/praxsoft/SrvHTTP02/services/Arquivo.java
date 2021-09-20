@@ -30,37 +30,85 @@ public class Arquivo {
         return ((int)Arquivo.length());
     }
 
-    String LeTexto(String Caminho, String NomeArquivo) {
-        File Arquivo = new File(Caminho + NomeArquivo);
-        String Arq = "";
+    //******************************************************************************************************************
+    // Nome do Método: LeArquivoTxt                                                                                    *
+    //	                                                                                                               *
+    // Funcao: lê um arquivo texto (sequência de caracteres) do diretório recursos dentro do diretŕorio principal do   *
+    //         servidor.                                                                                               *
+    //                                                                                                                 *
+    // Entrada: string com o caminho do arquivo e string com o nome do arquivo                                         *
+    //                                                                                                                 *
+    // Saida: String com o arquivo texto lido. Se ocorrer falha na leitura, o método retorna null                      *
+    //******************************************************************************************************************
+    //
+    public static String LeArquivoTxt(String caminho, String nomeArquivo) {
+
+        File Arquivo = new File(caminho + nomeArquivo);
+        String arquivoLido = "";
         try {
             BufferedReader br = new BufferedReader(new FileReader(Arquivo));
-
-            String st;
-            while ((st = br.readLine()) != null) {
-                Arq = Arq + st + "\n";
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                arquivoLido = arquivoLido + linha + "\n";
             }
+            Auxiliar.Terminal("Lido Arquivo " + nomeArquivo, false);
+            return arquivoLido;
+
         } catch (IOException e) {
-            return("erro");
+            Auxiliar.Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
+            return null;
         }
-        return(Arq);
     }
 
-    byte[] LeByte(String Caminho, String NomeArquivo) throws IOException {
-        File Arquivo = new File(Caminho + NomeArquivo);
-        FileInputStream ArquivoLido = null;
-        int TamArquivo = (int)Arquivo.length();
-        byte[] DadosArquivo = new byte[TamArquivo];
+    //******************************************************************************************************************
+    // Nome do Método: LeArquivoByte                                                                                   *
+    //	                                                                                                               *
+    // Funcao: lê um arquivo binário (sequência de bytes) do diretório recursos dentro do diretŕorio principal do      *
+    //         servidor.                                                                                               *
+    //                                                                                                                 *
+    // Entrada: string com o caminho do arquivo e string com o nome do arquivo                                         *
+    //                                                                                                                 *
+    // Saida: array com a sequência de bytes do arquivo lido. Se ocorrer falha na leitura, o método retorna null.      *
+    //******************************************************************************************************************
+    //
+    public static byte[] LeArquivoByte(String caminho, String nomeArquivo) {
 
         try {
-            ArquivoLido = new FileInputStream(Arquivo);
-            ArquivoLido.read(DadosArquivo);
-        } finally {
-            if (ArquivoLido != null)
-                ArquivoLido.close();
+            File arquivo = new File(caminho + nomeArquivo);
+            FileInputStream arquivoByte = null;
+            int numBytesArquivo = (int)arquivo.length();
+            byte[] arrayByteArquivo = new byte[numBytesArquivo];
+
+            arquivoByte = new FileInputStream(arquivo);
+            arquivoByte.read(arrayByteArquivo);
+
+            Auxiliar.Terminal("Lido Arquivo " + nomeArquivo, false);
+            arquivoByte.close();
+            return arrayByteArquivo;
+
+        } catch (IOException e) {
+            Auxiliar.Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
+            byte[] arrayErro = new byte[0];
+            return arrayErro;
         }
-        return DadosArquivo;
+
     }
+
+    //byte[] LeByte(String Caminho, String NomeArquivo) throws IOException {
+    //    File Arquivo = new File(Caminho + NomeArquivo);
+    //    FileInputStream ArquivoLido = null;
+    //    int TamArquivo = (int)Arquivo.length();
+    //    byte[] DadosArquivo = new byte[TamArquivo];
+
+    //    try {
+    //        ArquivoLido = new FileInputStream(Arquivo);
+    //        ArquivoLido.read(DadosArquivo);
+    //    } finally {
+    //        if (ArquivoLido != null)
+    //            ArquivoLido.close();
+    //    }
+    //    return DadosArquivo;
+    //}
 
     //******************************************************************************************************************
     // Nome do Método: EscreveArqTxt()                                                                                 *

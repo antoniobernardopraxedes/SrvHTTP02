@@ -1,6 +1,5 @@
 package praxsoft.SrvHTTP02.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,20 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SiteService {
 
-    @Autowired
-    private SupService supService;
-
-    public String VerificaMobile(String userAgent, String nomeArq) {
-        if (userAgent.toLowerCase().contains("mobile")) {
-
-            if (nomeArq.endsWith(".css")) {
-                nomeArq = nomeArq.substring(0, nomeArq.length() - 4) + ".m.css";
-            }
-        }
-        return nomeArq;
-    }
-
-    public ResponseEntity<?> LeArquivoMontaResposta(String caminho, String nomeArquivo) {
+    public ResponseEntity<?> LeArquivoMontaResposta(String caminho, String nomeArquivo, String userAgent) {
 
         String tipo = "text/plain";
         if (nomeArquivo.endsWith(".html")) {
@@ -30,19 +16,33 @@ public class SiteService {
         }
         if (nomeArquivo.endsWith(".css")) {
             tipo = "text/css";
-            caminho = caminho + "css/";
+            if (userAgent.toLowerCase().contains("mobile")) {
+                caminho = caminho + "css_m/";
+            }
+            else {
+                caminho = caminho + "css/";
+            }
         }
         if (nomeArquivo.endsWith(".js")) {
             tipo = "text/javascript";
-            caminho = caminho + "js/";
+            if (userAgent.toLowerCase().contains("mobile")) {
+                caminho = caminho + "js_m/";
+            }
+            else {
+                caminho = caminho + "js/";
+            }
         }
-        if (nomeArquivo.endsWith(".jpg")) {
+        if (nomeArquivo.endsWith(".jpg") || nomeArquivo.endsWith(".ico")) {
             tipo = "image/jpeg";
             caminho = caminho + "img/";
         }
+        if (nomeArquivo.endsWith(".png")) {
+            tipo = "image/png";
+            caminho = caminho + "img/";
+        }
 
-        if (tipo.equals("image/jpeg")) {
-            byte[] arquivoByte = supService.LeArquivoByte(caminho, nomeArquivo);
+        if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
+            byte[] arquivoByte = Arquivo.LeArquivoByte(caminho, nomeArquivo);
             if (arquivoByte.length == 0) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND )
@@ -57,7 +57,7 @@ public class SiteService {
             }
         }
         else {
-            String arquivoTxt = supService.LeArquivoTxt(caminho, nomeArquivo);
+            String arquivoTxt = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
             if (arquivoTxt == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND )
@@ -75,7 +75,7 @@ public class SiteService {
 
     private String msgArqNaoEncontrado(String nomeArquivo) {
 
-        return ("<h3>File not found: " + nomeArquivo + "</h3>");
+        return ("<p></p><h3>File not found: " + nomeArquivo + "</h3>");
     }
 
 }

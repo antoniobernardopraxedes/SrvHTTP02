@@ -15,18 +15,14 @@ public class SiteResources {
     public ResponseEntity<?> InicioSite(@RequestHeader(value = "User-Agent") String userAgent) {
         String nomeArquivo = "indice.html";
 
-        nomeArquivo = siteService.VerificaMobile(userAgent, nomeArquivo);
-
-        return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo);
+        return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo, userAgent);
    }
 
     @GetMapping(value = "/site.{nomeArquivo}")
     public ResponseEntity<?> EnviaHtmlSite(@PathVariable("nomeArquivo") String nomeArquivo,
                                            @RequestHeader(value = "User-Agent") String userAgent) {
 
-        nomeArquivo = siteService.VerificaMobile(userAgent, nomeArquivo);
-
-        return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo);
+        return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo, userAgent);
   }
 
 }

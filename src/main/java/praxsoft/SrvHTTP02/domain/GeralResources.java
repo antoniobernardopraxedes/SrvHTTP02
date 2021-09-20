@@ -17,9 +17,7 @@ public class GeralResources {
     public ResponseEntity<?> inicio(@RequestHeader(value = "User-Agent") String userAgent) {
         String nomeArquivo = "index.html";
 
-        nomeArquivo = siteService.VerificaMobile(userAgent, nomeArquivo);
-
-        return siteService.LeArquivoMontaResposta("recursos/", nomeArquivo);
+        return siteService.LeArquivoMontaResposta("recursos/", nomeArquivo, userAgent);
     }
 
 }
