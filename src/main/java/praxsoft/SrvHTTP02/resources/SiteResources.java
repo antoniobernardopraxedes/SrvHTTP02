@@ -23,6 +23,6 @@ public class SiteResources {
                                            @RequestHeader(value = "User-Agent") String userAgent) {
 
         return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo, userAgent);
-  }
+    }
 
 }

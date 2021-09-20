@@ -3,97 +3,68 @@
         <head>
             <meta charset="UTF-8">
             <title>Reservas - Vista Linda Gastronomia e Lazer</title>
-            <link rel="stylesheet" type="text/css" href="vlgl.bootstrap.min.css">
             <link rel="stylesheet" type="text/css" href="vlgl.style.css">
             <script type="text/javascript" defer src="vlgl.main.js"></script>
         </head>
         <body>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">
-                        <img src="vlgl.logo.jpg" alt="Logo Vista Linda" width="150" height="150" class="d-inline-block align-middle">
-                        <em class="titulo">Reservas</em>
-                    </a>
-               
-                    
-              </div>
-            </nav>
-                     
             <table>
                 <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Gazebo
-                  </td>
-                  <td>
-                    
-                  </td>  
+                    <td><img src="vlgl.logo.jpg" alt="Logo Vista Linda" width="150" height="150"></td>
+                    <td em class="titulo"em>Reservas</td>
                 </tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A1
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B9
-                  </td>    
-                </tr>
-                <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A2
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B10
-                  </td>  
-                </tr>
-                <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A3
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B11
-                  </td>  
+            </table>            
+            
+            <form id="signup">
+                <div class="field">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your fullname" />
+                    <small></small>
+                </div>
+                <div class="field">
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" placeholder="Enter your email address" />
+                    <small></small>
+                </div>
+                <button type="button" onclick="getName()">Subscribe</button>
+            </form>
+                     
+            <table>
+               <tr>
+                  <td class="mesas"><button type="button" onclick="clicou('Gazebo')" class="botao">Gazebo</button></td>
+                  <td class="mesas">Jardim</td>  
                 </tr>
                 <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A4
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B12
-                  </td>
+                  <td class="mesas"><button type="button" onclick="clicou('A1')" class="botao">Mesa A1</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B9')" class="botao">Mesa B9</button></td>    
                 </tr>
                 <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A5
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B13
-                  </td>
+                  <td class="mesas"><button type="button" onclick="clicou('A2')" class="botao">Mesa A2</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B10')" class="botao">Mesa B10</button></td>  
                 </tr>
                 <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A6
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B14
-                  </td>
+                  <td class="mesas"><button type="button" onclick="clicou('A3')" class="botao">Mesa A3</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B11')" class="botao">Mesa B11</button></td>  
                 </tr>
                 <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A7
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B15
-                  </td>
+                  <td class="mesas"><button type="button" onclick="clicou('A4')" class="botao">Mesa A4</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B12')" class="botao">Mesa B12</button></td>
                 </tr>
                 <tr>
-                  <td >
-                    <button type="button" onclick="clicou()" class="botao">Mesa A8
-                  </td>
-                  <td>
-                    <button type="button" onclick="clicou()" class="botao">Mesa B16
-                  </td>
+                  <td class="mesas"><button type="button" onclick="clicou('A5')" class="botao">Mesa A5</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B13')" class="botao">Mesa B13</button></td>
                 </tr>
-                
+                <tr>
+                  <td class="mesas"><button type="button" onclick="clicou('A6')" class="botao">Mesa A6</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B14')" class="botao">Mesa B14</button></td>
+                </tr>
+                <tr>
+                  <td class="mesas"><button type="button" onclick="clicou('A7')" class="botao">Mesa A7</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B15')" class="botao">Mesa B15</button></td>
+                </tr>
+                <tr>
+                  <td class="mesas"><button type="button" onclick="clicou('A8')" class="botao">Mesa A8</button></td>
+                  <td class="mesas"><button type="button" onclick="clicou('B16')" class="botao">Mesa B16</button></td>
+                </tr>
             </table>
-     
         </body>
-                
     </html>

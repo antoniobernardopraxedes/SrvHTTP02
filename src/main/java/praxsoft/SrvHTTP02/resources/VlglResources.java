@@ -25,4 +25,11 @@ public class VlglResources {
         return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
+    @PostMapping(value = "/recurso")
+    public String RecebeDados(@RequestBody String dado) {
+        System.out.println("Dado Recebido no Método POST: " + dado);
+
+        return "{\n \"resposta\" : \"ack\"\n}";
+    }
+
 }

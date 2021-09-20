@@ -6,83 +6,29 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Dados001;
-import praxsoft.SrvHTTP02.services.Arquivo;
-import praxsoft.SrvHTTP02.services.Auxiliar;
-import praxsoft.SrvHTTP02.services.Inicia;
-import praxsoft.SrvHTTP02.services.SupService;
+import praxsoft.SrvHTTP02.services.*;
 
 @RestController
 public class SupResources {
 
     @Autowired
+    private SiteService siteService;
     private SupService supService;
     private static String strComando;
     private static int numComando;
 
     @GetMapping(value = "/sup")
-    public ResponseEntity<?> supHtml() {
+    public ResponseEntity<?> supHtml(@RequestHeader(value = "User-Agent") String userAgent) {
+        String nomeArquivo = "tabela.html";
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("text/html"))
-                .body(Arquivo.LeArquivoTxt("recursos/sup/", "tabela.html"));
+        return siteService.LeArquivoMontaResposta("recursos/sup/", nomeArquivo, userAgent);
     }
 
-    @GetMapping(value = "/sup.{nomeArq}.css")
-    public ResponseEntity<?> EnviaCSSSup(@PathVariable String nomeArq) {
+    @GetMapping(value = "/sup.{nomeArquivo}")
+    public ResponseEntity<?> EnviaHtmlSite(@PathVariable("nomeArquivo") String nomeArquivo,
+                                           @RequestHeader(value = "User-Agent") String userAgent) {
 
-        String nomeArquivo = nomeArq + ".css";
-        String arquivo = Arquivo.LeArquivoTxt("recursos/sup/", nomeArquivo);
-        if (arquivo != null ) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf("text/css"))
-                    .body(arquivo);
-        }
-        else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND )
-                    .contentType(MediaType.valueOf("text/html"))
-                    .body(msgArqNaoEncontrado(nomeArquivo));
-        }
-    }
-
-    @GetMapping(value = "/sup.{nomeArq}.js")
-    public ResponseEntity<?> EnviaJSSup(@PathVariable String nomeArq) {
-
-        String nomeArquivo = nomeArq + ".js";
-        String arquivo = Arquivo.LeArquivoTxt("recursos/sup/", nomeArquivo);
-        if (arquivo != null) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf("text/javascript"))
-                    .body(arquivo);
-        }
-        else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND )
-                    .contentType(MediaType.valueOf("text/html"))
-                    .body(msgArqNaoEncontrado(nomeArquivo));
-        }
-    }
-
-    @GetMapping(value = "/sup.{nomeArq}.ico")
-    public ResponseEntity<?> EnviaImagemSup(@PathVariable String nomeArq) {
-
-        String nomeArquivo = nomeArq + ".ico";
-        byte[] arquivo = Arquivo.LeArquivoByte("recursos/sup/", nomeArquivo);
-        if (arquivo.length > 0) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf("image/ico"))
-                    .body(arquivo);
-        }
-        else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND )
-                    .contentType(MediaType.valueOf("text/html"))
-                    .body(msgArqNaoEncontrado(nomeArquivo));
-        }
+        return siteService.LeArquivoMontaResposta("recursos/sup/", nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/local001.xml")
@@ -130,8 +76,4 @@ public class SupResources {
 
     }
 
-    private String msgArqNaoEncontrado(String nomeArquivo) {
-
-        return ("<h3>File not found: " + nomeArquivo + "</h3>");
-    }
 }

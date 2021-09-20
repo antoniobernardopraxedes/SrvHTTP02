@@ -1,6 +1,7 @@
 
-function clicou() {
-    confirm("Confirma a reserva da mesa?");
+function clicou(numMesa) {
+    var mensagem = "Confirma a reserva da mesa?";
+    confirm(mensagem);
 }
 
 function trocar(parametro) {

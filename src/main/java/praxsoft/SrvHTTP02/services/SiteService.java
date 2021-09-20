@@ -58,7 +58,10 @@ public class SiteService {
         }
         else {
             String arquivoTxt = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
+            //System.out.println(arquivoTxt);
+
             if (arquivoTxt == null) {
+                //System.out.println("Não Encontrado");
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND )
                         .contentType(MediaType.valueOf("text/html"))
