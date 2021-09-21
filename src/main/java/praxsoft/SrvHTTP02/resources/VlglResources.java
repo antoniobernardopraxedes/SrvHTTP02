@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.services.SiteService;
 import praxsoft.SrvHTTP02.services.VlglService;
@@ -13,6 +15,7 @@ public class VlglResources {
 
     @Autowired
     private SiteService siteService;
+    private static String idUsuario;
 
     @GetMapping(value = "/admin")
     public ResponseEntity<?> AdminVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
@@ -25,6 +28,9 @@ public class VlglResources {
     public ResponseEntity<?> ReservasVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
         String nomeArquivo = "reservas.html";
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        idUsuario = auth.getName();
+
         return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
@@ -36,8 +42,8 @@ public class VlglResources {
     }
 
     @PostMapping(value = "/reserva")
-    public ResponseEntity<?> RecebeDados(@RequestBody String idUsuario) {
-        System.out.println("Dado Recebido no Método POST: " + idUsuario);
+    public ResponseEntity<?> RecebeDados(@RequestBody String dadosReserva) {
+        System.out.println("Dado Recebido no Método POST: " + dadosReserva);
 
         String[] dadosUsuario = VlglService.BuscaUsuario(idUsuario);
 
@@ -47,7 +53,7 @@ public class VlglResources {
                           "  <CLIENTE>" + dadosUsuario[1] + "</CLIENTE>\n" +
                           "</RESERVA>\n ";
 
-        //System.out.println(MsgXML);
+        System.out.println(MsgXML);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

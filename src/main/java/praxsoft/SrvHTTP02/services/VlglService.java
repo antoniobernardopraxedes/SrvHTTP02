@@ -9,19 +9,19 @@ public class VlglService {
         String[] dadosUsuario = new String[2];
 
         switch (userName) {
-            case ("Isis Dias Vieirs") :
+            case ("IsisDias") :
                 dadosUsuario[0] = "0001";
                 dadosUsuario[1] = "Isis Dias Vieira";
                 break;
 
-            case ("Lucca Borges") :
+            case ("LuccaBorges") :
                 dadosUsuario[0] = "0002";
-                dadosUsuario[1] = "Lucca Borges C. Dias";
+                dadosUsuario[1] = "Lucca Borges Câmara Dias";
                 break;
 
-            case ("Sofia Dias") :
+            case ("SofiaDias") :
                 dadosUsuario[0] = "0003";
-                dadosUsuario[1] = "Sofia Borges C. Dias";
+                dadosUsuario[1] = "Sofia Borges Câmara Dias";
                 break;
         }
         if (dadosUsuario[0] == null) {

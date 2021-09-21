@@ -22,7 +22,7 @@ function Entrar() {
     var recurso = "reserva";
     xhttp.open("POST", recurso, false);
     try {
-        xhttp.send(UserName);
+        xhttp.send(numPessoas);
         var xmlRec = xhttp.responseXML;
         var i = 0;
         var reserva = xmlRec.getElementsByTagName("RESERVA");
