@@ -1,6 +1,8 @@
 package praxsoft.SrvHTTP02.resources;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.services.SiteService;
@@ -25,11 +27,21 @@ public class VlglResources {
         return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
-    @PostMapping(value = "/recurso")
-    public String RecebeDados(@RequestBody String dado) {
+    @PostMapping(value = "/reserva")
+    public ResponseEntity<?> RecebeDados(@RequestBody String dado) {
         System.out.println("Dado Recebido no Método POST: " + dado);
 
-        return "{\n \"resposta\" : \"ack\"\n}";
+        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        MsgXML = MsgXML + "<RESERVA>\n" +
+                          "  <CLIENTE>Isis Dias Vieira</CLIENTE>\n" +
+                          "</RESERVA>\n ";
+
+        System.out.println(MsgXML);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/xml"))
+                .body(MsgXML);
     }
 
 }

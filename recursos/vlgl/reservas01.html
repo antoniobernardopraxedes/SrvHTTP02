@@ -15,23 +15,47 @@
             </table>            
             
             <form id="signup">
-                <div class="field">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" placeholder="Enter your fullname" />
+                <table>
+                  <tr>
+                    <td>
+                    <label for="email"></label>
+                    <input type="text" id="email" name="email" placeholder="Email cadastrado" class = "campo1">
                     <small></small>
-                </div>
-                <div class="field">
-                    <label for="email">Email:</label>
-                    <input type="text" id="email" name="email" placeholder="Enter your email address" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                    <label for="data"></label>
+                    <input type="data" id="data" name="data" placeholder="Data da reserva" class = "campo1">
                     <small></small>
-                </div>
-                <button type="button" onclick="getName()">Subscribe</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label for="name"></label>
+                      <input type="number" id="numpessoas" name="numpessoas" placeholder="Número de Pessoas" class = "campo2">
+                      <small></small>
+                    </td>
+                    <td class="campo3">
+                        <button type="button" onclick="Entrar()" class="botaoentrar">Entrar</button>
+                    </td>
+                  </tr>
+                </table>
             </form>
+            <table>
+                <tr><p></p></tr>
+                <tr>
+                    <td class="campocliente" id="cliente">Bem Vindo à nossa página de reservas.</td> 
+                </tr>
+                <tr>
+                    <td class="campocliente" id="info"></td>
+                </tr>
+            </table>
                      
             <table>
                <tr>
-                  <td class="mesas"><button type="button" onclick="clicou('Gazebo')" class="botao">Gazebo</button></td>
-                  <td class="mesas">Jardim</td>  
+                  <td class="mesas"><button type="button" onclick="getName('Gazebo')" class="botao" id="gazebo">Gazebo</button></td>
+                  <td class="mesas"><p></p></td>  
                 </tr>
                 <tr>
                   <td class="mesas"><button type="button" onclick="clicou('A1')" class="botao">Mesa A1</button></td>

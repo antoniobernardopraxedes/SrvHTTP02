@@ -19,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests().anyRequest().permitAll()
-                //.antMatchers("/atualiza").permitAll()
+                //.antMatchers("/vlgl").permitAll()
                 //.anyRequest().authenticated()
                 .and()
                 .httpBasic()

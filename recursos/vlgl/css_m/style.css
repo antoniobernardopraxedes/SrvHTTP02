@@ -3,17 +3,33 @@ body{
     font-size: 20px;
 }
 
-table, th, td {
-  border: 1px solid black;
+.mesas {
   padding-left: 30px;
   padding-right: 30px;
-  padding-top: 30px;
-  padding-bottom: 30px;
-  border-collapse: collapse;
+  padding-top: 40px;
+  align-self: center;
 }
 
 .titulo {
   font-size: 60px;
+  
+}
+
+.campo1 {
+  font-family: serif;
+  font-size: 40px;
+  width: 390px;
+}
+
+.campo2 {
+  font-family: serif;
+  font-size: 40px;
+  width: 390px;
+}
+
+.campocliente {
+  font-family: serif;
+  font-size: 40px;
 }
 
 .botao {
