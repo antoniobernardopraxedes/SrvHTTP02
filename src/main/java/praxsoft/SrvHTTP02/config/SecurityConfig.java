@@ -10,17 +10,26 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public static void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
             .inMemoryAuthentication()
-            .withUser("usuario").password("{noop}senha").roles("USER");
+            .withUser("bernardo").password("{noop}senha").roles("USER");
     }
 
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests().anyRequest().permitAll()
-                //.antMatchers("/vlgl").permitAll()
-                //.anyRequest().authenticated()
+                .authorizeRequests()
+                .antMatchers("/reservas").permitAll()
+                .antMatchers("/vlgl.*").permitAll()
+                .antMatchers("/reserva").permitAll()
+                .anyRequest().authenticated()
+
+                //.formLogin()
+                //.loginPage("/reservas")
+                //.permitAll();
+
+                //.antMatchers("/reservas").permitAll()
+
                 .and()
                 .httpBasic()
                 .and()
