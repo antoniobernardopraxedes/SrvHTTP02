@@ -1,47 +1,63 @@
 var xhttp = new XMLHttpRequest();
 const form = document.getElementById('signup');
-//const userName = form.elements['username'];
+const userName = form.elements['username'];
 const dataReserva = form.elements['data'];
-const userName = "";
 const numPessoas = form.elements['numpessoas'];
 
-//var UserName;
+var AdminName;
+var UserName;
 var DataReserva;
 var NumPessoas;
- 
 var Cliente;
 var clienteOK = false;
-document.getElementById("nomecliente").innerHTML = "Por favor, entre com os dados";
-document.getElementById("nomecliente").style.fontSize = "47px";
-document.getElementById("nomecliente").style.paddingLeft = "20px";
+var i = 0;
+var grupo;
+var recurso = "reserva";
+xhttp.open("POST", recurso, false);
+try {
+    xhttp.send("nomeAdmin");
+    var xmlRec = xhttp.responseXML;
+    grupo = xmlRec.getElementsByTagName("RESERVA");
+    AdminName = grupo[i].getElementsByTagName("ADMIN")[0].childNodes[0].nodeValue;
+    
+} catch(err) {
+    console.log("Erro " + err);
+}
+
+
+document.getElementById("nomeadmin").innerHTML = "Admin: " + AdminName;
+document.getElementById("nomeadmin").style.fontSize = "43px";
+document.getElementById("nomeadmin").style.paddingLeft = "20px";
 document.getElementById("info1").innerHTML = "                                  ";
 document.getElementById("info1").style.fontSize = "47px";
 document.getElementById("info1").style.paddingLeft = "20px";
 
 function Entrar() {
-    //UserName = userName.value;
+    UserName = userName.value;
     DataReserva = dataReserva.value;
     NumPessoas = numPessoas.value;
     
-    var recurso = "reserva";
+    recurso = "reserva";
     xhttp.open("POST", recurso, false);
     try {
-        xhttp.send(NumPessoas);
+        xhttp.send(UserName);
         var xmlRec = xhttp.responseXML;
-        var i = 0;
-        var reserva = xmlRec.getElementsByTagName("RESERVA");
-        Cliente = reserva[i].getElementsByTagName("CLIENTE")[0].childNodes[0].nodeValue;
+        i = 0;
+        grupo = xmlRec.getElementsByTagName("RESERVA");
+        Cliente = grupo[i].getElementsByTagName("CLIENTE")[0].childNodes[0].nodeValue;
         
         if (Cliente == "null") {
             document.getElementById("info1").innerHTML = "Cliente não cadastrado";
         }
         else {
             clienteOK = true;
-            document.getElementById("nomecliente").innerHTML = "Cliente: " + Cliente;
-            document.getElementById("nomecliente").style.fontSize = "47px";
-            document.getElementById("nomecliente").style.paddingLeft = "20px";
+            document.getElementById("info1").innerHTML = "Cliente: " + Cliente;
+            document.getElementById("info1").style.fontSize = "47px";
+            document.getElementById("info1").style.paddingLeft = "20px";
             
-            document.getElementById("info1").innerHTML = "Por favor, escolha a mesa";
+            document.getElementById("info2").innerHTML = "Escolha a mesa:";
+            document.getElementById("info2").style.fontSize = "47px";
+            document.getElementById("info2").style.paddingLeft = "20px";
         }
         console.log("Mensagem POST enviada: " + UserName);
     } catch(err) {
@@ -56,14 +72,14 @@ function reservaMesa(mesa) {
         if (confirm(msgConfirma)) {
             
             var MsgConfirmacao = "Confirmada a reserva da mesa " + mesa;
-            document.getElementById("info1").innerHTML = MsgConfirmacao;
-            document.getElementById("info1").style.fontSize = "47px";
-            document.getElementById("info1").style.paddingLeft = "20px";
-            //document.getElementById("info1").style.color = "#C70039";
-            MsgConfirmacao = "para " + NumPessoas + " pessoas no dia " + DataReserva;
             document.getElementById("info2").innerHTML = MsgConfirmacao;
             document.getElementById("info2").style.fontSize = "47px";
             document.getElementById("info2").style.paddingLeft = "20px";
+            //document.getElementById("info1").style.color = "#C70039";
+            MsgConfirmacao = "para " + NumPessoas + " pessoas no dia " + DataReserva;
+            document.getElementById("info3").innerHTML = MsgConfirmacao;
+            document.getElementById("info3").style.fontSize = "47px";
+            document.getElementById("info3").style.paddingLeft = "20px";
             
             document.getElementById(mesa).style.backgroundColor = "#aeb6bf";
             document.getElementById(mesa).innerHTML = "Reservada";

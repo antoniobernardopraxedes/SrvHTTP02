@@ -13,16 +13,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-        String[][] usuarioSenha = new String[3][2];
-        usuarioSenha[0][0] = "bernardo";       usuarioSenha[0][1] = "cl030379";
-        usuarioSenha[1][0] = "IsisDias";       usuarioSenha[1][1] = "260998";
-        usuarioSenha[2][0] = "LuccaBorges";    usuarioSenha[2][1] = "25052009";
+        int numUsuarios = 5;
+        String[][] usuarioSenha = new String[numUsuarios][2];
+        usuarioSenha[0][0] = "Ingrid";       usuarioSenha[0][1] = "moqueca";
+        usuarioSenha[1][0] = "Bernardo";       usuarioSenha[1][1] = "cl030379";
+        usuarioSenha[2][0] = "IsisDias";    usuarioSenha[2][1] = "25052009";
+        usuarioSenha[3][0] = "LuccaBorges";    usuarioSenha[3][1] = "25052009";
+        usuarioSenha[4][0] = "SofiaDias";    usuarioSenha[4][1] = "15122007";
 
-        auth
-            .inMemoryAuthentication()
-            .withUser(usuarioSenha[0][0]).password("{noop}" + usuarioSenha[0][1]).roles("USER").and()
-            .withUser(usuarioSenha[1][0]).password("{noop}" + usuarioSenha[1][1]).roles("USER").and()
-            .withUser(usuarioSenha[2][0]).password("{noop}" + usuarioSenha[2][1]).roles("USER");
+        for (int i = 0; i < numUsuarios; i++) {
+            auth.inMemoryAuthentication()
+                    .withUser(usuarioSenha[i][0]).password("{noop}" + usuarioSenha[i][1]).roles("USER");
+        }
+
     }
 
     protected void configure(HttpSecurity http) throws Exception {
@@ -31,13 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers("/reservas").permitAll()
                 .antMatchers("/vlgl.*").permitAll()
                 .antMatchers("/reserva").permitAll()
+                .antMatchers("/atualiza").permitAll()
+                .antMatchers("/local001.xml").permitAll()
                 .anyRequest().authenticated()
-
-                //.formLogin()
-                //.loginPage("/reservas")
-                //.permitAll();
-
-                //.antMatchers("/reservas").permitAll()
 
                 .and()
                 .httpBasic()
