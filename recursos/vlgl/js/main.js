@@ -1,18 +1,31 @@
 var xhttp = new XMLHttpRequest();
 const form = document.getElementById('signup');
-//const userName = form.elements['username'];
+const userName = form.elements['username'];
 const dataReserva = form.elements['data'];
-const userName = "";
 const numPessoas = form.elements['numpessoas'];
 
-//var UserName;
+var AdminName;
+var UserName;
 var DataReserva;
 var NumPessoas;
- 
 var Cliente;
 var clienteOK = false;
-document.getElementById("nomecliente").innerHTML = "Por favor, entre com os dados";
-document.getElementById("nomecliente").style.fontSize = "47px";
+var i = 0;
+var grupo;
+var recurso = "reserva";
+xhttp.open("POST", recurso, false);
+try {
+    xhttp.send("dadosReserva");
+    var xmlRec = xhttp.responseXML;
+    grupo = xmlRec.getElementsByTagName("CLIENTE");
+    Cliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+    
+} catch(err) {
+    console.log("Erro " + err);
+}
+
+document.getElementById("nomecliente").innerHTML = "Cliente: " + Cliente;
+document.getElementById("nomecliente").style.fontSize = "43px";
 document.getElementById("nomecliente").style.paddingLeft = "20px";
 document.getElementById("info1").innerHTML = "                                  ";
 document.getElementById("info1").style.fontSize = "47px";

@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import praxsoft.SrvHTTP02.domain.DadosVlgl;
+import praxsoft.SrvHTTP02.services.Auxiliar;
 import praxsoft.SrvHTTP02.services.SiteService;
 import praxsoft.SrvHTTP02.services.VlglService;
 
@@ -31,10 +33,9 @@ public class VlglResources {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         idUsuario = auth.getName();
-        String[] dadosUsuario = VlglService.BuscaUsuario(idUsuario);
 
         String nomeArquivo = "";
-        if (dadosUsuario[1].equals("admin")) {
+        if (DadosVlgl.VerificaAdmin(idUsuario)) {
             usuarioAdmin = true;
             nomeArquivo = "adminreservas.html";
         }
@@ -58,33 +59,35 @@ public class VlglResources {
     }
 
     @PostMapping(value = "/reserva")
-    public ResponseEntity<?> RecebeDados(@RequestBody String dadosReq) {
-        System.out.println("Dado Recebido no Método POST: " + dadosReq);
+    public ResponseEntity<?> RecebeDados(@RequestBody String dadosCliente) {
+        System.out.println("Dado Recebido no Método POST: " + dadosCliente);
 
-        String[] dadosUsuario;
+        String MsgXML = "null";
 
-        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-
+        // Se o Administrador fez login - está fazendo a reserva
         if (usuarioAdmin) {
-            if (dadosReq.equals("nomeAdmin")) {
-                dadosUsuario = VlglService.BuscaUsuario(idUsuario);
-                MsgXML = MsgXML + "<RESERVA>\n" +
-                        "  <ID>" + dadosUsuario[0] + "</ID>\n" +
-                        "  <ADMIN>" + dadosUsuario[2] + "</ADMIN>\n" +
-                        "  <CLIENTE>" + "null" + "</CLIENTE>\n" +
-                        "</RESERVA>\n ";
+            if (dadosCliente.equals("nomeAdmin")) {
+                MsgXML = DadosVlgl.MontaXMLadmin(idUsuario);
             }
             else {
-                dadosUsuario = VlglService.BuscaUsuario(dadosReq);
-                MsgXML = MsgXML + "<RESERVA>\n" +
-                        "  <ID>" + dadosUsuario[0] + "</ID>\n" +
-                        "  <ADMIN>" + dadosUsuario[1] + "</ADMIN>\n" +
-                        "  <CLIENTE>" + dadosUsuario[2] + "</CLIENTE>\n" +
-                        "</RESERVA>\n ";
+                String idCliente = Auxiliar.LeParametroArquivo(dadosCliente, "IdCliente:");
+                String dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
+                if (idCliente == null) { idCliente = "null"; }
+                if (dataReserva == null) { idCliente = "null"; }
+                MsgXML = DadosVlgl.MontaXMLclienteMesas(dataReserva, dadosCliente);
+
+
+                //dadosUsuario = VlglService.BuscaUsuario(dadosReq);
+                //dadosAdmin = VlglService.BuscaUsuario(idUsuario);
+                //MsgXML = MsgXML + "<RESERVA>\n" +
+                //        "  <ID>" + dadosUsuario[0] + "</ID>\n" +
+                //        "  <ADMIN>" + dadosAdmin[0] + "</ADMIN>\n" +
+                //        "  <CLIENTE>" + dadosUsuario[2] + "</CLIENTE>\n" +
+                //        "</RESERVA>\n ";
             }
         }
         else {
-            dadosUsuario = VlglService.BuscaUsuario(idUsuario);
+            String[] dadosUsuario = VlglService.BuscaUsuario(idUsuario);
             MsgXML = MsgXML + "<RESERVA>\n" +
                     "  <ID>" + dadosUsuario[0] + "</ID>\n" +
                     "  <ADMIN>" + dadosUsuario[1] + "</ADMIN>\n" +

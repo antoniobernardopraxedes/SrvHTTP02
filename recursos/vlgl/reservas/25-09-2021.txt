@@ -1,0 +1,17 @@
+mesaA00: livre
+mesaA01: livre
+mesaA02: livre
+mesaA03: reservada
+mesaA04: livre
+mesaA05: livre
+mesaA06: livre
+mesaA07: livre
+mesaA08: reservada
+mesaB09: livre
+mesaB10: livre
+mesaB11: livre
+mesaB12: reservada
+mesaB13: livre
+mesaB14: livre
+mesaB15: reservada
+mesaB16: livre

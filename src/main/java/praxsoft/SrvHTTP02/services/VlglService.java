@@ -10,31 +10,31 @@ public class VlglService {
 
         switch (userName) {
             case ("Ingrid") :
-                dadosUsuario[0] = "0001";
+                dadosUsuario[0] = "Ingrid";
                 dadosUsuario[1] = "admin";
                 dadosUsuario[2] = "Ingrid Loyane F. Silva";
                 break;
 
             case ("Bernardo") :
-                dadosUsuario[0] = "0002";
+                dadosUsuario[0] = "Bernardo";
                 dadosUsuario[1] = "admin";
                 dadosUsuario[2] = "Antonio Bernardo Praxedes";
                 break;
 
             case ("IsisDias") :
-                dadosUsuario[0] = "0003";
+                dadosUsuario[0] = "IsisDias";
                 dadosUsuario[1] = "cliente";
                 dadosUsuario[2] = "Isis Dias Vieira";
                 break;
 
             case ("LuccaBorges") :
-                dadosUsuario[0] = "0004";
+                dadosUsuario[0] = "LuccaBorges";
                 dadosUsuario[1] = "cliente";
                 dadosUsuario[2] = "Lucca Borges Câmara Dias";
                 break;
 
             case ("SofiaDias") :
-                dadosUsuario[0] = "0005";
+                dadosUsuario[0] = "SofiaDias";
                 dadosUsuario[1] = "cliente";
                 dadosUsuario[2] = "Sofia Borges Câmara Dias";
                 break;

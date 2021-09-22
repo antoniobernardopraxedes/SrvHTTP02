@@ -1,6 +1,7 @@
 package praxsoft.SrvHTTP02.services;
 
 import java.time.LocalDateTime;
+import java.util.StringTokenizer;
 
 public class Auxiliar {
 
@@ -152,6 +153,76 @@ public class Auxiliar {
 
         return (MsgXML);
 
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EntTagValue                                                                                     *
+    //                                                                                                                 *
+    // Funcao: monta um array de duas strings a partir de duas strings (Tag e Value). Se a flag falha = true,          *
+    //         preenche o campo Value com ---------- indicando falha.                                                  *
+    //                                                                                                                 *
+    // Entrada: string com a Tag, string com o Value e boolean falha                                                   *
+    //                                                                                                                 *
+    // Saida: array[2] com a string Tag na posição 0 e a string Values na posição 1.                                   *
+    //                                                                                                                 *
+    //******************************************************************************************************************
+    //
+    public static String[] EntTagValue(String tag, String value, boolean normal) {
+        String[] tagvalue = new String[2];
+        tagvalue[0] = tag;
+        if (normal) {
+            tagvalue[1] = value;
+        } else {
+            tagvalue[1] = "----------";
+        }
+        return (tagvalue);
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: LeParametroArquivo                                                                              *
+    //                                                                                                                 *
+    // Funcao: procura um token em um arquivo texto e retorna o parâmetro que está após o token                        *
+    //                                                                                                                 *
+    // Entrada: string com o arquivo texto e string com o token                                                        *
+    //                                                                                                                 *
+    // Saida: string com o parâmetro lido após o token                                                                 *
+    //                                                                                                                 *
+    //******************************************************************************************************************
+    //
+    public static String LeParametroArquivo(String arquivo, String token){
+        int Indice = arquivo.lastIndexOf(token);
+        int indiceF = arquivo.length() - 1;
+        String parametro = null;
+        if (Indice >= 0) {
+            Indice = Indice + token.length() + 1;
+            String Substring = arquivo.substring(Indice, indiceF);
+            StringTokenizer parseToken = new StringTokenizer(Substring);
+            parametro = parseToken.nextToken();
+        }
+        return parametro;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: LeCampoArquivo                                                                                  *
+    //                                                                                                                 *
+    // Funcao: procura um token em um arquivo texto e retorna o campo que está após o token até o próximo CR/LF        *
+    //                                                                                                                 *
+    // Entrada: string com o arquivo texto e string com o token                                                        *
+    //                                                                                                                 *
+    // Saida: string com o parâmetro lido após o token                                                                 *
+    //                                                                                                                 *
+    //******************************************************************************************************************
+    //
+    public static String LeCampoArquivo(String arquivo, String token) {
+        String campo = null;
+        int indiceAposToken = arquivo.indexOf(token) + token.length();
+        System.out.println("indiceAposToken = " + indiceAposToken);
+        String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
+        int indiceCRLF = arquivoAposToken.indexOf("\n");
+        System.out.println("indiceCRLF = " + indiceCRLF);
+        campo = arquivoAposToken.substring(1, indiceCRLF);
+
+        return campo;
     }
 
     //******************************************************************************************************************

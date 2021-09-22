@@ -55,9 +55,9 @@ public class Inicia {
             Arquivo arquivo = new Arquivo();
             ArquivoConf = arquivo.LeArquivoTxt(caminho, nomeArquivo);
 
-            String ModoOp = LeParametroArqConf(ArquivoConf, "ModoOp:");
-            String Verbose = LeParametroArqConf(ArquivoConf, "Verbose:");
-            String EndIpConcArduino = LeParametroArqConf(ArquivoConf, "EndIpConcArduino:");
+            String ModoOp = Auxiliar.LeParametroArquivo(ArquivoConf, "ModoOp:");
+            String Verbose = Auxiliar.LeParametroArquivo(ArquivoConf, "Verbose:");
+            String EndIpConcArduino = Auxiliar.LeParametroArquivo(ArquivoConf, "EndIpConcArduino:");
 
             if (ModoOp.equals("local")) { opLocal = true; } else { opLocal = false; }
             if (Verbose.equals("true")) { verbose = true; } else { verbose = false; }
@@ -78,17 +78,17 @@ public class Inicia {
         return lidoArqConf;
     }
 
-    private static String LeParametroArqConf (String arquivo, String token){
-        int Indice = arquivo.lastIndexOf(token);
-        int indiceF = arquivo.length() - 1;
-        String parametro = null;
-        if (Indice >= 0) {
-            Indice = Indice + token.length() + 1;
-            String Substring = arquivo.substring(Indice, indiceF);
-            StringTokenizer parseToken = new StringTokenizer(Substring);
-            parametro = parseToken.nextToken();
-        }
-        return parametro;
-    }
+    //private static String LeParametroArquivo(String arquivo, String token){
+    //    int Indice = arquivo.lastIndexOf(token);
+    //    int indiceF = arquivo.length() - 1;
+    //    String parametro = null;
+    //    if (Indice >= 0) {
+    //        Indice = Indice + token.length() + 1;
+    //        String Substring = arquivo.substring(Indice, indiceF);
+    //        StringTokenizer parseToken = new StringTokenizer(Substring);
+    //        parametro = parseToken.nextToken();
+    //    }
+    //    return parametro;
+    //}
 
 }
