@@ -188,12 +188,14 @@ public class DadosVlgl {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: MontaXMLclienteMesas()                                                                          *
+    // Nome do Método: MontaXMLclienteData()                                                                           *
     //	                                                                                                               *
     // Data: 22/09/2021                                                                                                *
     //                                                                                                                 *
     // Funcao: monta uma string XML com as informações referentes ao cliente e à disponibilidade de mesas na data      *
-    //         especificada. As informações são lidas de um arquivo texto que tem o nome igual à data.                 *
+    //         especificada. As informações do cliente são lidas de um arquivo texto que tem o nome igual ao nome      *
+    //         de usuário. As informações da disponibilidade de mesas são lidas de um arquivo que tem o nome igual     *
+    //         à data.                                                                                                 *
     //                                                                                                                 *
     // Entrada: string com a data da reserva no formato DD-MM-AAAA) e string com o nome de usuário do cliente          *
     //          (idCliente)                                                                                            *
@@ -201,7 +203,7 @@ public class DadosVlgl {
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public static String MontaXMLclienteMesas(String codigo, String dataReserva, String userName) {
+    public static String MontaXMLclienteData(String codigo, String dataReserva, String userName) {
 
         String caminho = "recursos/vlgl/";
         String nomeCliente = "null";
@@ -210,11 +212,12 @@ public class DadosVlgl {
         String res3Cliente = "null";
         String res4Cliente = "null";
 
-        if (codigo.equals("DataCliente")) {
+        if (codigo.equals("Cliente") || codigo.equals("DataCliente")) {
             String nomeArquivo = userName + ".txt";
             String registroCliente = Arquivo.LeArquivoTxt(caminho + "clientes/", nomeArquivo);
 
             if (registroCliente == null) {
+                userName = "null";
                 nomeCliente = "naocadastrado";
             }
             else {
@@ -245,28 +248,30 @@ public class DadosVlgl {
         String mesaB15 = "null";
         String mesaB16 = "null";
 
-        String registroMesas = Arquivo.LeArquivoTxt(caminho + "reservas/", "25-09-2021.txt");
-        if (registroMesas != null) {
-            mesaA00 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA00:");
-            mesaA01 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA01:");
-            mesaA02 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA02:");
-            mesaA03 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA03:");
-            mesaA04 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA04:");
-            mesaA05 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA05:");
-            mesaA06 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA06:");
-            mesaA07 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA07:");
-            mesaA08 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA08:");
+        if (codigo.equals("Data") || codigo.equals("DataCliente")) {
 
-            mesaB09 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB09:");
-            mesaB10 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB10:");
-            mesaB11 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB11:");
-            mesaB12 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB12:");
-            mesaB13 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB13:");
-            mesaB14 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB14:");
-            mesaB15 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB15:");
-            mesaB16 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB16:");
+            String registroMesas = Arquivo.LeArquivoTxt(caminho + "reservas/", "25-09-2021.txt");
+            if (registroMesas != null) {
+                mesaA00 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA00:");
+                mesaA01 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA01:");
+                mesaA02 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA02:");
+                mesaA03 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA03:");
+                mesaA04 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA04:");
+                mesaA05 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA05:");
+                mesaA06 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA06:");
+                mesaA07 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA07:");
+                mesaA08 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA08:");
+
+                mesaB09 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB09:");
+                mesaB10 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB10:");
+                mesaB11 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB11:");
+                mesaB12 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB12:");
+                mesaB13 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB13:");
+                mesaB14 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB14:");
+                mesaB15 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB15:");
+                mesaB16 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB16:");
+            }
         }
-
         // -------------------------------------------------------------------------------------------------------------
         // // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis
         String MsgXMLArray[][][][] = new String[1][10][30][2];

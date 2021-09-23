@@ -73,16 +73,10 @@ public class VlglResources {
                 String codigo = Auxiliar.LeCampoArquivo(dadosCliente, "Codigo:");
                 String dataReserva = Auxiliar.LeCampoArquivo(dadosCliente, "DataReserva:");
                 String userName = Auxiliar.LeCampoArquivo(dadosCliente, "UserName:");
-                MsgXML = DadosVlgl.MontaXMLclienteMesas(codigo, dataReserva, userName);
+                //String numPessoas = Auxiliar.LeCampoArquivo(dadosCliente, "NumPessoas:");
+
+                MsgXML = DadosVlgl.MontaXMLclienteData(codigo, dataReserva, userName);
             }
-        }
-        else {
-            String[] dadosUsuario = VlglService.BuscaUsuario(idUsuario);
-            MsgXML = MsgXML + "<RESERVA>\n" +
-                    "  <ID>" + dadosUsuario[0] + "</ID>\n" +
-                    "  <ADMIN>" + dadosUsuario[1] + "</ADMIN>\n" +
-                    "  <CLIENTE>" + dadosUsuario[2] + "</CLIENTE>\n" +
-                    "</RESERVA>\n ";
         }
 
         System.out.println(MsgXML);

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+    <html lang="pt-br">
+        <head>
+            <meta charset="UTF-8">
+            <title>Reservas - Vista Linda Gastronomia e Lazer</title>
+            <link rel="stylesheet" type="text/css" href="vlgl.adminstyle.css">
+            <script type="text/javascript" defer src="vlgl.adminmain.js"></script>
+        </head>
+        <body>
+            <table>
+                <tr>
+                    <td><img src="vlgl.logo.jpg" alt="Logo Vista Linda" width="120" height="120"></td>
+                    <td em class="titulo"em>Reservas Vista Linda</td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                  <td class="campo1" id="nomeadmin"></td>    
+                </tr>
+            </table>
+            
+            <form id="signup">
+              <table>
+                  <tr>
+                    <td>
+                      <label for="data"></label>
+                      <input type="data" id="data" name="data" placeholder="Data da reserva" class = "campo1">
+                      <small></small>
+                    </td>
+                    <td class="campo3">
+                      <button type="button" onclick="VerificaClienteMesas()" class="botaoentrar">Verifica</button>
+                    </td>
+                  <tr>
+                  <td>
+                    <label for="username"></label>
+                    <input type="text" id="username" name="username" placeholder="Nome de usuário do cliente" class = "campo2">
+                    <small></small>
+                    </td>
+                    <td class="campo3">
+                      <button type="button" onclick="VerificaClienteMesas()" class="botaoentrar">Cancela</button>
+                    </td>
+                  </tr>
+                  </tr>
+                  <tr>
+                    <td>
+                    <label for="name"></label>
+                    <input type="number" id="numpessoas" name="numpessoas" placeholder="Número de pessoas" class = "campo3">
+                    <small></small>
+                  </td>
+                  <td class="campo4">
+                    <button type="button" onclick="CancelaReserva()" class="botaoentrar">Limpa</button>
+                  </td>
+                </tr>
+              </table>
+            </form>
+            <table>
+                <tr>
+                    <td class="campoinfo1" id="info1"></td> 
+                </tr>
+                <tr>
+                    <td class="campoinfo2" id="info2"></td>
+                </tr>
+                <tr>
+                    <td class="campoinfo3" id="info3"></td>
+                </tr>
+            </table>
+                     
+            <table>
+                <tr>
+                  <td class="textoesq">P</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A00')" class="botao" id="A00">Gazebo</button>
+                  </td>
+                  <td class="mesas"><p></p></td>  
+                </tr>
+                <tr>
+                  <td class="textoesq">a</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A01')" class="botao" id="A01">Mesa A1</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B09')" class="botao" id="B09">Mesa B9</button>
+                  </td>    
+                </tr>
+                <tr>
+                  <td class="textoesq">r</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A02')" class="botao" id="A02">Mesa A2</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B10')" class="botao" id="B10">Mesa B10</button>
+                  </td>  
+                </tr>
+                <tr>
+                  <td class="textoesq">a</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A03')" class="botao" id="A03">Mesa A3</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B11')" class="botao" id="B11">Mesa B11</button>
+                  </td>  
+                </tr>
+                <tr>
+                  <td class="textoesq">p</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A04')" class="botao" id="A04">Mesa A4</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B12')" class="botao" id="B12">Mesa B12</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="textoesq">e</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A05')" class="botao" id="A05">Mesa A5</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B13')" class="botao" id="B13">Mesa B13</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="textoesq">i</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A06')" class="botao" id="A06">Mesa A6</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B14')" class="botao" id="B14">Mesa B14</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="textoesq">t</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A07')" class="botao" id="A07">Mesa A7</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B15')" class="botao" id="B15">Mesa B15</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="textoesq">o</td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('A08')" class="botao" id="A08">Mesa A8</button>
+                  </td>
+                  <td class="mesas">
+                    <button type="button" onclick="reservaMesa('B16')" class="botao" id="B16">Mesa B16</button>
+                  </td>
+                </tr>
+            </table>
+        </body>
+    </html>

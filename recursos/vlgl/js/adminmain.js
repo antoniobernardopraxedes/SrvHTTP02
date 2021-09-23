@@ -20,9 +20,12 @@ var DataReserva;
 var NumPessoas;
 var Cliente;
 var clienteOK = false;
+var numPessoasOK;
 var i = 0;
 var grupo;
 var recurso = "reserva";
+
+var mesaSelecionada;
 
 VerificaAdmin()
 
@@ -56,36 +59,26 @@ function VerificaAdmin() {
     }
 
     document.getElementById("nomeadmin").innerHTML = "Admin: " + AdminName;
-    document.getElementById("nomeadmin").style.fontSize = "43px";
-    document.getElementById("nomeadmin").style.paddingLeft = "20px";
-    document.getElementById("info1").innerHTML = "                                  ";
-    document.getElementById("info1").style.fontSize = "47px";
-    document.getElementById("info1").style.paddingLeft = "20px";
+    LimpaCampoInfo("info1");
 }
 
 //*********************************************************************************************************************
-// Nome da função: VerificaClienteMesas                                                                               *
+// Nome da função: VerificaData                                                                                       *
 //                                                                                                                    *
 // Data: 23/09/2021                                                                                                   *
 //                                                                                                                    *
-// Função: é chamada cada vez que o usuário Admin pressiona o botão Reservar. Esta função envia para o servidor o     *
-//         nome de usuário do cliente  e a data da reserva. O servidor deve responder enviando duas informações:      *
-//         1) Se o cliente está cadastrado; 2) O mapa de ocupação das mesas.                                          *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Verifica ao lado do campo Data da reserva do      *
+//         formulário. A função envia para o servidor a data e o servidor deve responder com o mapa de mesas.         *
 //                                                                                                                    *
-// Entrada: string com o nome da mesa (A0 a A8 e B9 a B16)                                                            *
+// Entrada: não tem                                                                                                   *
 //                                                                                                                    *
 // Saída: não tem                                                                                                     *
 //*********************************************************************************************************************
 //
-function VerificaClienteMesas() {
+function VerificaData() {
     DataReserva = dataReserva.value;
-    UserName = userName.value;
-    NumPessoas = numPessoas.value;
-    var codigo = "DataCliente";
-    if (UserName == "") {
-        codigo = "Data";
-    }
     
+    var codigo = "Data";
     recurso = "reserva";
     xhttp.open("POST", recurso, false);
     try {
@@ -94,39 +87,6 @@ function VerificaClienteMesas() {
         i = 0;
         grupo = xmlRec.getElementsByTagName("CLIENTE");
         Cliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        
-        if (Cliente != "null") {
-            if (Cliente != "naocadastrado") {
-                clienteOK = "true";
-                document.getElementById("info1").innerHTML = "Cliente: " + Cliente;
-                document.getElementById("info1").style.fontSize = "47px";
-                document.getElementById("info1").style.paddingLeft = "20px";
-                document.getElementById("info2").innerHTML = "Escolha a mesa:";
-                document.getElementById("info2").style.fontSize = "47px";
-                document.getElementById("info2").style.paddingLeft = "20px";
-                
-                LimpaCampoInfo3();
-                //document.getElementById("info3").innerHTML = "                      ";
-                //document.getElementById("info3").style.fontSize = "47px";
-                //document.getElementById("info3").style.paddingLeft = "20px";
-            }
-            else {
-                document.getElementById("info1").innerHTML = "Cliente não cadastrado";
-                document.getElementById("info1").style.fontSize = "47px";
-                document.getElementById("info1").style.paddingLeft = "20px";
-                
-                LimpaCampoInfo2();
-                //document.getElementById("info2").innerHTML = "                      ";
-                //document.getElementById("info2").style.fontSize = "47px";
-                //document.getElementById("info2").style.paddingLeft = "20px";
-                
-                LimpaCampoInfo3();
-                //document.getElementById("info3").innerHTML = "                      ";
-                //document.getElementById("info3").style.fontSize = "47px";
-                //document.getElementById("info3").style.paddingLeft = "20px";
-            }
-        }
-        
             
         grupo = xmlRec.getElementsByTagName("MESAS");
         var habMesa = grupo[i].getElementsByTagName("A00")[0].childNodes[0].nodeValue;
@@ -165,42 +125,163 @@ function VerificaClienteMesas() {
         habMesa = grupo[i].getElementsByTagName("B16")[0].childNodes[0].nodeValue;
         corMesa("B16", habMesa);
         
-        console.log("Mensagem POST enviada: " + UserName);
+        EscreveTexto("Recebido o mapa de mesas do dia " + DataReserva, "info1");
+        
     } catch(err) {
+        EscreveTexto("O servidor não respondeu", "info1");
         console.log("Erro " + err);
     }
 }
 
-function corMesa(mesa, habMesa) {
-    if (habMesa == "livre") {
-        document.getElementById(mesa).style.backgroundColor = "#33ff71";
-    }
-    else {
-        document.getElementById(mesa).style.backgroundColor = "#aeb6bf";
-        document.getElementById(mesa).innerHTML = "Reservada";
-    }
-}
-
-function LimpaCampoInfo2() {
-    document.getElementById("info2").innerHTML = "                      ";
-    document.getElementById("info2").style.fontSize = "47px";
-    document.getElementById("info2").style.paddingLeft = "20px";
-}
-
-function LimpaCampoInfo3() {
-    document.getElementById("info3").innerHTML = "                      ";
-    document.getElementById("info3").style.fontSize = "47px";
-    document.getElementById("info3").style.paddingLeft = "20px";
-}
-
-function MontaMsgServ(codigo, userName, dataReserva) {
+//*********************************************************************************************************************
+// Nome da função: VerificaCliente                                                                                    *
+//                                                                                                                    *
+// Data: 23/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Verifica ao lado do campo Nome de usuário do      *
+//         cliente no formulário. A função envia para o servidor o nome de usuário do cliente e o servidor deve       *
+//         responder com os dados do cliente.                                                                         *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function VerificaCliente() {
+    UserName = userName.value;
     
-    msgServ = "Codigo: " + codigo + "\n" +
-              "UserName: " + userName + "\n" +
-              "DataReserva: " + dataReserva + "\n" +
-              "NumPessoas: " + NumPessoas;
-              
-    return msgServ;
+    var codigo = "Cliente";
+    recurso = "reserva";
+    xhttp.open("POST", recurso, false);
+    try {
+        xhttp.send(MontaMsgServ(codigo, UserName, "null"));
+        var xmlRec = xhttp.responseXML;
+        i = 0;
+        grupo = xmlRec.getElementsByTagName("CLIENTE");
+        var NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+        
+        if (NomeCliente != "null") {
+            if (NomeCliente != "naocadastrado") {
+                clienteOK = true;
+                EscreveTexto("Cliente: " + NomeCliente, "info1");
+            }
+            else {
+                clienteOK = false;
+                EscreveTexto("Cliente não cadastrado", "info1");
+                LimpaCampoInfo("info2");
+                LimpaCampoInfo("info3");
+            }
+        }
+        
+    } catch(err) {
+        EscreveTexto("O servidor não respondeu", "info1");
+        console.log("Erro " + err);
+    }
+}
+
+//*********************************************************************************************************************
+// Nome da função: Entra                                                                                              *
+//                                                                                                                    *
+// Data: 23/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Entra ao lado do campo Número de pessoas do       *
+//         formulário. A função envia para o servidor a data, o nome de usuário do cliente e o número de pessoas.     *
+//         O servidor deve responder com os dados do cliente e o mapa de mesas.                                       *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function Entra() {
+    DataReserva = dataReserva.value;
+    UserName = userName.value;
+    NumPessoas = numPessoas.value;
+    
+    var codigo = "DataCliente";
+    if (UserName == "") { codigo = "Data"; }
+    
+    numPessoasOK = false;
+    let NumeroPessoas = parseInt(NumPessoas);
+    if ((NumeroPessoas > 0) && (NumeroPessoas < 13)) { numPessoasOK = true; }
+    
+    recurso = "reserva";
+    xhttp.open("POST", recurso, false);
+    try {
+        xhttp.send(MontaMsgServ(codigo, UserName, DataReserva));
+        var xmlRec = xhttp.responseXML;
+        i = 0;
+        grupo = xmlRec.getElementsByTagName("CLIENTE");
+        Cliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+            
+        grupo = xmlRec.getElementsByTagName("MESAS");
+        var habMesa = grupo[i].getElementsByTagName("A00")[0].childNodes[0].nodeValue;
+        corMesa("A00", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A01")[0].childNodes[0].nodeValue;
+        corMesa("A01", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A02")[0].childNodes[0].nodeValue;
+        corMesa("A02", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A03")[0].childNodes[0].nodeValue;
+        corMesa("A03", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A04")[0].childNodes[0].nodeValue;
+        corMesa("A04", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A05")[0].childNodes[0].nodeValue;
+        corMesa("A05", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A06")[0].childNodes[0].nodeValue;
+        corMesa("A06", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A07")[0].childNodes[0].nodeValue;
+        corMesa("A07", habMesa);
+        habMesa = grupo[i].getElementsByTagName("A08")[0].childNodes[0].nodeValue;
+        corMesa("A08", habMesa);
+            
+        habMesa = grupo[i].getElementsByTagName("B09")[0].childNodes[0].nodeValue;
+        corMesa("B09", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B10")[0].childNodes[0].nodeValue;
+        corMesa("B10", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B11")[0].childNodes[0].nodeValue;
+        corMesa("B11", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B12")[0].childNodes[0].nodeValue;
+        corMesa("B12", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B13")[0].childNodes[0].nodeValue;
+        corMesa("B13", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B14")[0].childNodes[0].nodeValue;
+        corMesa("B14", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B15")[0].childNodes[0].nodeValue;
+        corMesa("B15", habMesa);
+        habMesa = grupo[i].getElementsByTagName("B16")[0].childNodes[0].nodeValue;
+        corMesa("B16", habMesa);
+        
+        if (codigo == "Data") {
+            EscreveTexto("Recebido o mapa de mesas do dia " + DataReserva, "info1");
+        }
+        else {
+            if (Cliente != "null") {
+               if (Cliente != "naocadastrado") {
+                   clienteOK = true;
+                   EscreveTexto("Cliente: " + Cliente, "info1");
+                   if (numPessoasOK) {
+                       EscreveTexto("Escolha a mesa", "info2");
+                       LimpaCampoInfo("info3");
+                   }
+                   else {
+                       EscreveTexto("Entre com o número de pessoas", "info2");
+                       LimpaCampoInfo("info3");
+                   }
+                   
+               }
+               else {
+                   clienteOK = false;
+                   EscreveTexto("Cliente não cadastrado", "info1");
+                   LimpaCampoInfo("info2");
+                   LimpaCampoInfo("info3");
+               }
+            }
+        }
+        
+        console.log("Mensagem POST enviada: " + UserName);
+    } catch(err) {
+        console.log("Erro " + err);
+    }
 }
 
 //*********************************************************************************************************************
@@ -215,36 +296,75 @@ function MontaMsgServ(codigo, userName, dataReserva) {
 // Entrada: string com o nome da mesa (A0 a A8 e B9 a B16)                                                            *
 //*********************************************************************************************************************
 //
-function reservaMesa(mesa) {
+function reservaMesa(mesa, impMesa) {
+    DataReserva = dataReserva.value;
+    UserName = userName.value;
+    NumPessoas = numPessoas.value;
+    mesaSelecionada = mesa;
     impMesa = mesa;
-    if (clienteOK) {
+    if (numPessoasOK) {
+      if (clienteOK) {
         if (mesa == "A00") {
             impMesa = "Gazebo";
         }
         var msgConfirma = "Confirma a reserva da mesa " + impMesa + " para " + Cliente + " no dia " + DataReserva + "?";
-        
-        if (confirm(msgConfirma)) {
-            
-            var MsgConfirmacao = "Confirmada a reserva da mesa " + impMesa;
-            document.getElementById("info2").innerHTML = MsgConfirmacao;
-            document.getElementById("info2").style.fontSize = "47px";
-            document.getElementById("info2").style.paddingLeft = "20px";
-            MsgConfirmacao = "para " + NumPessoas + " pessoas no dia " + DataReserva;
-            document.getElementById("info3").innerHTML = MsgConfirmacao;
-            document.getElementById("info3").style.fontSize = "47px";
-            document.getElementById("info3").style.paddingLeft = "20px";
-            
-            document.getElementById(mesa).style.backgroundColor = "#aeb6bf";
-            document.getElementById(mesa).innerHTML = "Reservada";
-        }
-        else {
-            document.getElementById("info1").innerHTML = "Por favor, escolha a mesa";
-        }
+        EscreveTexto(msgConfirma, "info2");
+  
+      }
+    }
+    else {
+        EscreveTexto("Entre com o número de pessoas", "info2");
     }
     
-    function CancelaReserva() {
-        //code
+}
+
+function Confirma() {
+    
+    impMesa = mesaSelecionada;
+    if (mesaSelecionada == "A00") {
+        impMesa = "Gazebo";
     }
+    
+    var MsgConfirmacao = "Confirmada a reserva da mesa " + impMesa + " para " + NumPessoas + " pessoas no dia " + DataReserva;
+    MsgConfirmacao = MsgConfirmacao + " no nome de " + Cliente + ".";
+    EscreveTexto(MsgConfirmacao, "info2");
+    
+    document.getElementById(mesaSelecionada).style.backgroundColor = "#aeb6bf";
+    document.getElementById(mesaSelecionada).innerHTML = UserName;
+    
+}
+
+function EscreveTexto(texto, idHTML) {
+    document.getElementById(idHTML).innerHTML = texto;
+}
+
+function corMesa(mesa, habMesa) {
+    if (habMesa == "livre") {
+        document.getElementById(mesa).style.backgroundColor = "#33ff71";
+    }
+    else {
+        document.getElementById(mesa).style.backgroundColor = "#aeb6bf";
+        document.getElementById(mesa).innerHTML = habMesa;
+    }
+}
+
+function LimpaCampoInfo(id) {
+    document.getElementById(id).innerHTML = "                      ";
+}
+
+function LimpaCampoInfoForm(id) {
+    document.getElementById(id).innerHTML = "                  ";
+}
+
+
+function MontaMsgServ(codigo, userName, dataReserva) {
+    
+    msgServ = "Codigo: " + codigo + "\n" +
+              "UserName: " + userName + "\n" +
+              "DataReserva: " + dataReserva + "\n" +
+              "NumPessoas: " + NumPessoas;
+              
+    return msgServ;
 }
 
 
