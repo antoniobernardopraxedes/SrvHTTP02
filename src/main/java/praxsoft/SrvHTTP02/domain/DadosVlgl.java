@@ -201,30 +201,29 @@ public class DadosVlgl {
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public static String MontaXMLclienteMesas(String dataReserva, String idCliente) {
+    public static String MontaXMLclienteMesas(String codigo, String dataReserva, String userName) {
 
-        String nomeCliente;
-        String res1Cliente;
-        String res2Cliente;
-        String res3Cliente;
-        String res4Cliente;
-        String caminho = "recursos/vlgl/clientes/";
-        String nomeArquivo = idCliente + ".txt";
-        String registroCliente = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
+        String caminho = "recursos/vlgl/";
+        String nomeCliente = "null";
+        String res1Cliente = "null";
+        String res2Cliente = "null";
+        String res3Cliente = "null";
+        String res4Cliente = "null";
 
-        if (registroCliente == null) {
-            nomeCliente = "null";
-            res1Cliente = "null";
-            res2Cliente = "null";
-            res3Cliente = "null";
-            res4Cliente = "null";
-        }
-        else {
-            nomeCliente = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
-            res1Cliente = Auxiliar.LeCampoArquivo(registroCliente, "Res1:");
-            res2Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res2:");
-            res3Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res3:");
-            res4Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res4:");
+        if (codigo.equals("DataCliente")) {
+            String nomeArquivo = userName + ".txt";
+            String registroCliente = Arquivo.LeArquivoTxt(caminho + "clientes/", nomeArquivo);
+
+            if (registroCliente == null) {
+                nomeCliente = "naocadastrado";
+            }
+            else {
+                nomeCliente = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
+                res1Cliente = Auxiliar.LeCampoArquivo(registroCliente, "Res1:");
+                res2Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res2:");
+                res3Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res3:");
+                res4Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res4:");
+            }
         }
 
         String mesaA00 = "null";
@@ -246,8 +245,7 @@ public class DadosVlgl {
         String mesaB15 = "null";
         String mesaB16 = "null";
 
-        caminho = "recursos/vlgl/reservas/";
-        String registroMesas = Arquivo.LeArquivoTxt(caminho, "25-09-2021.txt");
+        String registroMesas = Arquivo.LeArquivoTxt(caminho + "reservas/", "25-09-2021.txt");
         if (registroMesas != null) {
             mesaA00 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA00:");
             mesaA01 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA01:");
@@ -285,7 +283,7 @@ public class DadosVlgl {
         int i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";    // Carrega a Tag do Grupo 1
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", idCliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", userName, normal);
         i = i + 1;
         MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("NOME", nomeCliente, normal);
         i = i + 1;

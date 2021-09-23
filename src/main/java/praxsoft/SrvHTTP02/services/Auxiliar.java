@@ -216,10 +216,10 @@ public class Auxiliar {
     public static String LeCampoArquivo(String arquivo, String token) {
         String campo = null;
         int indiceAposToken = arquivo.indexOf(token) + token.length();
-        System.out.println("indiceAposToken = " + indiceAposToken);
+
         String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
         int indiceCRLF = arquivoAposToken.indexOf("\n");
-        System.out.println("indiceCRLF = " + indiceCRLF);
+
         campo = arquivoAposToken.substring(1, indiceCRLF);
 
         return campo;

@@ -60,7 +60,7 @@ public class VlglResources {
 
     @PostMapping(value = "/reserva")
     public ResponseEntity<?> RecebeDados(@RequestBody String dadosCliente) {
-        System.out.println("Dado Recebido no Método POST: " + dadosCliente);
+        System.out.println(dadosCliente);
 
         String MsgXML = "null";
 
@@ -70,20 +70,10 @@ public class VlglResources {
                 MsgXML = DadosVlgl.MontaXMLadmin(idUsuario);
             }
             else {
-                String idCliente = Auxiliar.LeParametroArquivo(dadosCliente, "IdCliente:");
-                String dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
-                if (idCliente == null) { idCliente = "null"; }
-                if (dataReserva == null) { idCliente = "null"; }
-                MsgXML = DadosVlgl.MontaXMLclienteMesas(dataReserva, dadosCliente);
-
-
-                //dadosUsuario = VlglService.BuscaUsuario(dadosReq);
-                //dadosAdmin = VlglService.BuscaUsuario(idUsuario);
-                //MsgXML = MsgXML + "<RESERVA>\n" +
-                //        "  <ID>" + dadosUsuario[0] + "</ID>\n" +
-                //        "  <ADMIN>" + dadosAdmin[0] + "</ADMIN>\n" +
-                //        "  <CLIENTE>" + dadosUsuario[2] + "</CLIENTE>\n" +
-                //        "</RESERVA>\n ";
+                String codigo = Auxiliar.LeCampoArquivo(dadosCliente, "Codigo:");
+                String dataReserva = Auxiliar.LeCampoArquivo(dadosCliente, "DataReserva:");
+                String userName = Auxiliar.LeCampoArquivo(dadosCliente, "UserName:");
+                MsgXML = DadosVlgl.MontaXMLclienteMesas(codigo, dataReserva, userName);
             }
         }
         else {

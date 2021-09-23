@@ -16,8 +16,8 @@ body{
 
 .campo1 {
   font-family: serif;
-  font-size: 50px;
-  width: 900px;
+  font-size: 45px;
+  width: 650px;
   margin-top: 20px;
   margin-left: 30px;
   padding-top: 10px;
@@ -26,8 +26,8 @@ body{
 
 .campo2 {
   font-family: serif;
-  font-size: 50px;
-  width: 600px;
+  font-size: 45px;
+  width: 650px;
   margin-top: 20px;
   margin-left: 30px;
   padding-top: 10px;
@@ -36,13 +36,24 @@ body{
 
 .campo3 {
   font-family: serif;
-  font-size: 50px;
+  font-size: 45px;
+  width: 650px;
+  margin-top: 20px;
+  margin-left: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
+
+.campo4 {
+  font-family: serif;
+  font-size: 45px;
+}
+
 
 .botaoentrar {
   margin-top: 20px;
   height: 85px;
-  width: 280px;
+  width: 250px;
   font-size: 50px;
   margin-left: 20px;
 }
