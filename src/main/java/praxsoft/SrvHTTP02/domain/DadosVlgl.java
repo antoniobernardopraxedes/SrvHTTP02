@@ -229,47 +229,47 @@ public class DadosVlgl {
             }
         }
 
-        String mesaA00 = "null";
-        String mesaA01 = "null";
-        String mesaA02 = "null";
-        String mesaA03 = "null";
-        String mesaA04 = "null";
-        String mesaA05 = "null";
-        String mesaA06 = "null";
-        String mesaA07 = "null";
-        String mesaA08 = "null";
+        String OA00 = "null";    String horaA00 = "null";    String numpA00 = "null";
+        String OA01 = "null";    String horaA01 = "null";    String numpA01 = "null";
+        String OA02 = "null";    String horaA02 = "null";    String numpA02 = "null";
+        String OA03 = "null";    String horaA03 = "null";    String numpA03 = "null";
+        String OA04 = "null";    String horaA04 = "null";    String numpA04 = "null";
+        String OA05 = "null";    String horaA05 = "null";    String numpA05 = "null";
+        String OA06 = "null";    String horaA06 = "null";    String numpA06 = "null";
+        String OA07 = "null";    String horaA07 = "null";    String numpA07 = "null";
+        String OA08 = "null";    String horaA08 = "null";    String numpA08 = "null";
 
-        String mesaB09 = "null";
-        String mesaB10 = "null";
-        String mesaB11 = "null";
-        String mesaB12 = "null";
-        String mesaB13 = "null";
-        String mesaB14 = "null";
-        String mesaB15 = "null";
-        String mesaB16 = "null";
+        String OB09 = "null";    String horaB09 = "null";
+        String OB10 = "null";    String horaB10 = "null";
+        String OB11 = "null";    String horaB11 = "null";
+        String OB12 = "null";    String horaB12 = "null";
+        String OB13 = "null";    String horaB13 = "null";
+        String OB14 = "null";    String horaB14 = "null";
+        String OB15 = "null";    String horaB15 = "null";
+        String OB16 = "null";    String horaB16 = "null";
 
         if (codigo.equals("Data") || codigo.equals("DataCliente")) {
 
             String registroMesas = Arquivo.LeArquivoTxt(caminho + "reservas/", "25-09-2021.txt");
             if (registroMesas != null) {
-                mesaA00 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA00:");
-                mesaA01 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA01:");
-                mesaA02 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA02:");
-                mesaA03 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA03:");
-                mesaA04 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA04:");
-                mesaA05 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA05:");
-                mesaA06 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA06:");
-                mesaA07 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA07:");
-                mesaA08 = Auxiliar.LeParametroArquivo(registroMesas, "mesaA08:");
+                OA00 = Auxiliar.LeParametroArquivo(registroMesas, "OA00:");
+                OA01 = Auxiliar.LeParametroArquivo(registroMesas, "OA01:");
+                OA02 = Auxiliar.LeParametroArquivo(registroMesas, "OA02:");
+                OA03 = Auxiliar.LeParametroArquivo(registroMesas, "OA03:");
+                OA04 = Auxiliar.LeParametroArquivo(registroMesas, "OA04:");
+                OA05 = Auxiliar.LeParametroArquivo(registroMesas, "OA05:");
+                OA06 = Auxiliar.LeParametroArquivo(registroMesas, "OA06:");
+                OA07 = Auxiliar.LeParametroArquivo(registroMesas, "OA07:");
+                OA08 = Auxiliar.LeParametroArquivo(registroMesas, "OA08:");
 
-                mesaB09 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB09:");
-                mesaB10 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB10:");
-                mesaB11 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB11:");
-                mesaB12 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB12:");
-                mesaB13 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB13:");
-                mesaB14 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB14:");
-                mesaB15 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB15:");
-                mesaB16 = Auxiliar.LeParametroArquivo(registroMesas, "mesaB16:");
+                OB09 = Auxiliar.LeParametroArquivo(registroMesas, "OB09:");
+                OB10 = Auxiliar.LeParametroArquivo(registroMesas, "OB10:");
+                OB11 = Auxiliar.LeParametroArquivo(registroMesas, "OB11:");
+                OB12 = Auxiliar.LeParametroArquivo(registroMesas, "OB12:");
+                OB13 = Auxiliar.LeParametroArquivo(registroMesas, "OB13:");
+                OB14 = Auxiliar.LeParametroArquivo(registroMesas, "OB14:");
+                OB15 = Auxiliar.LeParametroArquivo(registroMesas, "OB15:");
+                OB16 = Auxiliar.LeParametroArquivo(registroMesas, "OB16:");
             }
         }
         // -------------------------------------------------------------------------------------------------------------
@@ -309,39 +309,39 @@ public class DadosVlgl {
         i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A00", mesaA00, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA00", OA00, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A01", mesaA01, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA01", OA01, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A02", mesaA02, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA02", OA02, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A03", mesaA03, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA03", OA03, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A04", mesaA04, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA04", OA04, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A05", mesaA05, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA05", OA05, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A06", mesaA06, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA06", OA06, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A07", mesaA07, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA07", OA07, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("A08", mesaA08, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA08", OA08, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B09", mesaB09, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB09", OB09, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B10", mesaB10, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB10", OB10, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B11", mesaB11, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB11", OB11, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B12", mesaB12, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB12", OB12, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B13", mesaB13, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB13", OB13, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B14", mesaB14, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB14", OB14, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B15", mesaB15, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB15", OB15, normal);
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("B16", mesaB16, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB16", OB16, normal);
 
         // Carrega o número de elementos do Grupo 2
         MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
