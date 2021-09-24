@@ -12,6 +12,8 @@ public class VlglService {
     private static final String admin2 = "Guto";
     private static final String admin3 = "Bernardo";
 
+    private static String[][] mesa = new String[18][3];
+
     public static boolean VerificaAdmin(String idUsuario) {
         boolean adminOK;
 
@@ -206,24 +208,24 @@ public class VlglService {
             }
         }
 
-        String OA00 = "null";    String horaA00 = "null";    String numpA00 = "null";
-        String OA01 = "null";    String horaA01 = "null";    String numpA01 = "null";
-        String OA02 = "null";    String horaA02 = "null";    String numpA02 = "null";
-        String OA03 = "null";    String horaA03 = "null";    String numpA03 = "null";
-        String OA04 = "null";    String horaA04 = "null";    String numpA04 = "null";
-        String OA05 = "null";    String horaA05 = "null";    String numpA05 = "null";
-        String OA06 = "null";    String horaA06 = "null";    String numpA06 = "null";
-        String OA07 = "null";    String horaA07 = "null";    String numpA07 = "null";
-        String OA08 = "null";    String horaA08 = "null";    String numpA08 = "null";
+        String OA00 = "null";    String NA00 = "null";    String HA00 = "null";
+        String OA01 = "null";    String NA01 = "null";    String HA01 = "null";
+        String OA02 = "null";    String NA02 = "null";    String HA02 = "null";
+        String OA03 = "null";    String NA03 = "null";    String HA03 = "null";
+        String OA04 = "null";    String NA04 = "null";    String HA04 = "null";
+        String OA05 = "null";    String NA05 = "null";    String HA05 = "null";
+        String OA06 = "null";    String NA06 = "null";    String HA06 = "null";
+        String OA07 = "null";    String NA07 = "null";    String HA07 = "null";
+        String OA08 = "null";    String NA08 = "null";    String HA08 = "null";
 
-        String OB09 = "null";    String horaB09 = "null";
-        String OB10 = "null";    String horaB10 = "null";
-        String OB11 = "null";    String horaB11 = "null";
-        String OB12 = "null";    String horaB12 = "null";
-        String OB13 = "null";    String horaB13 = "null";
-        String OB14 = "null";    String horaB14 = "null";
-        String OB15 = "null";    String horaB15 = "null";
-        String OB16 = "null";    String horaB16 = "null";
+        String OB09 = "null";    String NB09 = "null";    String HB09 = "null";
+        String OB10 = "null";    String NB10 = "null";    String HB10 = "null";
+        String OB11 = "null";    String NB11 = "null";    String HB11 = "null";
+        String OB12 = "null";    String NB12 = "null";    String HB12 = "null";
+        String OB13 = "null";    String NB13 = "null";    String HB13 = "null";
+        String OB14 = "null";    String NB14 = "null";    String HB14 = "null";
+        String OB15 = "null";    String NB15 = "null";    String HB15 = "null";
+        String OB16 = "null";    String NB16 = "null";    String HB16 = "null";
 
         if (!dataReserva.equals("null")) {
 
@@ -231,104 +233,80 @@ public class VlglService {
             String nomeArquivo = dataReserva + ".res";
             String registroMesas = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
             if (registroMesas != null) {
-                OA00 = Auxiliar.LeParametroArquivo(registroMesas, "OA00:");
-                OA01 = Auxiliar.LeParametroArquivo(registroMesas, "OA01:");
-                OA02 = Auxiliar.LeParametroArquivo(registroMesas, "OA02:");
-                OA03 = Auxiliar.LeParametroArquivo(registroMesas, "OA03:");
-                OA04 = Auxiliar.LeParametroArquivo(registroMesas, "OA04:");
-                OA05 = Auxiliar.LeParametroArquivo(registroMesas, "OA05:");
-                OA06 = Auxiliar.LeParametroArquivo(registroMesas, "OA06:");
-                OA07 = Auxiliar.LeParametroArquivo(registroMesas, "OA07:");
-                OA08 = Auxiliar.LeParametroArquivo(registroMesas, "OA08:");
+                for (int i = 0; i < 9; i++) {
+                    String token = "OA" + Auxiliar.IntToStr2(i) + ":";
+                    mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                    token = "NA" + Auxiliar.IntToStr2(i) + ":";
+                    mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                    token = "HA" + Auxiliar.IntToStr2(i) + ":";
+                    mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
 
-                OB09 = Auxiliar.LeParametroArquivo(registroMesas, "OB09:");
-                OB10 = Auxiliar.LeParametroArquivo(registroMesas, "OB10:");
-                OB11 = Auxiliar.LeParametroArquivo(registroMesas, "OB11:");
-                OB12 = Auxiliar.LeParametroArquivo(registroMesas, "OB12:");
-                OB13 = Auxiliar.LeParametroArquivo(registroMesas, "OB13:");
-                OB14 = Auxiliar.LeParametroArquivo(registroMesas, "OB14:");
-                OB15 = Auxiliar.LeParametroArquivo(registroMesas, "OB15:");
-                OB16 = Auxiliar.LeParametroArquivo(registroMesas, "OB16:");
+                }
+                for (int i = 9; i < 17; i++) {
+                    String token = "OB" + Auxiliar.IntToStr2(i) + ":";
+                    mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                    token = "NB" + Auxiliar.IntToStr2(i) + ":";
+                    mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                    token = "HB" + Auxiliar.IntToStr2(i) + ":";
+                    mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                }
             }
         }
 
-        // -------------------------------------------------------------------------------------------------------------
         // // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis
-        String MsgXMLArray[][][][] = new String[1][10][30][2];
+        String MsgXMLArray[][][][] = new String[1][10][60][2];
         int IdNv0 = 0;
         int IdNv1 = 0;
         boolean normal = true;
-        String MsgXML = "";
         MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
         MsgXMLArray[IdNv0][IdNv1][0][1] = "02";
 
-        // -------------------------------------------------------------------------------------------------------------
         // Grupo 1: Variáveis de Informação do Cliente
         IdNv1 = 1;
-        int i = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";    // Carrega a Tag do Grupo 1
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", nomeUsuario, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("NOME", nomeCliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES1", res1Cliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES2", res2Cliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES3", res3Cliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES4", res4Cliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", nomeUsuario, normal);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", nomeCliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("RES1", res1Cliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("RES2", res2Cliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("RES3", res3Cliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("RES4", res4Cliente, normal);
 
         // Carrega o número de elementos do Grupo 1
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(6);
 
-        // -------------------------------------------------------------------------------------------------------------
         // Grupo 1: Variáveis de Informação da Disponibilidade das Mesas
         IdNv1 = 2;
-        i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA00", OA00, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA01", OA01, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA02", OA02, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA03", OA03, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA04", OA04, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA05", OA05, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA06", OA06, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA07", OA07, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OA08", OA08, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB09", OB09, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB10", OB10, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB11", OB11, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB12", OB12, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB13", OB13, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB14", OB14, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB15", OB15, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("OB16", OB16, normal);
+        int i = 0;
+        int numTags1 = 9;
+        for (int k = 0; k < numTags1; k++) {
+            String token = "OA" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0], normal);
+            token = "NA" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1], normal);
+            token = "HA" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2], normal);
+        }
 
-        // Carrega o número de elementos do Grupo 2
+        int numTags2 = 8;
+        for (int k = numTags1; k < (numTags1 + numTags2); k++) {
+            String token = "OB" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0], normal);
+            token = "NB" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1], normal);
+            token = "HB" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2], normal);
+        }
+
+        // Carrega o número de elementos do Grupo 2 e retorna a Mensagem XML completa em formato de String
         MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
-
-        // Retorna a Mensagem XML completa em formato de String
-        MsgXML = Auxiliar.StringXML(MsgXMLArray);
-        return(MsgXML);
+        return(Auxiliar.StringXML(MsgXMLArray));
     }
 
 }
