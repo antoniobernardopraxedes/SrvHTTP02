@@ -56,21 +56,40 @@ public class VlglService {
         String dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
         String userName = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
         String numPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
-        String horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioChegada:");
+        String horarioCheg = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
+        String mesaSelec = Auxiliar.LeParametroArquivo(dadosCliente,"MesaSelec: ");
 
         System.out.println("Código: " + codigo);
         System.out.println("Data da Reserva: " + dataReserva);
         System.out.println("Nome de Usuário: " + userName);
         System.out.println("Número de Pessoas: " + numPessoas);
-        System.out.println("Horário de Chegada: " + horarioChegada);
+        System.out.println("Horário de Chegada: " + horarioCheg);
+        System.out.println("Mesa Selecionada: " + mesaSelec);
 
         // Se o Administrador fez login - está fazendo a reserva
         if (VerificaAdmin(idUsuario)) {
-            if (codigo.equals("carregaAdmin")) {
-                MsgXML = MontaXMLadmin(idUsuario);
-            }
-            else {
-                MsgXML = MontaXMLdataCliente(dataReserva, userName);
+            switch (codigo) {
+                case "carregaAdmin" :
+                    MsgXML = MontaXMLadmin(idUsuario);
+                    break;
+
+                case "DataCliente" :
+                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    break;
+
+                case "Data" :
+                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    break;
+
+                case "Cliente" :
+                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    break;
+
+                case "Confirma" :
+                    AtualizaArquivoData(dataReserva, userName, numPessoas, horarioCheg, mesaSelec);
+                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    break;
+
             }
         }
 
@@ -130,7 +149,6 @@ public class VlglService {
                 throw new IllegalStateException("Unexpected value: " + idAdmin);
         }
 
-        // -------------------------------------------------------------------------------------------------------------
         // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis
         String MsgXMLArray[][][][] = new String[1][10][30][2];
         int IdNv0 = 0;
@@ -140,7 +158,6 @@ public class VlglService {
         MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
         MsgXMLArray[IdNv0][IdNv1][0][1] = "01";
 
-        // -------------------------------------------------------------------------------------------------------------
         // Grupo 1: Variáveis de Informação do Administrador
         IdNv1 = 1;
         int i = 0;
@@ -307,6 +324,73 @@ public class VlglService {
         // Carrega o número de elementos do Grupo 2 e retorna a Mensagem XML completa em formato de String
         MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
         return(Auxiliar.StringXML(MsgXMLArray));
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: AtualizaArquivoData                                                                             *
+    //	                                                                                                               *
+    // Data: 24/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de data com as informações das mesas e atualiza a reserva realizada.                      *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA, string com o nome de usuário do cliente, string    *
+    //          com o número de pessoas e string com a hora de chegada                                                 *
+    //                                                                                                                 *
+    // Saida:                                                                                                          *
+    //******************************************************************************************************************
+    //
+    public static void AtualizaArquivoData(String data, String uName, String numPes, String horaCheg, String iDmesa) {
+        String caminho = "recursos/vlgl/reservas/";
+        String nomeArquivo = data + ".res";
+        String dadosArquivo = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
+
+        String[][] dadosMesas = new String[17][3];
+        if (dadosArquivo != null) {
+            for (int i = 0; i < 9; i++) {
+                String token = "OA" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NA" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "HA" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+
+            }
+            for (int i = 9; i < 17; i++) {
+                String token = "OB" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NB" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "HB" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+            }
+        }
+
+        int indice = Auxiliar.StringToInt(iDmesa.substring(1,2));
+        System.out.println("Índice mesa = " + indice);
+        dadosMesas[indice][0] = uName;
+        dadosMesas[indice][1] = numPes;
+        dadosMesas[indice][2] = horaCheg;
+
+        dadosArquivo = "{\n";
+        for (int i = 0; i < 9; i++) {
+            String Indice = Auxiliar.IntToStr2(i);
+            dadosArquivo = dadosArquivo + "  OA" + Indice + ": " +  dadosMesas[i][0] + "\n";
+            dadosArquivo = dadosArquivo + "  NA" + Indice + ": " +  dadosMesas[i][1] + "\n";
+            dadosArquivo = dadosArquivo + "  HA" + Indice + ": " +  dadosMesas[i][2] + "\n";
+        }
+        for (int i = 9; i < 17; i++) {
+            String Indice = Auxiliar.IntToStr2(i);
+            dadosArquivo = dadosArquivo + "  OB" + Indice + ": " +  dadosMesas[i][0] + "\n";
+            dadosArquivo = dadosArquivo + "  NB" + Indice + ": " +  dadosMesas[i][1] + "\n";
+            dadosArquivo = dadosArquivo + "  HB" + Indice + ": " +  dadosMesas[i][2] + "\n";
+        }
+        dadosArquivo = dadosArquivo + "}";
+
+        System.out.println("");
+        System.out.println(dadosArquivo);
+        System.out.println("");
+
+        Arquivo.EscreveArqTxt(caminho, nomeArquivo, true);
     }
 
 }

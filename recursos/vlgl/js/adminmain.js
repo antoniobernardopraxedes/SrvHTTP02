@@ -483,8 +483,8 @@ function MontaMsgServ(codigoMsg, nomeUsuario, dataRes, numeroPes, horarioCheg, m
               "DataReserva: " + dataRes + "\n" +
               "NomeUsuario: " + nomeUsuario + "\n" +
               "NumPessoas: " + numeroPes + "\n" +
-              "HorarioChegada: " + horarioCheg + "\n" +
-              "MesaSelecionada: " + mesaSel + "\n";
+              "HorarioCheg: " + horarioCheg + "\n" +
+              "MesaSelec: " + mesaSel + "\n";
               
     return msgServ;
 }

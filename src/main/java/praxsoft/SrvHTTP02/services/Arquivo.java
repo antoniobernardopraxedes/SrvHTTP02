@@ -20,6 +20,9 @@ import java.io.PrintWriter;
 //
 public class Arquivo {
 
+    public static void EscreveArqTxt(String caminho, String nomeArquivo, boolean b) {
+    }
+
     boolean Existe(String Caminho, String NomeArquivo) {
         File Arquivo = new File(Caminho + NomeArquivo);
         return (Arquivo.exists());
