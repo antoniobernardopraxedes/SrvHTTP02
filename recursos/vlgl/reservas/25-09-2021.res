@@ -1,3 +1,4 @@
+{
 OA00: livre
 HA00: null
 OA01: livre
@@ -32,3 +33,4 @@ OB15: JairBolsonaro
 HB15: 14:00
 OB16: livre
 HB16: null
+}

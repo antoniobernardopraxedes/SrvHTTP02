@@ -5,6 +5,7 @@ import praxsoft.SrvHTTP02.services.Auxiliar;
 
 public class DadosVlgl {
 
+
     private static final String admin1 = "Ingrid";
     private static final String admin2 = "Guto";
     private static final String admin3 = "Bernardo";
@@ -113,82 +114,7 @@ public class DadosVlgl {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: MontaXMLcliente()                                                                               *
-    //	                                                                                                               *
-    // Data: 22/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes ao cliente que está fazendo a reserva.               *
-    //         As informações do cliente são lidas de um arquivo texto que tem o nome igual ao id do cliente.          *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do cliente (idCliente). O idCliente não deve ter espaços nem caracteres   *
-    //          especiais.                                                                                             *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public static String MontaXMLcliente(String idCliente) {
-
-        String nomeCliente;
-        String res1Cliente;
-        String res2Cliente;
-        String res3Cliente;
-        String res4Cliente;
-        String caminho = "recursos/vlgl/clientes/";
-        String registroCliente = Arquivo.LeArquivoTxt(caminho, idCliente);
-
-        if (registroCliente == null) {
-            nomeCliente = "null";
-            res1Cliente = "null";
-            res2Cliente = "null";
-            res3Cliente = "null";
-            res4Cliente = "null";
-        }
-        else {
-            nomeCliente = Auxiliar.LeParametroArquivo(registroCliente, "Nome:");
-            res1Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res1:");
-            res2Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res2:");
-            res3Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res3:");
-            res4Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res4:");
-        }
-
-        // -------------------------------------------------------------------------------------------------------------
-        // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0, 1,e 2 e as variáveis
-        String MsgXMLArray[][][][] = new String[1][10][30][2];
-        int IdNv0 = 0;
-        int IdNv1 = 0;
-        boolean normal = true;
-        String MsgXML = "";
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "01";
-
-        // -------------------------------------------------------------------------------------------------------------
-        // Grupo 1: Variáveis de Informação do Cliente
-        IdNv1 = 1;
-        int i = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";    // Carrega a Tag do Grupo 1
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", idCliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("NOME", nomeCliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES1", res1Cliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES2", res2Cliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES3", res3Cliente, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES4", res4Cliente, normal);
-
-        // Carrega o número de elementos do Grupo 1
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
-
-        // Retorna a Mensagem XML completa em formato de String
-        MsgXML = Auxiliar.StringXML(MsgXMLArray);
-        return(MsgXML);
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLclienteData()                                                                           *
+    // Nome do Método: MontaXMLdataCliente()                                                                           *
     //	                                                                                                               *
     // Data: 22/09/2021                                                                                                *
     //                                                                                                                 *
@@ -203,22 +129,24 @@ public class DadosVlgl {
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public static String MontaXMLclienteData(String codigo, String dataReserva, String userName) {
+    public static String MontaXMLdataCliente(String dataReserva, String nomeUsuario) {
 
-        String caminho = "recursos/vlgl/";
+        String caminho = "";
+
         String nomeCliente = "null";
         String res1Cliente = "null";
         String res2Cliente = "null";
         String res3Cliente = "null";
         String res4Cliente = "null";
 
-        if (codigo.equals("Cliente") || codigo.equals("DataCliente")) {
-            String nomeArquivo = userName + ".txt";
-            String registroCliente = Arquivo.LeArquivoTxt(caminho + "clientes/", nomeArquivo);
+        if (!nomeUsuario.equals("null")) {
+
+            caminho = "recursos/vlgl/clientes/";
+            String nomeArquivo = nomeUsuario + ".clt";
+            String registroCliente = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
 
             if (registroCliente == null) {
-                userName = "null";
-                nomeCliente = "naocadastrado";
+                nomeUsuario = "null";
             }
             else {
                 nomeCliente = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
@@ -248,9 +176,11 @@ public class DadosVlgl {
         String OB15 = "null";    String horaB15 = "null";
         String OB16 = "null";    String horaB16 = "null";
 
-        if (codigo.equals("Data") || codigo.equals("DataCliente")) {
+        if (!dataReserva.equals("null")) {
 
-            String registroMesas = Arquivo.LeArquivoTxt(caminho + "reservas/", "25-09-2021.txt");
+            caminho = "recursos/vlgl/reservas/";
+            String nomeArquivo = dataReserva + ".res";
+            String registroMesas = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
             if (registroMesas != null) {
                 OA00 = Auxiliar.LeParametroArquivo(registroMesas, "OA00:");
                 OA01 = Auxiliar.LeParametroArquivo(registroMesas, "OA01:");
@@ -272,6 +202,7 @@ public class DadosVlgl {
                 OB16 = Auxiliar.LeParametroArquivo(registroMesas, "OB16:");
             }
         }
+
         // -------------------------------------------------------------------------------------------------------------
         // // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis
         String MsgXMLArray[][][][] = new String[1][10][30][2];
@@ -288,7 +219,7 @@ public class DadosVlgl {
         int i = 0;
         MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";    // Carrega a Tag do Grupo 1
         i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", userName, normal);
+        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", nomeUsuario, normal);
         i = i + 1;
         MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("NOME", nomeCliente, normal);
         i = i + 1;
@@ -350,5 +281,4 @@ public class DadosVlgl {
         MsgXML = Auxiliar.StringXML(MsgXMLArray);
         return(MsgXML);
     }
-
 }
