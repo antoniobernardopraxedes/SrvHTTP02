@@ -86,21 +86,39 @@ body{
 }
 
 .campoinfo1 {
-  padding-left: 20px;
-  padding-top: 5px;
-  font-size: 20px;
+  width: 600px;
+  height: 30px;
+  font-size: 18px;
+  padding-left: 10px;
+  padding-top: 10px;
 }
 
-.campoinfo2 {
-  padding-left: 20px;
+.campoinfo {
+  width: 600px;
+  height: 30px;
+  font-size: 18px;
+  padding-left: 10px;
   padding-top: 5px;
-  font-size: 20px;
 }
 
-.campoinfo3 {
-  padding-left: 20px;
+.campoinfo5 {
+  width: 600px;
+  height: 30px;
+  font-size: 18px;
+  padding-left: 10px;
   padding-top: 5px;
-  font-size: 20px;
+  padding-bottom: 5px
+}
+
+.campoinfo6 {
+  width: 600px;
+  height: 20px;
+  padding-left: 10px;
+  padding-top: 5px;
+  font-size: 16px;
+  border-top: solid;
+  border-width: 1px;
+  border-color: gray;
 }
 
 .mesas {

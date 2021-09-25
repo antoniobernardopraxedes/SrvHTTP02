@@ -31,8 +31,10 @@ var Info1Cliente;
 var Info2Cliente;
 var Info3Cliente;
 
+var dataOK = false;
 var clienteOK = false;
 var numPessoasOK;
+var horaChegadaOK;
 var i = 0;
 var grupo;
 var recurso = "reserva";
@@ -77,19 +79,21 @@ VerificaAdmin()
 //
 function VerificaAdmin() {    
 
+EscreveTexto("Enviada requisição ao servidor", "info6");
     xhttp.open("POST", recurso, false);
     try {
         xhttp.send(MontaMsgServ("carregaAdmin", "null", "null", "null", "null", "null"));
         var xmlRec = xhttp.responseXML;
         grupo = xmlRec.getElementsByTagName("ADMIN");
         AdminName = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+        EscreveTexto("Resposta do Servidor: informações do administrador", "info6");
     
     } catch(err) {
+        EscreveTexto("O servidor não respondeu", "info6");
         console.log("Erro " + err);
     }
-
-    document.getElementById("nomeadmin").innerHTML = "Admin: " + AdminName;
-    LimpaCampoInfo("info1");
+    EscreveTexto("Admin: " + AdminName, "nomeadmin");
+    
 }
 
 //*********************************************************************************************************************
@@ -108,20 +112,38 @@ function VerificaAdmin() {
 function VerificaData() {
     DataReserva = dataReserva.value;
     
-    DataReserva = "25-09-2021";
+    //DataReserva = "25-09-2021";
     
-    xhttp.open("POST", recurso, false);
-    try {
-        xhttp.send(MontaMsgServ("Data", "null", DataReserva, "null", "null", "null"));
-        var xmlRec = xhttp.responseXML;
-        CarregaMesas(xmlRec);
-     
-        EscreveTexto("Recebido o mapa de mesas do dia " + DataReserva, "info1");
-        
-    } catch(err) {
-        EscreveTexto("O servidor não respondeu", "info1");
-        console.log("Erro " + err);
+    if (DataReserva == "") {
+        dataOK = false;
+        EscreveTexto("Entre com a data da reserva", "info1");
     }
+    else {
+        dataOK = VerificaFormatoData(DataReserva);
+    }
+    
+    if (dataOK) {
+        EscreveTexto("Enviada requisição ao servidor", "info6");
+        xhttp.open("POST", recurso, false);
+        try {
+            xhttp.send(MontaMsgServ("Data", "null", DataReserva, "null", "null", "null"));
+            var xmlRec = xhttp.responseXML;
+            CarregaMesas(xmlRec);
+            dataOK = true;
+        
+            LimpaCamposInfo();
+            EscreveTexto("Resposta do Servidor: mapa de mesas do dia " + DataReserva, "info6");
+        
+        } catch(err) {
+            EscreveTexto("O servidor não respondeu", "info6");
+            console.log("Erro " + err);
+        }
+    }
+}
+
+function VerificaFormatoData(dataR) {
+    
+    return true;
 }
 
 //*********************************************************************************************************************
@@ -141,27 +163,37 @@ function VerificaData() {
 function VerificaCliente() {
     UserName = userName.value;
     
-    recurso = "reserva";
-    xhttp.open("POST", recurso, false);
-    try {
-        xhttp.send(MontaMsgServ("Cliente", UserName, "null", "null", "null", "null"));
-        var xmlRec = xhttp.responseXML;
-        CarregaCliente(xmlRec);
+    LimpaCamposInfo();
+    if (UserName == "") {
+        clienteOK = false;
+        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
+    }
+    else {
+        clienteOK = true;
+        EscreveTexto("Enviada requisição ao servidor", "info6");
+        xhttp.open("POST", recurso, false);
+        try {
+            xhttp.send(MontaMsgServ("Cliente", UserName, "null", "null", "null", "null"));
+            var xmlRec = xhttp.responseXML;
+            CarregaCliente(xmlRec);
+            
+            if (clienteOK) {
+                EscreveTexto("Nome de usuário: " + UserName, "info1");
+                EscreveTexto("Nome: " + NomeCliente, "info2");
+                EscreveTexto("Idade: " + Info1Cliente + " anos", "info3");
+                EscreveTexto("Dificuldade de locomoção: " + Info2Cliente, "info4");
+                EscreveTexto("Exigente: " + Info3Cliente, "info5");
+            }
+            else {
+                EscreveTexto("Cliente não cadastrado", "info1");
+            }
+            EscreveTexto("Resposta do Servidor: informações do cliente", "info6");
+            document.getElementById("info6").style.color = "#23257e";
         
-        if (clienteOK) {
-            EscreveTexto("Cliente: " + NomeCliente, "info1");
-            LimpaCampoInfo("info2");
-            LimpaCampoInfo("info3");
+        } catch(err) {
+            EscreveTexto("O servidor não respondeu", "info6");
+            console.log("Erro " + err);
         }
-        else {
-            EscreveTexto("Cliente não cadastrado", "info1");
-            LimpaCampoInfo("info2");
-            LimpaCampoInfo("info3");
-        }
-        
-    } catch(err) {
-        EscreveTexto("O servidor não respondeu", "info1");
-        console.log("Erro " + err);
     }
 }
 
@@ -180,46 +212,70 @@ function VerificaCliente() {
 //*********************************************************************************************************************
 //
 function Entra() {
-    DataReserva = dataReserva.value;
     
+    DataReserva = dataReserva.value;
     UserName = userName.value;
     NumPessoas = numPessoas.value;
     HoraChegada = horarioChegada.value;
     
-    numPessoasOK = false;
-    NumeroPessoas = parseInt(NumPessoas);
-    if (NumeroPessoas == 0) NumPessoas = 1;
-    if (NumeroPessoas > 12) NumPessoas = 12;
-    numPessoasOK = true;
+    LimpaCamposInfo();
     
-    recurso = "reserva";
-    xhttp.open("POST", recurso, false);
-    try {
-        xhttp.send(MontaMsgServ("DataCliente", UserName, DataReserva, NumPessoas, "null", "null"));
-        var xmlRec = xhttp.responseXML;
-        CarregaCliente(xmlRec);
-        CarregaMesas(xmlRec);
-              
-        if (clienteOK) {
-            EscreveTexto("Cliente: " + NomeCliente, "info1");
-            if (numPessoasOK) {
-                EscreveTexto("Escolha a mesa", "info2");
-                LimpaCampoInfo("info3");
+    if (!dataOK) {
+        EscreveTexto("Entre com a data da reserva", "info1");
+    }
+    else {
+        if (!clienteOK) {
+            EscreveTexto("Cliente não cadastrado", "info1");
+        }
+        else { 
+            if (NumPessoas == "") {
+                numPessoasOK = false;
+                EscreveTexto("Entre com o número de pessoas", "info2");
             }
             else {
-                EscreveTexto("Entre com o número de pessoas", "info2");
-                LimpaCampoInfo("info3");
-            }
+                var NumeroPessoas = parseInt(NumPessoas);
+                if (NumeroPessoas < 1) {
+                    numPessoasOK = false;
+                    EscreveTexto("Entre com o número de pessoas", "info2");
+                }
+                else {
+                    numPessoasOK = true;
+                    if (NumeroPessoas > 12) {
+                        NumPessoas = "12";
+                        LimpaCamposInfo();
+                        EscreveTexto("Número de pessoas maior que 12", "info3");
+                        EScreveTexto("Verificar disponibilidade", "info4");
+                    }
+                    if (HoraChegada == "") {
+                        horaChegadaOK = false;
+                        EscreveTexto("Entre com o horário de chegada", "info2");
+                    }
+                    else {
+                        horaChegadaOK = true;
+                    }
+                }
+            }    
         }
-        else {
-            EscreveTexto("Cliente não cadastrado", "info1");
-            LimpaCampoInfo("info2");
-            LimpaCampoInfo("info3");
-       }
+    }
+    
+    if (dataOK && clienteOK && numPessoasOK && horaChegadaOK) {
+       
+        LimpaCamposInfo();
+        EscreveTexto("Escolha a mesa", "info1");
+    
+        EscreveTexto("Enviada requisição ao servidor", "info6");
+        xhttp.open("POST", recurso, false);
+        try {
+            xhttp.send(MontaMsgServ("DataCliente", UserName, DataReserva, NumPessoas, HoraChegada, "null"));
+            var xmlRec = xhttp.responseXML;
+            CarregaCliente(xmlRec);
+            CarregaMesas(xmlRec);
+            EscreveTexto("Resposta do Servidor: data e cliente verificados", "info6");
         
-    } catch(err) {
-        EscreveTexto("O servidor não respondeu", "info1");
-        console.log("Erro " + err);
+        } catch(err) {
+            EscreveTexto("O servidor não respondeu", "info1");
+            console.log("Erro " + err);
+        }
     }
 }
 
@@ -243,20 +299,22 @@ function reservaMesa(mesa) {
     NumPessoas = numPessoas.value;
     MesaSelecionada = mesa;
     if (numPessoasOK) {
-      if (clienteOK) {
-        if (mesa == "A00") {
-            impMesa = "Gazebo";
+        if (clienteOK) {
+            if (mesa == "A00") {
+                impMesa = "Gazebo";
+            }
+            LimpaCamposInfo();
+            EscreveTexto("Confirma a reserva da " + NomeMesa(mesa) + "?", "info1");
+            EscreveTexto("Cliente: " + NomeCliente, "info2");
+            EscreveTexto("Data: " + DataReserva, "info3");
+            EscreveTexto("Número de pessoas: " + NumPessoas, "info4");
+            EscreveTexto("Horário de chegada: " + HoraChegada, "info5");
         }
-        var msgConfirma = "Confirma a reserva da " + NomeMesa(mesa) + " para " + NomeCliente + " no dia " + DataReserva + "?";
-        EscreveTexto(msgConfirma, "info1");
-        LimpaCampoInfo("info2");
-        LimpaCampoInfo("info3");
-      }
     }
     else {
-        EscreveTexto("Entre com o número de pessoas", "info2");
+        LimpaCamposInfo();
+        EscreveTexto("Entre com o número de pessoas", "info1");
     }
-    
 }
 
 //*********************************************************************************************************************
@@ -282,6 +340,7 @@ function Confirma() {
     NumPessoas = numPessoas.value;
     HoraChegada = horarioChegada.value;
     
+    EscreveTexto("Enviada requisição ao servidor", "info6");
     xhttp.open("POST", recurso, false);
     try {
         xhttp.send(MontaMsgServ("Confirma", UserName, DataReserva, NumPessoas, HoraChegada, MesaSelecionada));
@@ -291,11 +350,19 @@ function Confirma() {
         
         AtualizaMesa(MesaSelecionada, UserName, NumPessoas, HoraChegada);
         
-        var MsgConfirmacao = "Confirmada a reserva de " + NomeCliente + " da " + NomeMesa(MesaSelecionada) + " para ";
-        MsgConfirmacao = MsgConfirmacao + NumPessoas + " pessoas no dia " + DataReserva + ". Horário de chegada: " + HoraChegada;
-        EscreveTexto(MsgConfirmacao, "info1");
-        LimpaCampoInfo("info2");
-        LimpaCampoInfo("info3");
+        LimpaCamposInfo();
+        EscreveTexto("Confirmada a reserva da " + NomeMesa(MesaSelecionada), "info1");
+        EscreveTexto("Cliente: " + NomeCliente, "info2");
+        EscreveTexto("Data: " + DataReserva, "info3");
+        EscreveTexto("Número de pessoas: " + NumPessoas, "info4");
+        EscreveTexto("Horário de chegada: " + HoraChegada, "info5");
+        
+        EscreveTexto("Resposta do Servidor: confirmação da reserva", "info6");
+        
+        dataOK = false;
+        clienteOK = false;
+        numPessoasOK = false;
+        horaChegadaOK = false;
     
     } catch(err) {
         console.log("Erro " + err);
@@ -477,6 +544,20 @@ function CarregaCliente(xmlMsg) {
     
 }
 
+//*********************************************************************************************************************
+// Nome da função: MontaMsgServ                                                                                       *
+//                                                                                                                    *
+// Data: 24/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: monta a mensagem de requisição ao servidor                                                                 *
+//                                                                                                                    *
+// Entrada: código da requisição, data da reserva, nome de usuário do cliente, número de pessoas na mesa, horário     *
+//          de chegada e mesa selecionada. Caso um ou mais campos não estejam dispóníveis no momento do envio da      *
+//          solicitação, estes devem ser preenchidos a string "null"                                                  *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
 function MontaMsgServ(codigoMsg, nomeUsuario, dataRes, numeroPes, horarioCheg, mesaSel) {
     
     msgServ = "Codigo: " + codigoMsg + "\n" +
@@ -489,13 +570,32 @@ function MontaMsgServ(codigoMsg, nomeUsuario, dataRes, numeroPes, horarioCheg, m
     return msgServ;
 }
 
-
+//*********************************************************************************************************************
+// Nome da função: EscreveTexto                                                                                       *
+//                                                                                                                    *
+// Data: 24/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: escreve na tela uma mensagem                                                                               *
+//                                                                                                                    *
+// Entrada: string com a mensagem e string com o identificador do campo na tela (*/)id)                               *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
 function EscreveTexto(texto, idHTML) {
     document.getElementById(idHTML).innerHTML = texto;
 }
 
 function LimpaCampoInfo(id) {
     document.getElementById(id).innerHTML = "                      ";
+}
+
+function LimpaCamposInfo() {
+    document.getElementById("info1").innerHTML = "                      ";
+    document.getElementById("info2").innerHTML = "                      ";
+    document.getElementById("info3").innerHTML = "                      ";
+    document.getElementById("info4").innerHTML = "                      ";
+    document.getElementById("info5").innerHTML = "                      ";
 }
 
 function LimpaCampoInfoForm(id) {
