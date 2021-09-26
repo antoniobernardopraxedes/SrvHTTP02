@@ -115,7 +115,8 @@ public class Auxiliar {
     //******************************************************************************************************************
     //
     public static String StringXML(String MsgXMLArray[][][][]) {
-        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        String MsgXML = "";
+        MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
 
         char Dezena = MsgXMLArray[0][0][0][1].charAt(0);
@@ -152,29 +153,23 @@ public class Auxiliar {
         MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">";
 
         return (MsgXML);
-
     }
 
     //******************************************************************************************************************
     // Nome do Método: EntTagValue                                                                                     *
     //                                                                                                                 *
-    // Funcao: monta um array de duas strings a partir de duas strings (Tag e Value). Se a flag falha = true,          *
-    //         preenche o campo Value com ---------- indicando falha.                                                  *
+    // Funcao: monta um array de duas strings a partir de duas strings (Tag e Value).                                  *
     //                                                                                                                 *
-    // Entrada: string com a Tag, string com o Value e boolean falha                                                   *
+    // Entrada: string com a Tag e string com o Value                                                                  *
     //                                                                                                                 *
     // Saida: array[2] com a string Tag na posição 0 e a string Values na posição 1.                                   *
-    //                                                                                                                 *
     //******************************************************************************************************************
     //
-    public static String[] EntTagValue(String tag, String value, boolean normal) {
+    public static String[] EntTagValue(String tag, String value) {
         String[] tagvalue = new String[2];
         tagvalue[0] = tag;
-        if (normal) {
-            tagvalue[1] = value;
-        } else {
-            tagvalue[1] = "----------";
-        }
+        tagvalue[1] = value;
+
         return (tagvalue);
     }
 
@@ -186,7 +181,6 @@ public class Auxiliar {
     // Entrada: string com o arquivo texto e string com o token                                                        *
     //                                                                                                                 *
     // Saida: string com o parâmetro lido após o token                                                                 *
-    //                                                                                                                 *
     //******************************************************************************************************************
     //
     public static String LeParametroArquivo(String arquivo, String token){
@@ -210,7 +204,6 @@ public class Auxiliar {
     // Entrada: string com o arquivo texto e string com o token                                                        *
     //                                                                                                                 *
     // Saida: string com o parâmetro lido após o token                                                                 *
-    //                                                                                                                 *
     //******************************************************************************************************************
     //
     public static String LeCampoArquivo(String arquivo, String token) {
@@ -229,9 +222,10 @@ public class Auxiliar {
     // Nome da Rotina: BytetoInt                                                                                       *
     //                                                                                                                 *
     // Funcao: converte um valor byte para inteiro (conversao sem sinal)                                               *
-    // Entrada: valor byte sem sinal de 0 a 255                                                                        *
-    // Saida: valor (inteiro) sempre positivo de 0 a 255                                                               *
     //                                                                                                                 *
+    // Entrada: valor byte sem sinal de 0 a 255                                                                        *
+    //                                                                                                                 *
+    // Saida: valor (inteiro) sempre positivo de 0 a 255                                                               *
     //******************************************************************************************************************
     //
     public static int BytetoInt(int valor) {
@@ -246,9 +240,10 @@ public class Auxiliar {
     // Nome da Rotina: TwoBytetoInt                                                                                    *
     //                                                                                                                 *
     // Funcao: converte dois bytes em sequencia de um array para inteiro (conversao sem sinal)                         *
-    // Entrada: dois bytes consecutivos (LSB e MSB) sem sinal de 0 a 255                                               *
-    // Saida: valor (inteiro) sempre positivo de 0 a 65535                                                             *
     //                                                                                                                 *
+    // Entrada: dois bytes consecutivos (LSB e MSB) sem sinal de 0 a 255                                               *
+    //                                                                                                                 *
+    // Saida: valor (inteiro) sempre positivo de 0 a 65535                                                             *
     //******************************************************************************************************************
     //
     public static int DoisBytesInt(int LSByte, int MSByte) {
@@ -271,9 +266,10 @@ public class Auxiliar {
     // Nome da Rotina: ThreeBytetoInt                                                                                  *
     //                                                                                                                 *
     // Funcao: converte tres bytes em sequencia de um array para inteiro (conversao sem sinal)                         *
-    // Entrada: dois bytes consecutivos (LSB e MSB) sem sinal de 0 a 255                                               *
-    // Saida: valor (inteiro) sempre positivo de 0 a 65535                                                             *
     //                                                                                                                 *
+    // Entrada: dois bytes consecutivos (LSB e MSB) sem sinal de 0 a 255                                               *
+    //                                                                                                                 *
+    // Saida: valor (inteiro) sempre positivo de 0 a 65535                                                             *
     //******************************************************************************************************************
     //
     public static int ThreeBytetoInt(int LSByte, int MSByte, int HSByte) {

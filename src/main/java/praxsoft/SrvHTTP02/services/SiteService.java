@@ -57,7 +57,7 @@ public class SiteService {
             }
         }
         else {
-            String arquivoTxt = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
+            String arquivoTxt = Arquivo.LeTexto(caminho, nomeArquivo);
             //System.out.println(arquivoTxt);
 
             if (arquivoTxt == null) {

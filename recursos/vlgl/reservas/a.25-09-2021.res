@@ -29,9 +29,9 @@
   OB09: livre
   NB09: null
   HB09: null
-  OB10: IsisDias
-  NB10: 4
-  HB10: 12:30
+  OB10: livre
+  NB10: null
+  HB10: null
   OB11: livre
   NB11: null
   HB11: null

@@ -13,7 +13,7 @@ public class VlglResources {
 
     @Autowired
     private SiteService siteService;
-    private VlglService vlglService;
+    //private VlglService vlglService;
 
     @GetMapping(value = "/reservas")
     public ResponseEntity<?> ReservasVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
@@ -21,7 +21,8 @@ public class VlglResources {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         String nomeArquivo = "";
-        if (vlglService.VerificaAdmin(auth.getName())) {
+        if (VlglService.VerificaAdmin(auth.getName())) {
+            VlglService.IniciaVariaveis();;
             nomeArquivo = "adminreservas.html";
         }
         else {
@@ -37,13 +38,19 @@ public class VlglResources {
         return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
+    @GetMapping(value = "/favicon.ico")
+    public ResponseEntity<?> EnviaIcone() {
+
+        return siteService.LeArquivoMontaResposta("recursos/vlgl/", "favicon.ico", "null");
+    }
+
     @PostMapping(value = "/reserva")
     public ResponseEntity<?> RecebeDados(@RequestBody String dadosCliente) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String idUsuario = auth.getName();
 
-        return  vlglService.ExecutaComandos(dadosCliente, idUsuario);
+        return  VlglService.ExecutaComandos(dadosCliente, idUsuario);
 
     }
 

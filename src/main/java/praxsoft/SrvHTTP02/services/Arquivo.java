@@ -23,12 +23,12 @@ public class Arquivo {
     public static void EscreveArqTxt(String caminho, String nomeArquivo, boolean b) {
     }
 
-    boolean Existe(String Caminho, String NomeArquivo) {
+    public static boolean Existe(String Caminho, String NomeArquivo) {
         File Arquivo = new File(Caminho + NomeArquivo);
         return (Arquivo.exists());
     }
 
-    int Tamanho(String Caminho, String NomeArquivo) {
+    public static int Tamanho(String Caminho, String NomeArquivo) {
         File Arquivo = new File(Caminho + NomeArquivo);
         return ((int)Arquivo.length());
     }
@@ -44,7 +44,7 @@ public class Arquivo {
     // Saida: String com o arquivo texto lido. Se ocorrer falha na leitura, o método retorna null                      *
     //******************************************************************************************************************
     //
-    public static String LeArquivoTxt(String caminho, String nomeArquivo) {
+    public static String LeTexto(String caminho, String nomeArquivo) {
 
         File Arquivo = new File(caminho + nomeArquivo);
         String arquivoLido = "";
@@ -61,6 +61,7 @@ public class Arquivo {
             Auxiliar.Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
             return null;
         }
+
     }
 
     //******************************************************************************************************************
@@ -97,84 +98,79 @@ public class Arquivo {
 
     }
 
-    //byte[] LeByte(String Caminho, String NomeArquivo) throws IOException {
-    //    File Arquivo = new File(Caminho + NomeArquivo);
-    //    FileInputStream ArquivoLido = null;
-    //    int TamArquivo = (int)Arquivo.length();
-    //    byte[] DadosArquivo = new byte[TamArquivo];
-
-    //    try {
-    //        ArquivoLido = new FileInputStream(Arquivo);
-    //        ArquivoLido.read(DadosArquivo);
-    //    } finally {
-    //        if (ArquivoLido != null)
-    //            ArquivoLido.close();
-    //    }
-    //    return DadosArquivo;
-    //}
-
     //******************************************************************************************************************
-    // Nome do Método: EscreveArqTxt()                                                                                 *
+    // Nome do Método: EscreveTexto()                                                                                  *
     //	                                                                                                               *
     // Funcao: escreve um arquivo texto                                                                                *
     //                                                                                                                 *
     // Entrada: string com o nome do caminho e do arquivo e texto a ser escrito no arquivo                             *
     //                                                                                                                 *
-    // Saida: = 1 leu arquivo / = 0 falha ao ler o arquivo                                                             *
+    // Saida: = boolean operação realizada = true / operação não realizada = false                                     *
     //	                                                                                                               *
     //******************************************************************************************************************
     //
-    public static boolean EscreveArqTxt(String Caminho, String NomeArquivo, String Texto, boolean Verbose) {
-
+    public static boolean EscreveTexto(String caminho, String nomeArquivo, String conteudo) {
+        boolean resultado;
         try {
-            PrintWriter out = new PrintWriter(new FileWriter(Caminho + NomeArquivo));
-            out.write(Texto);
+            PrintWriter out = new PrintWriter(new FileWriter(caminho + nomeArquivo));
+            out.write(conteudo);
             out.close();
-            return (true);
+            resultado = true;
         } catch (IOException e) {
-            if (Verbose) {
-                System.out.print("Erro ao escrever arquivo texto ");
-            }
-            return (false);
+
+            resultado = false;
         }
+        return resultado;
     }
 
+    //******************************************************************************************************************
+    // Nome do Método: Tipo()                                                                                          *
+    //	                                                                                                               *
+    // Funcao: verifica o tipo do arquivo pela extensão                                                                *
+    //                                                                                                                 *
+    // Entrada: string com o nome do arquivo                                                                           *
+    //                                                                                                                 *
+    // Saida: = string com o tipo do arquivo                                                             *
+    //	                                                                                                               *
+    //******************************************************************************************************************
+    //
     String Tipo(String NomeArquivo) {
-        String tipo = "";
+        String tipo = null;
 
-        if (NomeArquivo.endsWith(".htm")  ||  NomeArquivo.endsWith(".html")) {
-            tipo = "text/html";
-        }
-
-        if (NomeArquivo.endsWith(".js")) {
-            tipo = "text/javascript";
-        }
-
-        if (NomeArquivo.endsWith(".css")) {
-            tipo = "text/css";
-        }
-
-        if (NomeArquivo.endsWith(".jpg")  ||  NomeArquivo.endsWith(".jpeg")) {
-            tipo = "image/jpeg";
-        }
-
-        if (NomeArquivo.endsWith(".gif")) {
-            tipo = "image/gif";
-        }
-
-        if (NomeArquivo.endsWith(".png")) {
-            tipo = "image/png";
-        }
-
-        if (NomeArquivo.endsWith(".bmp")) {
-            tipo = "image/bmp";
-        }
-
-        if (NomeArquivo.endsWith(".txt")) {
-            tipo = "text/plain";
-        }
+        if (NomeArquivo.endsWith(".htm")  ||  NomeArquivo.endsWith(".html")) { tipo = "text/html"; }
+        if (NomeArquivo.endsWith(".js")) { tipo = "text/javascript"; }
+        if (NomeArquivo.endsWith(".css")) { tipo = "text/css"; }
+        if (NomeArquivo.endsWith(".jpg")  ||  NomeArquivo.endsWith(".jpeg")) { tipo = "image/jpeg"; }
+        if (NomeArquivo.endsWith(".gif")) { tipo = "image/gif"; }
+        if (NomeArquivo.endsWith(".png")) { tipo = "image/png"; }
+        if (NomeArquivo.endsWith(".bmp")) { tipo = "image/bmp"; }
+        if (NomeArquivo.endsWith(".txt")) { tipo = "text/plain"; }
 
         return(tipo);
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: Renomeia()                                                                                      *
+    //	                                                                                                               *
+    // Funcao: renomeia um arquivo                                                                                     *
+    //                                                                                                                 *
+    // Entrada: string com o caminho, string com o nome velho do arquivo e string com o nome novo do arquivo           *
+    //                                                                                                                 *
+    // Saida: = boolean se a operação foi realizada = true / se não foi realizada = false                              *
+    //******************************************************************************************************************
+    //
+    public static boolean Renomeia(String caminho, String nomeVelho, String nomeNovo) {
+        boolean resultado;
+        File arquivo1 = new File(caminho + nomeVelho);
+        File arquivo2 = new File(caminho + nomeNovo);
+
+        if (arquivo2.exists()) {
+            resultado = false;
+        }
+        else {
+            resultado = arquivo1.renameTo(arquivo2);
+        }
+        return resultado;
     }
 
 }

@@ -248,7 +248,7 @@ function Entra() {
                     }
                     if (HoraChegada == "") {
                         horaChegadaOK = false;
-                        EscreveTexto("Entre com o horário de chegada", "info2");
+                        EscreveTexto("Entre com o horário de chegada", "info1");
                     }
                     else {
                         horaChegadaOK = true;
@@ -481,6 +481,7 @@ function CarregaMesas(xmlMsg) {
 function AtualizaMesa(idmesa, ocupacao, numPes, horCheg) {
     if (ocupacao == "livre") {
         document.getElementById(idmesa).style.backgroundColor = "#33ff71";
+        document.getElementById(idmesa).innerHTML = NomeMesa(idmesa) + "                                ";
     }
     else {
         document.getElementById(idmesa).style.backgroundColor = "#aeb6bf";
@@ -531,9 +532,9 @@ function CarregaCliente(xmlMsg) {
     grupo = xmlMsg.getElementsByTagName("CLIENTE");
     IdCliente = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
     NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-    Info1Cliente = grupo[i].getElementsByTagName("RES1")[0].childNodes[0].nodeValue;
-    Info2Cliente = grupo[i].getElementsByTagName("RES2")[0].childNodes[0].nodeValue;
-    Info3Cliente = grupo[i].getElementsByTagName("RES3")[0].childNodes[0].nodeValue;
+    Info1Cliente = grupo[i].getElementsByTagName("INFO1")[0].childNodes[0].nodeValue;
+    Info2Cliente = grupo[i].getElementsByTagName("INFO2")[0].childNodes[0].nodeValue;
+    Info3Cliente = grupo[i].getElementsByTagName("INFO3")[0].childNodes[0].nodeValue;
         
     if (IdCliente == "null") {
         clienteOK = false;

@@ -12,8 +12,44 @@ public class VlglService {
     private static final String admin2 = "Guto";
     private static final String admin3 = "Bernardo";
 
+    // Arrays que guardam as informações do cliente e das mesas
+    private static String[] cliente = new String[6];
     private static String[][] mesa = new String[18][3];
 
+    // Array usada para montagem da mensagem XML
+    private static String MsgXMLArray[][][][] = new String[1][4][60][2];
+
+    // Variáveis de estado
+    private static String confirmaReserva;
+    private static String dataReserva;
+    private static String nomeUsuarioCliente;
+    private static String clienteCadastrado;
+    private static String numeroPessoas;
+    private static String horarioChegada;
+    private static String mesaSelecionada;
+
+    public static void IniciaVariaveis() {
+        confirmaReserva = "null";
+        dataReserva = "null";
+        nomeUsuarioCliente = "null";
+        clienteCadastrado = "null";
+        numeroPessoas = "null";
+        horarioChegada = "null";
+        mesaSelecionada = "null";
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: VerificaAdmin                                                                                   *
+    //	                                                                                                               *
+    // Data: 22/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: verifica se o usuário que fez o login é administrador.                                                  *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário que fez login.                                                            *
+    //                                                                                                                 *
+    // Saida: boolean se o usuário é administrador = true / se o usuário não é administrador = false                   *
+    //******************************************************************************************************************
+    //
     public static boolean VerificaAdmin(String idUsuario) {
         boolean adminOK;
 
@@ -50,46 +86,46 @@ public class VlglService {
     //******************************************************************************************************************
     //
     public static ResponseEntity<?> ExecutaComandos(String dadosCliente, String idUsuario) {
-
-        String MsgXML = "null";
+        String MsgXML = "";
         String codigo = Auxiliar.LeParametroArquivo(dadosCliente, "Codigo:");
-        String dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
-        String userName = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
-        String numPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
-        String horarioCheg = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
-        String mesaSelec = Auxiliar.LeParametroArquivo(dadosCliente,"MesaSelec: ");
+        dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
+        nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
+        numeroPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
+        horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
+        mesaSelecionada = Auxiliar.LeParametroArquivo(dadosCliente,"MesaSelec: ");
 
-        System.out.println("Código: " + codigo);
-        System.out.println("Data da Reserva: " + dataReserva);
-        System.out.println("Nome de Usuário: " + userName);
-        System.out.println("Número de Pessoas: " + numPessoas);
-        System.out.println("Horário de Chegada: " + horarioCheg);
-        System.out.println("Mesa Selecionada: " + mesaSelec);
+        Auxiliar.Terminal("Recebida Requisição do Cliente - Código: " + codigo, false);
+        Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
+        Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
+        Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
+        Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
+        Auxiliar.Terminal("Mesa Selecionada: " + mesaSelecionada, false);
 
         // Se o Administrador fez login - está fazendo a reserva
         if (VerificaAdmin(idUsuario)) {
+            confirmaReserva = "semInf";
+
             switch (codigo) {
                 case "carregaAdmin" :
                     MsgXML = MontaXMLadmin(idUsuario);
                     break;
 
-                case "DataCliente" :
-                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
-                    break;
-
                 case "Data" :
-                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    MsgXML = MontaXMLData();
                     break;
 
                 case "Cliente" :
-                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    MsgXML = MontaXMLCliente();
+                    break;
+
+                case "DataCliente" :
+                    MsgXML = MontaXMLdataCliente();
                     break;
 
                 case "Confirma" :
-                    AtualizaArquivoData(dataReserva, userName, numPessoas, horarioCheg, mesaSelec);
-                    MsgXML = MontaXMLdataCliente(dataReserva, userName);
+                    AtualizaArqData();
+                    MsgXML = MontaXMLdataCliente();
                     break;
-
             }
         }
 
@@ -100,6 +136,229 @@ public class VlglService {
                 .contentType(MediaType.valueOf("application/xml"))
                 .body(MsgXML);
 
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: AtualizaArqData                                                                                 *
+    //	                                                                                                               *
+    // Data: 24/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de data com as informações das mesas, atualiza a reserva confirmada e grava novamente     *
+    //         o arquivo.                                                                                              *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA, string com o nome de usuário do cliente,           *
+    //          string com o número de pessoas e string com a hora de chegada                                          *
+    //                                                                                                                 *
+    // Saida:                                                                                                          *
+    //******************************************************************************************************************
+    //
+    public static void AtualizaArqData() {
+
+        String caminho = "recursos/vlgl/reservas/";
+        String nomeArquivo = dataReserva + ".res";
+
+        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
+        if (dadosArquivo != null) {
+            String[][] dadosMesas = new String[17][3];
+            for (int i = 0; i < 9; i++) {
+                String token = "OA" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NA" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "HA" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+            }
+            for (int i = 9; i < 17; i++) {
+                String token = "OB" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NB" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "HB" + Auxiliar.IntToStr2(i) + ":";
+                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+            }
+
+            int indice = Auxiliar.StringToInt(mesaSelecionada);
+            System.out.println("Índice mesa = " + indice);
+            dadosMesas[indice][0] = nomeUsuarioCliente;
+            dadosMesas[indice][1] = numeroPessoas;
+            dadosMesas[indice][2] = horarioChegada;
+
+            String dadosArqNovo = "{\n";
+            for (int i = 0; i < 9; i++) {
+                String Indice = Auxiliar.IntToStr2(i);
+                dadosArqNovo = dadosArqNovo + "  OA" + Indice + ": " + dadosMesas[i][0] + "\n";
+                dadosArqNovo = dadosArqNovo + "  NA" + Indice + ": " + dadosMesas[i][1] + "\n";
+                dadosArqNovo = dadosArqNovo + "  HA" + Indice + ": " + dadosMesas[i][2] + "\n";
+            }
+            for (int i = 9; i < 17; i++) {
+                String Indice = Auxiliar.IntToStr2(i);
+                dadosArqNovo = dadosArqNovo + "  OB" + Indice + ": " + dadosMesas[i][0] + "\n";
+                dadosArqNovo = dadosArqNovo + "  NB" + Indice + ": " + dadosMesas[i][1] + "\n";
+                dadosArqNovo = dadosArqNovo + "  HB" + Indice + ": " + dadosMesas[i][2] + "\n";
+            }
+            dadosArqNovo = dadosArqNovo + "}";
+
+            Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " lido e modificado", false);
+            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
+                Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
+                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                    Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
+                    confirmaReserva = "sim";
+                } else {
+                    confirmaReserva = "nao";
+                }
+            }
+
+            System.out.println("");
+            System.out.println(dadosArqNovo);
+            System.out.println("");
+
+        }
+        else {
+            Auxiliar.Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
+        }
+
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: CarregaEstadoArray                                                                              *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: carrega as informações de estado no array usado para montar a mensagem XML.                             *
+    //                                                                                                                 *
+    // Entrada: int com o índice do local e int com o índice do grupo                                                  *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    public static void CarregaEstadoArray(int IdNv0, int IdNv1) {
+
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "ESTADO";
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("CONFIRMA", confirmaReserva);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("DATA", dataReserva);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("CADASTRO", clienteCadastrado);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("NUMPES", numeroPessoas);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("HORARIO", horarioChegada);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(5);
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: CarregaClienteArray                                                                             *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
+    //                                                                                                                 *
+    // Saida: boolean (retorna false se o registro do cliente não for encontrado)                                      *
+    //******************************************************************************************************************
+    //
+    public static void CarregaClienteArray(int IdNv0, int IdNv1) {
+        if (nomeUsuarioCliente == null) { nomeUsuarioCliente = "null"; }
+        int numCampos = 6;
+
+        String caminho = "recursos/vlgl/clientes/";
+        String nomeArquivo = nomeUsuarioCliente + ".clt";
+        String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        if (registroCliente == null) {
+            clienteCadastrado = "nao";
+            for (int i = 0; i < numCampos; i++) {
+                cliente[i] = "null";
+            }
+        }
+        else {
+            clienteCadastrado = "sim";
+            cliente[0] = Auxiliar.LeCampoArquivo(registroCliente, "Id:");
+            cliente[1] = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
+            cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Info1:");
+            cliente[3] = Auxiliar.LeParametroArquivo(registroCliente, "Info2:");
+            cliente[4] = Auxiliar.LeParametroArquivo(registroCliente, "Info3:");
+            cliente[5] = Auxiliar.LeParametroArquivo(registroCliente, "Info4:");
+        }
+
+        // Grupo IdNv1: Variáveis de Informação do Cliente
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", cliente[0]);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", cliente[1]);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("INFO1", cliente[2]);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("INFO2", cliente[3]);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("INFO3", cliente[4]);
+        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("INFO4", cliente[5]);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(6); // Número de elementos do Grupo
+
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: CarregaDataArray                                                                                *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: carrega as informações das reservas das mesas na data no array usado para montar a mensagem XML.        *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva, int com o índice do local e int com o índice do grupo                    *
+    //                                                                                                                 *
+    // Saida: boolean (retorna false se o registro do cliente não for encontrado)                                      *
+    //******************************************************************************************************************
+    //
+    public static void CarregaDataArray(int IdNv0, int IdNv1) {
+
+        if (dataReserva == null) { dataReserva = "null"; }
+
+        String caminho = "recursos/vlgl/reservas/";
+        String nomeArquivo = dataReserva + ".res";
+        String registroMesas = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        if (registroMesas != null) {
+
+            for (int i = 0; i < 9; i++) {
+                String token = "OA" + Auxiliar.IntToStr2(i) + ":";
+                mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                token = "NA" + Auxiliar.IntToStr2(i) + ":";
+                mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                token = "HA" + Auxiliar.IntToStr2(i) + ":";
+                mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
+            }
+            for (int i = 9; i < 17; i++) {
+                String token = "OB" + Auxiliar.IntToStr2(i) + ":";
+                mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                token = "NB" + Auxiliar.IntToStr2(i) + ":";
+                mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
+                token = "HB" + Auxiliar.IntToStr2(i) + ":";
+                mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
+            }
+        }
+
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
+        int i = 0;
+        int numTags1 = 9;
+        for (int k = 0; k < numTags1; k++) {
+            String token = "OA" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
+            token = "NA" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
+            token = "HA" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
+        }
+
+        int numTags2 = 8;
+        for (int k = numTags1; k < (numTags1 + numTags2); k++) {
+            String token = "OB" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
+            token = "NB" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
+            token = "HB" + Auxiliar.IntToStr2(k);
+            i = i + 1;
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
+        }
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i); // Carrega o número de elementos do Grupo
     }
 
     //******************************************************************************************************************
@@ -146,39 +405,75 @@ public class VlglService {
                 break;
 
             default:
-                throw new IllegalStateException("Unexpected value: " + idAdmin);
+                nomeAdmin = "null";
+                res1Admin = "null";
+                res2Admin = "null";
+                res3Admin = "null";
         }
 
-        // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis
-        String MsgXMLArray[][][][] = new String[1][10][30][2];
+        // Monta a Mensagem XML
         int IdNv0 = 0;
-        int IdNv1 = 0;
-        boolean normal = true;
-        String MsgXML = "";
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "01";
+        MsgXMLArray[0][0][0][0] = "LOCAL001";
+        MsgXMLArray[0][0][0][1] = "01";
 
-        // Grupo 1: Variáveis de Informação do Administrador
-        IdNv1 = 1;
-        int i = 0;
+        int IdNv1 = 1;  // Grupo 1: Variáveis de Informação do Administrador
         MsgXMLArray[IdNv0][IdNv1][0][0] = "ADMIN";    // Carrega a Tag do Grupo 1
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("ID", idAdmin, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("NOME", nomeAdmin, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES1", res1Admin, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES2", res2Admin, normal);
-        i = i + 1;
-        MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue("RES3", res3Admin, normal);
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", idAdmin);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", nomeAdmin);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("RES1", res1Admin);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("RES2", res2Admin);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("RES3", res3Admin);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(5); // Carrega o número de elementos do Grupo 1
 
-        // Carrega o número de elementos do Grupo 1
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
+        return(Auxiliar.StringXML(MsgXMLArray));
+    }
 
-        // Retorna a Mensagem XML completa em formato de String
-        MsgXML = Auxiliar.StringXML(MsgXMLArray);
-        return(MsgXML);
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLCliente()                                                                               *
+    //	                                                                                                               *
+    // Data: 2%/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações referentes do cliente. As informações do cliente são lidas      *
+    //         de um arquivo texto que tem o nome igual ao nome de usuário.                                            *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente                                                                *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public static String MontaXMLCliente() {
+
+        MsgXMLArray[0][0][0][0] = "LOCAL001";    // Identificador do Local
+        MsgXMLArray[0][0][0][1] = "02";          // Número de Grupos (ESTADO e CLIENTE)
+
+        CarregaClienteArray(0, 2);
+        CarregaEstadoArray(0, 1);
+
+        return(Auxiliar.StringXML(MsgXMLArray));
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLData()                                                                                  *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações referentes à disponibilidade das mesas em uma data. As          *
+    //         informações são lidas de um arquivo do tipo texto que tem o nome no formato DD-MM-AAAA.res              *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD/MM/AAAA                                                     *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public static String MontaXMLData() {
+
+        MsgXMLArray[0][0][0][0] = "LOCAL001";    // Identificador do Local
+        MsgXMLArray[0][0][0][1] = "02";          // Número de Grupos (ESTADO e CLIENTE)
+
+        CarregaDataArray(0, 2);
+        CarregaEstadoArray(0, 1);
+
+        return(Auxiliar.StringXML(MsgXMLArray));
     }
 
     //******************************************************************************************************************
@@ -197,58 +492,47 @@ public class VlglService {
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public static String MontaXMLdataCliente(String dataReserva, String nomeUsuario) {
+    public static String MontaXMLdataCliente() {
+
+        MsgXMLArray[0][0][0][0] = "LOCAL001";    // Identificador do Local
+        MsgXMLArray[0][0][0][1] = "03";          // Número de Grupos (ESTADO, CLIENTE e DATA)
+
+        CarregaClienteArray(0, 2);               // As informações do cliente são carregadas no grupo 2
+        CarregaDataArray(0, 3);                  // As informações de data são carregadas no grupo 3
+        CarregaEstadoArray(0, 1);                // As informações de estado são carregadas no grupo 1
+
+        return(Auxiliar.StringXML(MsgXMLArray));
+    }
+
+
+    /*
+    public static String MontaXMLdataCliente() {
 
         String caminho = "";
-
-        String nomeCliente = "null";
-        String res1Cliente = "null";
-        String res2Cliente = "null";
-        String res3Cliente = "null";
-        String res4Cliente = "null";
-
         if (!nomeUsuario.equals("null")) {
 
             caminho = "recursos/vlgl/clientes/";
             String nomeArquivo = nomeUsuario + ".clt";
-            String registroCliente = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
+            String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
 
             if (registroCliente == null) {
                 nomeUsuario = "null";
             }
             else {
-                nomeCliente = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
-                res1Cliente = Auxiliar.LeCampoArquivo(registroCliente, "Res1:");
-                res2Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res2:");
-                res3Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res3:");
-                res4Cliente = Auxiliar.LeParametroArquivo(registroCliente, "Res4:");
+                cliente[0] = Auxiliar.LeCampoArquivo(registroCliente, "Id:");
+                cliente[1] = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
+                cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Info1:");
+                cliente[3] = Auxiliar.LeParametroArquivo(registroCliente, "Info2:");
+                cliente[4] = Auxiliar.LeParametroArquivo(registroCliente, "Info3:");
+                cliente[5] = Auxiliar.LeParametroArquivo(registroCliente, "Info4:");
             }
         }
-
-        String OA00 = "null";    String NA00 = "null";    String HA00 = "null";
-        String OA01 = "null";    String NA01 = "null";    String HA01 = "null";
-        String OA02 = "null";    String NA02 = "null";    String HA02 = "null";
-        String OA03 = "null";    String NA03 = "null";    String HA03 = "null";
-        String OA04 = "null";    String NA04 = "null";    String HA04 = "null";
-        String OA05 = "null";    String NA05 = "null";    String HA05 = "null";
-        String OA06 = "null";    String NA06 = "null";    String HA06 = "null";
-        String OA07 = "null";    String NA07 = "null";    String HA07 = "null";
-        String OA08 = "null";    String NA08 = "null";    String HA08 = "null";
-
-        String OB09 = "null";    String NB09 = "null";    String HB09 = "null";
-        String OB10 = "null";    String NB10 = "null";    String HB10 = "null";
-        String OB11 = "null";    String NB11 = "null";    String HB11 = "null";
-        String OB12 = "null";    String NB12 = "null";    String HB12 = "null";
-        String OB13 = "null";    String NB13 = "null";    String HB13 = "null";
-        String OB14 = "null";    String NB14 = "null";    String HB14 = "null";
-        String OB15 = "null";    String NB15 = "null";    String HB15 = "null";
-        String OB16 = "null";    String NB16 = "null";    String HB16 = "null";
 
         if (!dataReserva.equals("null")) {
 
             caminho = "recursos/vlgl/reservas/";
             String nomeArquivo = dataReserva + ".res";
-            String registroMesas = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
+            String registroMesas = Arquivo.LeTexto(caminho, nomeArquivo);
             if (registroMesas != null) {
                 for (int i = 0; i < 9; i++) {
                     String token = "OA" + Auxiliar.IntToStr2(i) + ":";
@@ -270,127 +554,61 @@ public class VlglService {
             }
         }
 
-        // // Monta a Mensagem XML - Carrega na StringXML Array os Tags de Níveis 0,1,e 2 e as variáveis
-        String MsgXMLArray[][][][] = new String[1][10][60][2];
+        // Monta a Mensagem XML
         int IdNv0 = 0;
         int IdNv1 = 0;
-        boolean normal = true;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "02";
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";    // |Identificador do Local
+        MsgXMLArray[IdNv0][IdNv1][0][1] = "03";          // Número de Grupos
 
-        // Grupo 1: Variáveis de Informação do Cliente
-        IdNv1 = 1;
+        IdNv1 = 1;  // Grupo 1: Variáveis de Informação de Estado
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "ESTADO";
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("CONF", confirmaReserva);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("CLTCD", clienteCadastrado);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("INFO2", "Reservado");
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("INFO3", "Reservado");
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(4); // Número de elementos do Grupo 1
+
+        IdNv1 = 2;  // Grupo 2: Variáveis de Informação do Cliente
         MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
-        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", nomeUsuario, normal);
-        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", nomeCliente, normal);
-        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("RES1", res1Cliente, normal);
-        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("RES2", res2Cliente, normal);
-        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("RES3", res3Cliente, normal);
-        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("RES4", res4Cliente, normal);
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", cliente[0]);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", cliente[1]);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("INFO1", cliente[2]);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("INFO2", cliente[3]);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("INFO3", cliente[4]);
+        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("INFO4", cliente[5]);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(6); // Número de elementos do Grupo 2
 
-        // Carrega o número de elementos do Grupo 1
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(6);
-
-        // Grupo 1: Variáveis de Informação da Disponibilidade das Mesas
-        IdNv1 = 2;
+        IdNv1 = 3; // Grupo 3: Variáveis de Informação das Mesas
         MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
         int i = 0;
         int numTags1 = 9;
         for (int k = 0; k < numTags1; k++) {
             String token = "OA" + Auxiliar.IntToStr2(k);
             i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0], normal);
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
             token = "NA" + Auxiliar.IntToStr2(k);
             i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1], normal);
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
             token = "HA" + Auxiliar.IntToStr2(k);
             i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2], normal);
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
         }
 
         int numTags2 = 8;
         for (int k = numTags1; k < (numTags1 + numTags2); k++) {
             String token = "OB" + Auxiliar.IntToStr2(k);
             i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0], normal);
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
             token = "NB" + Auxiliar.IntToStr2(k);
             i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1], normal);
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
             token = "HB" + Auxiliar.IntToStr2(k);
             i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2], normal);
+            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
         }
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i); // Carrega o número de elementos do Grupo 3
 
-        // Carrega o número de elementos do Grupo 2 e retorna a Mensagem XML completa em formato de String
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
         return(Auxiliar.StringXML(MsgXMLArray));
     }
-
-    //******************************************************************************************************************
-    // Nome do Método: AtualizaArquivoData                                                                             *
-    //	                                                                                                               *
-    // Data: 24/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: lê um arquivo de data com as informações das mesas e atualiza a reserva realizada.                      *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD-MM-AAAA, string com o nome de usuário do cliente, string    *
-    //          com o número de pessoas e string com a hora de chegada                                                 *
-    //                                                                                                                 *
-    // Saida:                                                                                                          *
-    //******************************************************************************************************************
-    //
-    public static void AtualizaArquivoData(String data, String uName, String numPes, String horaCheg, String iDmesa) {
-        String caminho = "recursos/vlgl/reservas/";
-        String nomeArquivo = data + ".res";
-        String dadosArquivo = Arquivo.LeArquivoTxt(caminho, nomeArquivo);
-
-        String[][] dadosMesas = new String[17][3];
-        if (dadosArquivo != null) {
-            for (int i = 0; i < 9; i++) {
-                String token = "OA" + Auxiliar.IntToStr2(i) + ":";
-                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "NA" + Auxiliar.IntToStr2(i) + ":";
-                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "HA" + Auxiliar.IntToStr2(i) + ":";
-                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-
-            }
-            for (int i = 9; i < 17; i++) {
-                String token = "OB" + Auxiliar.IntToStr2(i) + ":";
-                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "NB" + Auxiliar.IntToStr2(i) + ":";
-                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "HB" + Auxiliar.IntToStr2(i) + ":";
-                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-            }
-        }
-
-        int indice = Auxiliar.StringToInt(iDmesa.substring(1,2));
-        System.out.println("Índice mesa = " + indice);
-        dadosMesas[indice][0] = uName;
-        dadosMesas[indice][1] = numPes;
-        dadosMesas[indice][2] = horaCheg;
-
-        dadosArquivo = "{\n";
-        for (int i = 0; i < 9; i++) {
-            String Indice = Auxiliar.IntToStr2(i);
-            dadosArquivo = dadosArquivo + "  OA" + Indice + ": " +  dadosMesas[i][0] + "\n";
-            dadosArquivo = dadosArquivo + "  NA" + Indice + ": " +  dadosMesas[i][1] + "\n";
-            dadosArquivo = dadosArquivo + "  HA" + Indice + ": " +  dadosMesas[i][2] + "\n";
-        }
-        for (int i = 9; i < 17; i++) {
-            String Indice = Auxiliar.IntToStr2(i);
-            dadosArquivo = dadosArquivo + "  OB" + Indice + ": " +  dadosMesas[i][0] + "\n";
-            dadosArquivo = dadosArquivo + "  NB" + Indice + ": " +  dadosMesas[i][1] + "\n";
-            dadosArquivo = dadosArquivo + "  HB" + Indice + ": " +  dadosMesas[i][2] + "\n";
-        }
-        dadosArquivo = dadosArquivo + "}";
-
-        System.out.println("");
-        System.out.println(dadosArquivo);
-        System.out.println("");
-
-        Arquivo.EscreveArqTxt(caminho, nomeArquivo, true);
-    }
-
+*/
 }

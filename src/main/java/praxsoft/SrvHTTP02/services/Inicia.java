@@ -53,7 +53,7 @@ public class Inicia {
 
         try {
             Arquivo arquivo = new Arquivo();
-            ArquivoConf = arquivo.LeArquivoTxt(caminho, nomeArquivo);
+            ArquivoConf = arquivo.LeTexto(caminho, nomeArquivo);
 
             String ModoOp = Auxiliar.LeParametroArquivo(ArquivoConf, "ModoOp:");
             String Verbose = Auxiliar.LeParametroArquivo(ArquivoConf, "Verbose:");
