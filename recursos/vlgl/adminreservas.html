@@ -11,7 +11,7 @@
         <div class="colesq">
           <table>
             <tr>
-              <td><img src="vlgl.logo.jpg" alt="Logo Vista Linda" width="80" height="80"></td>
+              <td><img src="vlgl.logo.jpg" alt="Logo Vista Linda" width="60" height="60"></td>
               <td em class="titulo"em>Reservas Vista Linda</td>
             </tr>
           </table>
@@ -22,16 +22,16 @@
           </table>
           <table>
             <tr>
-              <td class="campo5">
-                <button type="button" onclick="VerificaCliente()" class="botaoentrar">Cadastra</button>
+              <td>
+                <button type="button" onclick="VerificaCliente()" class="botaoentrarsup">Cadastra</button>
               </td>
-              <td class="campo5">
-                <button type="button" onclick="VerificaCliente()" class="botaoentrar">Limpa</button>
+              <td>
+                <button type="button" onclick="VerificaCliente()" class="botaoentrarsup">Limpa</button>
               </td>
-              <td class="campo5">
-                <button type="button" onclick="VerificaCliente()" class="botaoentrar">Cancela</button>
+              <td>
+                <button type="button" onclick="VerificaCliente()" class="botaoentrarsup">Cancela</button>
               </td>
-              <td class="campo5">
+              <td>
                 <button type="button" onclick="Confirma()" class="botaoentrardir">Confirma</button>
               </td>
             </tr>
@@ -39,7 +39,7 @@
           <table>
             <form id="signup">          
               <tr>
-                <td>
+                <td colspan="2">
                   <label for="data"></label>
                   <input type="data" id="data" name="data" placeholder="Data da reserva" class = "campoform">
                   <small></small>                
@@ -49,35 +49,27 @@
                 </td>
               </tr>
               <tr>
-                <td>
+                <td colspan="2">
                   <label for="username"></label>
                   <input type="text" id="username" name="username" placeholder="Nome de usuário do cliente" class = "campoform">
                   <small></small>
                 </td>
-                <td class="campo5">
+                <td>
                   <button type="button" onclick="VerificaCliente()" class="botaoentraresq">Verifica</button>
                 </td>
               </tr>
               <tr>
                 <td>
                   <label for="numpessoas"></label>
-                  <input type="number" id="numpessoas" name="numpessoas" placeholder="Número de pessoas" class = "campoform">
+                  <input type="number" id="numpessoas" name="numpessoas" placeholder="Núm pessoas" class = "campoform2">
                   <small></small>
                 </td>
                 <td class="campo5">
-                  <button type="button" onclick="VerificaCliente()" class="botaoentraresq">Verifica</button>
-                </td>
-                </td>
-              </tr>
-              <tr>
-                <td>
                   <label for="horachegada"></label>
-                  <input type="text" id="hora" name="hora" placeholder="Horário de chegada" class = "campoform">
+                  <input type="text" id="hora" name="hora" placeholder="Hora chegada" class = "campoform3">
                   <small></small>
-                </td>
                 <td class="campo5">
                   <button type="button" onclick="Entra()" class="botaoentraresq">Entra</button>
-                </td>
                 </td>
               </tr>
             </form>
@@ -96,10 +88,19 @@
               <td class="campoinfo" id="info4"></td>
             </tr>
             <tr>
-              <td class="campoinfo5" id="info5"></td>
+              <td class="campoinfo" id="info5"></td>
             </tr>
             <tr>
-              <td class="campoinfo6" id="info6"></td>
+              <td class="campoinfo5" id="info6"></td>
+            </tr>
+            <tr>
+              <td class="campoinfo5" id="info7"></td>
+            </tr>
+            <tr>
+              <td class="campoinfo5" id="info8"></td>
+            </tr>
+            <tr>
+              <td class="campoinfocom" id="infocom"></td>
             </tr>
           </table>
         </div>
@@ -118,7 +119,10 @@
               </td>
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B09')" class="mesa" id="B09">Mesa B9</button>
-              </td>    
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I01">Mesa Interna 1</button>
+              </td>
             </tr>
             <tr>
               <td class="mesas">
@@ -126,7 +130,10 @@
               </td>
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B10')" class="mesa" id="B10">Mesa B10</button>
-              </td>  
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I02')" class="mesa" id="I02">Mesa Interna 2</button>
+              </td>
             </tr>
             <tr>
               <td class="mesas">
@@ -134,7 +141,10 @@
               </td>
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B11')" class="mesa" id="B11">Mesa B11</button>
-              </td>  
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I03">Mesa Interna 3</button>
+              </td>
             </tr>
             <tr>
               <td class="mesas">
@@ -142,6 +152,9 @@
               </td>
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B12')" class="mesa" id="B12">Mesa B12</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I04">Mesa Interna 4</button>
               </td>
             </tr>
             <tr>
@@ -151,6 +164,9 @@
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B13')" class="mesa" id="B13">Mesa B13</button>
               </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I05">Mesa Interna 5</button>
+              </td>
             </tr>
             <tr>
               <td class="mesas">
@@ -158,6 +174,9 @@
               </td>
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B14')" class="mesa" id="B14">Mesa B14</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I06">Mesa Interna 6</button>
               </td>
             </tr>
             <tr>
@@ -167,6 +186,9 @@
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B15')" class="mesa" id="B15">Mesa B15</button>
               </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I07">Mesa Interna 7</button>
+              </td>
             </tr>
             <tr>
               <td class="mesas">
@@ -174,6 +196,9 @@
               </td>
               <td class="mesas">
                 <button type="button" onclick="reservaMesa('B16')" class="mesainf" id="B16">Mesa B16</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I08">Mesa Interna 8</button>
               </td>
             </tr>
            </table>

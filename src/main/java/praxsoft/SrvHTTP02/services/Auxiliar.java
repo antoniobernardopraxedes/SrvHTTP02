@@ -207,15 +207,23 @@ public class Auxiliar {
     //******************************************************************************************************************
     //
     public static String LeCampoArquivo(String arquivo, String token) {
-        String campo = null;
-        int indiceAposToken = arquivo.indexOf(token) + token.length();
+        String campo;
+        try {
+            int indiceToken = arquivo.indexOf(token);
+            if (indiceToken > 0) {
+                int indiceAposToken = indiceToken + token.length();
 
-        String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
-        int indiceCRLF = arquivoAposToken.indexOf("\n");
+                String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
+                int indiceCRLF = arquivoAposToken.indexOf("\n");
 
-        campo = arquivoAposToken.substring(1, indiceCRLF);
-
-        return campo;
+                return arquivoAposToken.substring(1, indiceCRLF);
+            }
+            else {
+                return "null";
+            }
+        } catch (Exception e) {
+            return "null";
+        }
     }
 
     //******************************************************************************************************************

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+  <html lang="pt-br">
+    <head>
+      <meta charset="UTF-8">
+      <title>Cadastro de Clientes</title>
+      <link rel="stylesheet" type="text/css" href="vlgl.admincadastro.css">
+      <script type="text/javascript" defer src="vlgl.admincadastro.js"></script>
+    </head>
+    <body>
+      <div class="linhaesq">
+        <div class="colesq">
+          <table>
+            <tr>
+              <td><img src="vlgl.logo.jpg" alt="Logo Vista Linda" width="60" height="60"></td>
+              <td em class="titulo"em>Cadastro de Clientes</td>
+            </tr>
+          </table>
+          <table>
+            <tr>
+              <td class="camponomeadmin" id="nomeadmin"></td>    
+            </tr>
+          </table>
+          <table>
+            <form id="cadastrocliente">          
+              <tr>
+                <td>
+                  <label for="username"></label>
+                  <input type="text" id="username" name="username" placeholder="Nome de usuário" class = "campoform">
+                  <small></small>                
+                </td>
+                <td class="campo5">
+                  <button type="button" onclick="VerificaCliente()" class="botaoentraresq">Verifica</button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="nome"></label>
+                  <input type="text" id="nome" name="nome" placeholder="Nome Completo" class = "campoform">
+                  <small></small>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="celular"></label>
+                  <input type="text" id="celular" name="celular" placeholder="Número do celular (WhatsApp)" class = "campoform">
+                  <small></small>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="obs1"></label>
+                  <input type="text" id="obs1" name="obs1" placeholder="Observação 1" class = "campoform">
+                  <small></small>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label for="obs2"></label>
+                  <input type="text" id="obs2" name="obs2" placeholder="Observação 2" class = "campoform">
+                  <small></small>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td class="campoformselect">O cliente é idoso(a)?</td>
+                <td>
+                  <select name="idoso" class="select">
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="campoformselect">O cliente tem dificuldade de locomoção?</td>
+                <td>
+                  <select name="locomocao" class="select">
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="campoformselect">O cliente é exigente?</td>
+                <td>
+                  <select name="exigente" class="select">
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="campoformselect">Gênero?</td>
+                <td>
+                  <select name="genero" class="select">
+                    <option value="Feminino">Feminino</option>
+                    <option value="Masculino">Masculino</option>
+                  </select>
+                </td>
+              </tr>
+            </form>
+              <tr>
+                <td class="campoformselectinf">Por favor, confira as informações do cliente</td>
+                <td>
+                  <button type="button" onclick="Cadastra()" class="botaoentraresq">Cadastra</button>
+                </td>
+              </tr>
+          </table>
+          <table>
+            <tr>
+              <td class="campoinfocom" id="infocom"></td>
+            </tr>
+          </table>
+        </div>
+        <div class="linhadir">
+          <div class="coldir">
+            <table>
+            <tr><td class="campotituloinfo">Informações do Cliente</td></tr>
+            <tr></tr>
+            <tr><td class="campoinfo" id="info1"></td></tr>
+            <tr><td class="campoinfo" id="info2"></td></tr>
+            <tr><td class="campoinfo" id="info3"></td></tr>
+            <tr><td class="campoinfo" id="info4"></td></tr>
+            <tr><td class="campoinfo"></td></tr>
+            <tr><td class="campoinfo" id="info5"></td></tr>
+            <tr><td class="campoinfo" id="info6"></td></tr>
+            <tr><td class="campoinfo" id="info7"></td></tr>
+            <tr><td class="campoinfo" id="info8"></td></tr>
+            <tr><td class="campoinfo"></td></tr>
+            <tr><td class="campoinfo" id="info9"></td></tr>
+            <tr><td class="campoinfo" id="info10"></td></tr>
+            <tr><td class="campoinfo" id="info11"></td></tr>
+            <tr><td class="campoinfo" id="info12"></td></tr>
+            <tr><td class="campoinfo" id="info13"></td></tr>
+            <tr><td class="campoinfo" id="info14"></td></tr>
+            <tr><td class="campoinfo" id="info15"></td></tr>
+          </table>
+          </div>
+        </div>
+    </body>
+    </html>

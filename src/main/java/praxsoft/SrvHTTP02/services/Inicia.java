@@ -78,17 +78,4 @@ public class Inicia {
         return lidoArqConf;
     }
 
-    //private static String LeParametroArquivo(String arquivo, String token){
-    //    int Indice = arquivo.lastIndexOf(token);
-    //    int indiceF = arquivo.length() - 1;
-    //    String parametro = null;
-    //    if (Indice >= 0) {
-    //        Indice = Indice + token.length() + 1;
-    //        String Substring = arquivo.substring(Indice, indiceF);
-    //        StringTokenizer parseToken = new StringTokenizer(Substring);
-    //        parametro = parseToken.nextToken();
-    //    }
-    //    return parametro;
-    //}
-
 }

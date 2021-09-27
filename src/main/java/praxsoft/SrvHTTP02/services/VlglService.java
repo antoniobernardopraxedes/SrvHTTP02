@@ -8,68 +8,54 @@ import org.springframework.stereotype.Service;
 @Service
 public class VlglService {
 
-    private static final String admin1 = "Ingrid";
-    private static final String admin2 = "Guto";
-    private static final String admin3 = "Bernardo";
-
     // Arrays que guardam as informações do cliente e das mesas
-    private static String[] cliente = new String[6];
-    private static String[][] mesa = new String[18][3];
+    private static String[] cliente = new String[10];
+    private static String[][] mesa = new String[20][3];
 
     // Array usada para montagem da mensagem XML
     private static String MsgXMLArray[][][][] = new String[1][4][60][2];
 
-    // Variáveis de estado
+    // Variáveis de estado do Cliente
+    private static String clienteCadastrado;
+    private static String nomeUsuarioCliente;
+    private static String nomeCliente;
+    private static String celularCliente;
+    private static String observacao1Cliente;
+    private static String observacao2Cliente;
+    private static String idosoCliente;
+    private static String locomocaoCliente;
+    private static String exigenteCliente;
+    private static String generoCliente;
+    private static String adminRespCliente;
+
+    // Variáveis de estado da Reserva
     private static String confirmaReserva;
     private static String dataReserva;
-    private static String nomeUsuarioCliente;
-    private static String clienteCadastrado;
     private static String numeroPessoas;
     private static String horarioChegada;
     private static String mesaSelecionada;
 
+    private static final String admin1 = "Ingrid";
+    private static final String admin2 = "Guto";
+    private static final String admin3 = "Bernardo";
+
     public static void IniciaVariaveis() {
+        clienteCadastrado = "null";
+        nomeUsuarioCliente = "null";
+        celularCliente = "null";
+        observacao1Cliente = "null";
+        observacao2Cliente = "null";
+        idosoCliente = "null";
+        locomocaoCliente = "null";
+        exigenteCliente = "null";
+        generoCliente = "null";
+        adminRespCliente = "null";
+
         confirmaReserva = "null";
         dataReserva = "null";
-        nomeUsuarioCliente = "null";
-        clienteCadastrado = "null";
         numeroPessoas = "null";
         horarioChegada = "null";
         mesaSelecionada = "null";
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: VerificaAdmin                                                                                   *
-    //	                                                                                                               *
-    // Data: 22/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: verifica se o usuário que fez o login é administrador.                                                  *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário que fez login.                                                            *
-    //                                                                                                                 *
-    // Saida: boolean se o usuário é administrador = true / se o usuário não é administrador = false                   *
-    //******************************************************************************************************************
-    //
-    public static boolean VerificaAdmin(String idUsuario) {
-        boolean adminOK;
-
-        switch (idUsuario) {
-            case admin1:
-                adminOK = true;
-                break;
-
-            case admin2:
-                adminOK = true;
-                break;
-
-            case admin3:
-                adminOK = true;
-                break;
-
-            default:
-                adminOK = false;
-        }
-        return adminOK;
     }
 
     //******************************************************************************************************************
@@ -88,22 +74,9 @@ public class VlglService {
     public static ResponseEntity<?> ExecutaComandos(String dadosCliente, String idUsuario) {
         String MsgXML = "";
         String codigo = Auxiliar.LeParametroArquivo(dadosCliente, "Codigo:");
-        dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
-        nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
-        numeroPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
-        horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
-        mesaSelecionada = Auxiliar.LeParametroArquivo(dadosCliente,"MesaSelec: ");
-
         Auxiliar.Terminal("Recebida Requisição do Cliente - Código: " + codigo, false);
-        Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
-        Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
-        Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
-        Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
-        Auxiliar.Terminal("Mesa Selecionada: " + mesaSelecionada, false);
 
-        // Se o Administrador fez login - está fazendo a reserva
         if (VerificaAdmin(idUsuario)) {
-            confirmaReserva = "semInf";
 
             switch (codigo) {
                 case "carregaAdmin" :
@@ -111,18 +84,58 @@ public class VlglService {
                     break;
 
                 case "Data" :
+                    dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
+                    Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
                     MsgXML = MontaXMLData();
                     break;
 
                 case "Cliente" :
+                    nomeUsuarioCliente = Auxiliar.LeCampoArquivo(dadosCliente, "NomeUsuario:");
+                    Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
+                    nomeCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Nome:");
+                    Auxiliar.Terminal("Nome do Cliente: " + nomeCliente, false);
+                    celularCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Celular:");
+                    Auxiliar.Terminal("Celular do Cliente: " + celularCliente, false);
+                    observacao1Cliente = Auxiliar.LeCampoArquivo(dadosCliente, "Obs1:");
+                    Auxiliar.Terminal("Obs 1 Cliente: " + observacao1Cliente, false);
+                    observacao2Cliente = Auxiliar.LeCampoArquivo(dadosCliente, "Obs2:");
+                    Auxiliar.Terminal("Obs 2 Cliente: " + observacao2Cliente, false);
+                    idosoCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Idoso:");
+                    Auxiliar.Terminal("O Cliente é Idoso? " + idosoCliente, false);
+                    locomocaoCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Locomocao:");
+                    Auxiliar.Terminal("O cliente tem problema de locomoção? " + locomocaoCliente, false);
+                    exigenteCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Exigente:");
+                    Auxiliar.Terminal("O cliente é exigente? " + exigenteCliente, false);
+                    generoCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Genero:");
+                    Auxiliar.Terminal("Gênero do cliente: " + generoCliente, false);
+                    adminRespCliente = Auxiliar.LeCampoArquivo(dadosCliente, "AdminResp:");
+                    Auxiliar.Terminal("Responsável pelo cadastro: " + adminRespCliente, false);
                     MsgXML = MontaXMLCliente();
                     break;
 
                 case "DataCliente" :
+                    dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
+                    Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
+                    nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
+                    Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
+                    numeroPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
+                    Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
+                    horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
+                    Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
                     MsgXML = MontaXMLdataCliente();
                     break;
 
                 case "Confirma" :
+                    dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
+                    Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
+                    nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
+                    Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
+                    numeroPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
+                    Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
+                    horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
+                    Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
+                    mesaSelecionada = Auxiliar.LeParametroArquivo(dadosCliente,"MesaSelec: ");
+                    Auxiliar.Terminal("Mesa Selecionada: " + mesaSelecionada, false);
                     AtualizaArqData();
                     MsgXML = MontaXMLdataCliente();
                     break;
@@ -198,7 +211,11 @@ public class VlglService {
             }
             dadosArqNovo = dadosArqNovo + "}";
 
+
             Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " lido e modificado", false);
+            if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+                Arquivo.Apaga(caminho, "a." + nomeArquivo);
+            }
             if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
                 Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
                 if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
@@ -217,7 +234,47 @@ public class VlglService {
         else {
             Auxiliar.Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
         }
+    }
 
+    //******************************************************************************************************************
+    // Nome do Método: EscreveArquivoReservaNovo                                                                       *
+    //	                                                                                                               *
+    // Data: 27/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: cria um arquivo de reservas novo para a data especificada                                               *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
+    //                                                                                                                 *
+    // Saida:                                                                                                          *
+    //******************************************************************************************************************
+    //
+    public static void EscreveArquivoReservaNovo(String dataRes) {
+
+        String caminho = "recursos/vlgl/reservas/";
+        String nomeArquivo = dataRes + ".res";
+
+        String dadosArqNovo = "{\n";
+        for (int i = 0; i < 9; i++) {
+            String Indice = Auxiliar.IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  OA" + Indice + ": livre\n";
+            dadosArqNovo = dadosArqNovo + "  NA" + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HA" + Indice + ": null\n";
+        }
+        for (int i = 9; i < 17; i++) {
+            String Indice = Auxiliar.IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  OB" + Indice + ": livre\n";
+            dadosArqNovo = dadosArqNovo + "  NB" + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HB" + Indice + ": null\n";
+        }
+        dadosArqNovo = dadosArqNovo + "}";
+
+        if (!Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                Auxiliar.Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
+            } else {
+                Auxiliar.Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
+            }
+        }
     }
 
     //******************************************************************************************************************
@@ -273,21 +330,29 @@ public class VlglService {
             clienteCadastrado = "sim";
             cliente[0] = Auxiliar.LeCampoArquivo(registroCliente, "Id:");
             cliente[1] = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
-            cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Info1:");
-            cliente[3] = Auxiliar.LeParametroArquivo(registroCliente, "Info2:");
-            cliente[4] = Auxiliar.LeParametroArquivo(registroCliente, "Info3:");
-            cliente[5] = Auxiliar.LeParametroArquivo(registroCliente, "Info4:");
+            cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Celular:");
+            cliente[3] = Auxiliar.LeCampoArquivo(registroCliente, "Obs1:");
+            cliente[4] = Auxiliar.LeCampoArquivo(registroCliente, "Obs2:");
+            cliente[5] = Auxiliar.LeCampoArquivo(registroCliente, "Idoso:");
+            cliente[6] = Auxiliar.LeCampoArquivo(registroCliente, "Locomocao:");
+            cliente[7] = Auxiliar.LeCampoArquivo(registroCliente, "Exigente:");
+            cliente[8] = Auxiliar.LeCampoArquivo(registroCliente, "Genero:");
+            cliente[9] = Auxiliar.LeCampoArquivo(registroCliente, "AdminResp:");
         }
 
         // Grupo IdNv1: Variáveis de Informação do Cliente
         MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
         MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", cliente[0]);
         MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", cliente[1]);
-        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("INFO1", cliente[2]);
-        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("INFO2", cliente[3]);
-        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("INFO3", cliente[4]);
-        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("INFO4", cliente[5]);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(6); // Número de elementos do Grupo
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("CELULAR", cliente[2]);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("OBS1", cliente[3]);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("OBS2", cliente[4]);
+        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("IDOSO", cliente[5]);
+        MsgXMLArray[IdNv0][IdNv1][7] = Auxiliar.EntTagValue("LOCOMOCAO", cliente[6]);
+        MsgXMLArray[IdNv0][IdNv1][8] = Auxiliar.EntTagValue("EXIGENTE", cliente[7]);
+        MsgXMLArray[IdNv0][IdNv1][9] = Auxiliar.EntTagValue("GENERO", cliente[8]);
+        MsgXMLArray[IdNv0][IdNv1][10] = Auxiliar.EntTagValue("ADMINRSP", cliente[9]);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(10); // Número de elementos do Grupo
 
     }
 
@@ -307,12 +372,21 @@ public class VlglService {
 
         if (dataReserva == null) { dataReserva = "null"; }
 
+        String dia = dataReserva.substring(0,2);
+        String mes = dataReserva.substring(3,5);
+        String ano = dataReserva.substring(6,10);
+
+        System.out.println("Dia: " + dia + " - Mes: " + mes + " - Ano: " + ano);
+
         String caminho = "recursos/vlgl/reservas/";
-        String nomeArquivo = dataReserva + ".res";
+        String nomeArquivo = dia + "-" + mes + "-" + ano + ".res";
+        if (!Arquivo.Existe(caminho, nomeArquivo)) {
+            EscreveArquivoReservaNovo(dataReserva);
+        }
+
         String registroMesas = Arquivo.LeTexto(caminho, nomeArquivo);
 
         if (registroMesas != null) {
-
             for (int i = 0; i < 9; i++) {
                 String token = "OA" + Auxiliar.IntToStr2(i) + ":";
                 mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
@@ -377,27 +451,27 @@ public class VlglService {
     //
     public static String MontaXMLadmin(String idAdmin) {
 
-        String nomeAdmin = "null";
-        String res1Admin = "null";
-        String res2Admin = "null";
-        String res3Admin = "null";
+        String nomeAdmin;
+        String res1Admin;
+        String res2Admin;
+        String res3Admin;
 
         switch (idAdmin) {
-            case admin1:
+            case admin1 :
                 nomeAdmin = "Ingrid Loyane F. Silva";
                 res1Admin = "Gerente";
                 res2Admin = "Reserva";
                 res3Admin = "Reserva";
                 break;
 
-            case admin2:
+            case admin2 :
                 nomeAdmin = "Gouthier Dias";
                 res1Admin = "Gerente";
                 res2Admin = "Reserva";
                 res3Admin = "Reserva";
                 break;
 
-            case admin3:
+            case admin3 :
                 nomeAdmin = "Antonio Bernardo Praxedes";
                 res1Admin = "Técnico";
                 res2Admin = "Reserva";
@@ -504,111 +578,38 @@ public class VlglService {
         return(Auxiliar.StringXML(MsgXMLArray));
     }
 
+    //******************************************************************************************************************
+    // Nome do Método: VerificaAdmin                                                                                   *
+    //	                                                                                                               *
+    // Data: 22/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: verifica se o usuário que fez o login é administrador.                                                  *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário que fez login.                                                            *
+    //                                                                                                                 *
+    // Saida: boolean se o usuário é administrador = true / se o usuário não é administrador = false                   *
+    //******************************************************************************************************************
+    //
+    public static boolean VerificaAdmin(String idUsuario) {
+        boolean adminOK;
 
-    /*
-    public static String MontaXMLdataCliente() {
+        switch (idUsuario) {
+            case admin1:
+                adminOK = true;
+                break;
 
-        String caminho = "";
-        if (!nomeUsuario.equals("null")) {
+            case admin2:
+                adminOK = true;
+                break;
 
-            caminho = "recursos/vlgl/clientes/";
-            String nomeArquivo = nomeUsuario + ".clt";
-            String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
+            case admin3:
+                adminOK = true;
+                break;
 
-            if (registroCliente == null) {
-                nomeUsuario = "null";
-            }
-            else {
-                cliente[0] = Auxiliar.LeCampoArquivo(registroCliente, "Id:");
-                cliente[1] = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
-                cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Info1:");
-                cliente[3] = Auxiliar.LeParametroArquivo(registroCliente, "Info2:");
-                cliente[4] = Auxiliar.LeParametroArquivo(registroCliente, "Info3:");
-                cliente[5] = Auxiliar.LeParametroArquivo(registroCliente, "Info4:");
-            }
+            default:
+                adminOK = false;
         }
-
-        if (!dataReserva.equals("null")) {
-
-            caminho = "recursos/vlgl/reservas/";
-            String nomeArquivo = dataReserva + ".res";
-            String registroMesas = Arquivo.LeTexto(caminho, nomeArquivo);
-            if (registroMesas != null) {
-                for (int i = 0; i < 9; i++) {
-                    String token = "OA" + Auxiliar.IntToStr2(i) + ":";
-                    mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                    token = "NA" + Auxiliar.IntToStr2(i) + ":";
-                    mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                    token = "HA" + Auxiliar.IntToStr2(i) + ":";
-                    mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
-
-                }
-                for (int i = 9; i < 17; i++) {
-                    String token = "OB" + Auxiliar.IntToStr2(i) + ":";
-                    mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                    token = "NB" + Auxiliar.IntToStr2(i) + ":";
-                    mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                    token = "HB" + Auxiliar.IntToStr2(i) + ":";
-                    mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                }
-            }
-        }
-
-        // Monta a Mensagem XML
-        int IdNv0 = 0;
-        int IdNv1 = 0;
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "LOCAL001";    // |Identificador do Local
-        MsgXMLArray[IdNv0][IdNv1][0][1] = "03";          // Número de Grupos
-
-        IdNv1 = 1;  // Grupo 1: Variáveis de Informação de Estado
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "ESTADO";
-        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("CONF", confirmaReserva);
-        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("CLTCD", clienteCadastrado);
-        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("INFO2", "Reservado");
-        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("INFO3", "Reservado");
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(4); // Número de elementos do Grupo 1
-
-        IdNv1 = 2;  // Grupo 2: Variáveis de Informação do Cliente
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
-        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", cliente[0]);
-        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", cliente[1]);
-        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("INFO1", cliente[2]);
-        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("INFO2", cliente[3]);
-        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("INFO3", cliente[4]);
-        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("INFO4", cliente[5]);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(6); // Número de elementos do Grupo 2
-
-        IdNv1 = 3; // Grupo 3: Variáveis de Informação das Mesas
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
-        int i = 0;
-        int numTags1 = 9;
-        for (int k = 0; k < numTags1; k++) {
-            String token = "OA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
-            token = "NA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
-            token = "HA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
-        }
-
-        int numTags2 = 8;
-        for (int k = numTags1; k < (numTags1 + numTags2); k++) {
-            String token = "OB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
-            token = "NB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
-            token = "HB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
-        }
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i); // Carrega o número de elementos do Grupo 3
-
-        return(Auxiliar.StringXML(MsgXMLArray));
+        return adminOK;
     }
-*/
+
 }

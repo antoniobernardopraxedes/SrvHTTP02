@@ -25,8 +25,18 @@ public class VlglResources {
             VlglService.IniciaVariaveis();;
             nomeArquivo = "adminreservas.html";
         }
-        else {
-            nomeArquivo = "reservas.html";
+        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+    }
+
+    @GetMapping(value = "/cadastro")
+    public ResponseEntity<?> CadastroVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String nomeArquivo = "";
+        if (VlglService.VerificaAdmin(auth.getName())) {
+            VlglService.IniciaVariaveis();;
+            nomeArquivo = "admincadastro.html";
         }
         return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }

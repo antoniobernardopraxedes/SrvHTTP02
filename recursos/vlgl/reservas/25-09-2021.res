@@ -14,15 +14,15 @@
   OA04: livre
   NA04: null
   HA04: null
-  OA05: livre
-  NA05: null
-  HA05: null
+  OA05: SofiaDias
+  NA05: 3
+  HA05: 12:30
   OA06: livre
   NA06: null
   HA06: null
-  OA07: livre
-  NA07: null
-  HA07: null
+  OA07: IsisDias
+  NA07: 5
+  HA07: 12:00
   OA08: SofiaDias
   NA08: 03
   HA08: 12:30
@@ -41,9 +41,9 @@
   OB13: livre
   NB13: null
   HB13: null
-  OB14: livre
-  NB14: null
-  HB14: null
+  OB14: IsisDias
+  NB14: 5
+  HB14: 12:00
   OB15: JairBolsonaro
   NB15: 10
   HB15: 14:00

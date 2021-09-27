@@ -7,21 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-//**********************************************************************************************************************
-//                                                                                                                     *
-// Nome da Classe: Arquivo                                                                                             *
-//                                                                                                                     *
-// Atributos: Se o Arquivo Existe (boolean), Tamanho em Caracteres ou Bytes (int), Tipo do Arquivo (código MIME)       *
-//                                                                                                                     *
-// Métodos: Lê arquivo texto (sequência de caracteres), Lê arquivo binário (sequência de bytes), escreve               *
-//          arquivo texto                                                                                              *
-//                                                                                                                     *
-//**********************************************************************************************************************
-//
 public class Arquivo {
-
-    public static void EscreveArqTxt(String caminho, String nomeArquivo, boolean b) {
-    }
 
     public static boolean Existe(String Caminho, String NomeArquivo) {
         File Arquivo = new File(Caminho + NomeArquivo);
@@ -31,6 +17,11 @@ public class Arquivo {
     public static int Tamanho(String Caminho, String NomeArquivo) {
         File Arquivo = new File(Caminho + NomeArquivo);
         return ((int)Arquivo.length());
+    }
+
+    public static boolean Apaga(String Caminho, String NomeArquivo) {
+        File arquivo = new File(Caminho + NomeArquivo);
+        return (arquivo.delete());
     }
 
     //******************************************************************************************************************

@@ -4,31 +4,21 @@ body{
   background-color: rgb(247, 247, 247);
 }
 
-.linha1 {
-  display: flex;  /* aligns all child elements (flex items) in a row */
-  max-width: 900px;
-  margin: auto;
-}
-
-.linha1cadastro {
+.linhaesq {
   display: flex;  /* aligns all child elements (flex items) in a row */
   max-width: 570px;
   margin: auto;
 }
 
-.colesq {
-  flex: 1;        /* distributes space on the line equally among items */
-  width: 520px;
-  margin-right: 10px;
-  align-content: center;
-  border:solid;
-  border-width: 1px;
-  border-color: gray;
+.linhadir {
+  display: flex;  /* aligns all child elements (flex items) in a row */
+  max-width: 500px;
+  margin: auto;
 }
 
-.colesqcadastro {
+.colesq {
   flex: 1;        /* distributes space on the line equally among items */
-  width: 500px;
+  width: 570px;
   margin-right: 10px;
   align-content: center;
   border:solid;
@@ -38,8 +28,9 @@ body{
 
 .coldir {
   flex: 1;        /* distributes space on the line equally among items */
-  width: 700px;
+  width: 500px;
   margin-left: 10px;
+  margin-right: 20px;
   align-content: center;
   border:solid;
   border-width: 1px;
@@ -61,6 +52,7 @@ body{
 
 .campoform {
   font-size: 16px;
+  height: 20px;
   width: 400px;
   margin-top: 10px;
   margin-left: 10px;
@@ -81,10 +73,25 @@ body{
   padding-bottom: 10px;
 }
 
+.campoformselectinf {
+  font-size: 16px;
+  width: 500px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 0px;
+  padding-left: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-top: solid;
+  border-width: 1px;
+  border-color: gray;
+}
+
 .select {
   font-size: 16px;
-  height: 35px;
-  margin-top: 10px;
+  height: 30px;
+  width: 95px;
+  margin-top: 7px;
   margin-left: 20px;
 }
 
@@ -110,53 +117,39 @@ body{
   padding-bottom: 5px;
 }
 
-.campovazio {
-  width: 1px;
-}
-
 .infoform {
   font-size: 16px;
   padding-left: 10px;
 }
 
-.campo5 {
-  font-family: serif;
-  font-size: 25px;
-}
-
-.botaoentrarsup {
-  margin-top: 10px;
-  height: 35px;
-  width: 90px;
-  font-size: 16px;
-  margin-left: 10px;
-  margin-right: 10px;
-}
-
 .botaoentraresq {
-  margin-top: 10px;
-  height: 35px;
-  width: 90px;
+  margin-top: 5px;
+  height: 30px;
+  width: 95px;
   font-size: 16px;
   margin-left: 20px;
   margin-right: 10px;
 }
 
 .botaoentrardir {
-  margin-top: 10px;
-  height: 35px;
-  width: 90px;
+  margin-top: 5px;
+  height: 30px;
+  width: 95px;
   font-size: 16px;
   margin-left: 5px;
   margin-right: 10px;
 }
 
-.campoinfo1 {
+.campotituloinfo {
   width: 500px;
   height: 25px;
   font-size: 16px;
-  padding-left: 10px;
-  padding-top: 10px;
+  padding-left: 120px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-bottom: solid;
+  border-width: 1px;
+  border-color: gray;
 }
 
 .campoinfo {
@@ -167,28 +160,8 @@ body{
   padding-top: 5px;
 }
 
-.campoinfo5 {
-  width: 500px;
-  height: 25px;
-  font-size: 16px;
-  padding-left: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px
-}
-
-.campoinfo6 {
-  width: 500px;
-  height: 25px;
-  padding-left: 10px;
-  padding-top: 5px;
-  font-size: 16px;
-  border-top: solid;
-  border-width: 1px;
-  border-color: gray;
-}
-
 .campoinfocom {
-  width: 500px;
+  width: 550px;
   height: 20px;
   padding-left: 10px;
   padding-top: 5px;
@@ -197,38 +170,5 @@ body{
   border-width: 1px;
   border-color: gray;
 }
-
-.mesas {
-  padding-left: 5px;
-  padding-right: 10px;
-  padding-top: 10px;
-  align-self: center;
-}
-
-.mesa {
-  height: 55px;
-  width: 200px;
-  align-content: center;
-  font-size: 16px;
-  background-color: white;
-  border-width: 2px;
-  border-color: black;
-  margin-left: 7px;
-  margin-right: 7px;
-}
-
-.mesainf {
-  height: 55px;
-  width: 200px;
-  align-content: center;
-  font-size: 16px;
-  background-color: white;
-  border-width: 2px;
-  border-color: black;
-  margin-left: 7px;
-  margin-right: 7px;
-  margin-bottom: 10px;
-}
-
 
 
