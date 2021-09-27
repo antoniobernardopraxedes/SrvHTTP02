@@ -20,9 +20,9 @@
   OA06: livre
   NA06: null
   HA06: null
-  OA07: livre
-  NA07: null
-  HA07: null
+  OA07: IsisDias
+  NA07: 5
+  HA07: 12:00
   OA08: SofiaDias
   NA08: 03
   HA08: 12:30

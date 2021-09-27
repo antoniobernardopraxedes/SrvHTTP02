@@ -167,8 +167,14 @@ public class VlglService {
     //
     public static void AtualizaArqData() {
 
+        String dia = dataReserva.substring(0,2);
+        String mes = dataReserva.substring(3,5);
+        String ano = dataReserva.substring(6,10);
+
+        System.out.println("Dia: " + dia + " - Mes: " + mes + " - Ano: " + ano);
+
         String caminho = "recursos/vlgl/reservas/";
-        String nomeArquivo = dataReserva + ".res";
+        String nomeArquivo = dia + "-" + mes + "-" + ano + ".res";
 
         String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
         if (dadosArquivo != null) {

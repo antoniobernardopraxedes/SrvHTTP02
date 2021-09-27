@@ -10,6 +10,7 @@
 //
 var xhttp = new XMLHttpRequest();
 recurso = "reserva";
+var i = 0;
 
 const form = document.getElementById('signup');
 const userName = form.elements['username'];
@@ -25,18 +26,30 @@ var NumPessoas;
 var NumeroPessoas;
 var HoraChegada;
 
-var IdCliente;     // O nome de usuário do cliente recebido na mensagem XML
-var NomeCliente;
-var Info1Cliente;
-var Info2Cliente;
-var Info3Cliente;
-var Info4Cliente;
+//var IdCliente;     // O nome de usuário do cliente recebido na mensagem XML
+
+
+var EstadoConfirma = "null";
+var EstadoData = "null";
+var EstadoCadastro = "null";
+var EstadoNumPes = "null";
+var EstadoHorario = "null";
+
+var NomeUsuarioCliente = "null";
+var NomeCliente = "null";
+var CelularCliente = "null";
+var Obs1Cliente = "null";
+var Obs2Cliente = "null";
+var IdosoCliente = "null";
+var LocomocaoCliente = "null";
+var ExigenteCliente = "null";
+var GeneroCliente = "null";
+var AdminResp = "null";
 
 var dataOK = false;
 var clienteOK = false;
 var numPessoasOK;
 var horaChegadaOK;
-var i = 0;
 var grupo;
 var recurso = "reserva";
 
@@ -63,6 +76,15 @@ var OB16;   var NB16;   var HB16;
 VerificaAdmin()
 
 // Fim do Programa
+
+function CarregaVariaveisFormnulario() {
+    
+    DataReserva = dataReserva.value;
+    NomeUsuarioCliente = userName.value;
+    UserName = NomeUsuarioCliente;
+    NumPessoas = numPessoas.value;
+    HoraChegada = horarioChegada.value;
+}
 
 
 //*********************************************************************************************************************
@@ -111,7 +133,8 @@ function VerificaAdmin() {
 //*********************************************************************************************************************
 //
 function VerificaData() {
-    DataReserva = dataReserva.value;
+    
+    CarregaVariaveisFormnulario()
     
     if (DataReserva == "") {
         dataOK = false;
@@ -130,7 +153,6 @@ function VerificaData() {
             CarregaMesas(xmlRec);
             dataOK = true;
         
-            LimpaCamposInfo();
             EscreveTexto("Resposta do Servidor: reservas do dia " + DataReserva, "infocom");
         
         } catch(err) {
@@ -189,9 +211,9 @@ function VerificaFormatoData(dataR) {
 //*********************************************************************************************************************
 //
 function VerificaCliente() {
-    UserName = userName.value;
     
-    LimpaCamposInfo();
+    CarregaVariaveisFormnulario()
+    
     if (UserName == "") {
         clienteOK = false;
         EscreveTexto("Entre com o nome de usuário do cliente", "info1");
@@ -201,28 +223,31 @@ function VerificaCliente() {
         EscreveEnvMsgSrv();
         xhttp.open("POST", recurso, false);
         try {
-            xhttp.send(MontaMsgServ("Cliente", UserName, "null", "null", "null", "null"));
+            xhttp.send(MontaMsgServ("Cliente", NomeUsuarioCliente, "null", "null", "null", "null"));
             var xmlRec = xhttp.responseXML;
             CarregaCliente(xmlRec);
             
             if (clienteOK) {
-                EscreveTexto("Nome de usuário: " + UserName, "info1");
-                EscreveTexto("Nome: " + NomeCliente, "info2");
+                EscreveTexto("Nome de usuário: " + NomeUsuarioCliente, "info2");
+                EscreveTexto("Nome: " + NomeCliente, "info3");
+                EscreveTexto("Celular: " + CelularCliente, "info4");
                 
                 var sufixo = "o";
-                if (Info4Cliente == "feminino") {
+                if (GeneroCliente == "feminino") {
                     sufixo = "a";
                 }
                 
-                EscreveTexto("Idos" + sufixo + ": " + Info1Cliente, "info3");
-                EscreveTexto("Dificuldade de locomoção: " + Info2Cliente, "info4");
-                EscreveTexto("Exigente: " + Info3Cliente, "info5");
+                EscreveTexto("Idos" + sufixo + ": " + IdosoCliente, "info5");
+                EscreveTexto("Dificuldade de locomoção: " + LocomocaoCliente, "info6");
+                EscreveTexto("Exigente: " + ExigenteCliente, "info7");
+                EscreveTexto("Obs 1: " + Obs1Cliente, "info8");
+                EscreveTexto("Obs 2: " + Obs2Cliente, "info9");
             }
             else {
                 EscreveTexto("Cliente não cadastrado", "info1");
             }
             EscreveTexto("Resposta do Servidor: informações do cliente", "infocom");
-            document.getElementById("info6").style.color = "#23257e";
+            document.getElementById("infocom").style.color = "#23257e";
         
         } catch(err) {
             EscreveMsgErrSrv();
@@ -247,12 +272,7 @@ function VerificaCliente() {
 //
 function Entra() {
     
-    DataReserva = dataReserva.value;
-    UserName = userName.value;
-    NumPessoas = numPessoas.value;
-    HoraChegada = horarioChegada.value;
-    
-    LimpaCamposInfo();
+    CarregaVariaveisFormnulario();
     
     if (!dataOK) {
         EscreveTexto("Entre com a data da reserva", "info1");
@@ -264,21 +284,20 @@ function Entra() {
         else { 
             if (NumPessoas == "") {
                 numPessoasOK = false;
-                EscreveTexto("Entre com o número de pessoas", "info2");
+                EscreveTexto("Entre com o número de pessoas", "info1");
             }
             else {
                 var NumeroPessoas = parseInt(NumPessoas);
                 if (NumeroPessoas < 1) {
                     numPessoasOK = false;
-                    EscreveTexto("Entre com o número de pessoas", "info2");
+                    EscreveTexto("Entre com o número de pessoas", "info1");
                 }
                 else {
                     numPessoasOK = true;
                     if (NumeroPessoas > 12) {
                         NumPessoas = "12";
                         LimpaCamposInfo();
-                        EscreveTexto("Número de pessoas maior que 12", "info3");
-                        EScreveTexto("Verificar disponibilidade", "info4");
+                        EscreveTexto("Número de pessoas maior que 12" - Verificar, "info1");
                     }
                     if (HoraChegada == "") {
                         horaChegadaOK = false;
@@ -294,13 +313,12 @@ function Entra() {
     
     if (dataOK && clienteOK && numPessoasOK && horaChegadaOK) {
        
-        LimpaCamposInfo();
         EscreveTexto("Escolha a mesa", "info1");
     
         EscreveEnvMsgSrv();
         xhttp.open("POST", recurso, false);
         try {
-            xhttp.send(MontaMsgServ("DataCliente", UserName, DataReserva, NumPessoas, HoraChegada, "null"));
+            xhttp.send(MontaMsgServ("DataCliente", NomeUsuarioCliente, DataReserva, NumPessoas, HoraChegada, "null"));
             var xmlRec = xhttp.responseXML;
             CarregaCliente(xmlRec);
             CarregaMesas(xmlRec);
@@ -328,10 +346,12 @@ function Entra() {
 //*********************************************************************************************************************
 //
 function reservaMesa(mesa) {
+    
     DataReserva = dataReserva.value;
-    UserName = userName.value;
+    NomeUsuarioCliente = userName.value;
     NumPessoas = numPessoas.value;
     MesaSelecionada = mesa;
+    
     if (numPessoasOK) {
         if (clienteOK) {
             if (mesa == "A00") {
@@ -368,11 +388,7 @@ function reservaMesa(mesa) {
 //
 function Confirma() {
     
-    DataReserva = dataReserva.value;
-    
-    UserName = userName.value;
-    NumPessoas = numPessoas.value;
-    HoraChegada = horarioChegada.value;
+    CarregaVariaveisFormnulario();
     
     EscreveEnvMsgSrv();
     xhttp.open("POST", recurso, false);
@@ -526,7 +542,7 @@ function AtualizaMesa(idmesa, ocupacao, numPes, horCheg) {
 
 function NomeMesa(IdMesa) {
     nomMesa = "";
-    if (IdMesa == "A00") nomMesa = "Gazebo";
+    if (IdMesa == "A00") nomMesa = "Mesa Gazebo";
     if (IdMesa == "A01") nomMesa = "Mesa A1";
     if (IdMesa == "A02") nomMesa = "Mesa A2";
     if (IdMesa == "A03") nomMesa = "Mesa A3";
@@ -563,16 +579,22 @@ function NomeMesa(IdMesa) {
 //*********************************************************************************************************************
 //
 function CarregaCliente(xmlMsg) {
-    i = 0;
+    
     grupo = xmlMsg.getElementsByTagName("CLIENTE");
-    IdCliente = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+    NomeUsuarioCliente = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
     NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-    Info1Cliente = grupo[i].getElementsByTagName("INFO1")[0].childNodes[0].nodeValue;
-    Info2Cliente = grupo[i].getElementsByTagName("INFO2")[0].childNodes[0].nodeValue;
-    Info3Cliente = grupo[i].getElementsByTagName("INFO3")[0].childNodes[0].nodeValue;
-    Info4Cliente = grupo[i].getElementsByTagName("INFO4")[0].childNodes[0].nodeValue;
+    CelularCliente = grupo[i].getElementsByTagName("CELULAR")[0].childNodes[0].nodeValue;
+    Obs1Cliente = grupo[i].getElementsByTagName("OBS1")[0].childNodes[0].nodeValue;
+    Obs2Cliente = grupo[i].getElementsByTagName("OBS2")[0].childNodes[0].nodeValue;
+    
+    IdosoCliente = grupo[i].getElementsByTagName("IDOSO")[0].childNodes[0].nodeValue;
+    LocomocaoCliente = grupo[i].getElementsByTagName("LOCOMOCAO")[0].childNodes[0].nodeValue;
+    ExigenteCliente = grupo[i].getElementsByTagName("EXIGENTE")[0].childNodes[0].nodeValue;
+    GeneroCliente = grupo[i].getElementsByTagName("GENERO")[0].childNodes[0].nodeValue;
+    
+    AdminResp = grupo[i].getElementsByTagName("ADMINRSP")[0].childNodes[0].nodeValue;
         
-    if (IdCliente == "null") {
+    if (NomeUsuarioCliente == "null") {
         clienteOK = false;
     }
     else {
