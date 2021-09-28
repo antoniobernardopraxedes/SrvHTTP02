@@ -2,14 +2,14 @@
 //                                                                                                                    *
 //                       Programa Javascript para rodar no navegador de um administrador                              *
 //                                                                                                                    *
-// Data: 23/09/2021                                                                                                   *
+// Data: 28/09/2021                                                                                                   *
 //                                                                                                                    *
 // Função: permite ao administrador gerenciar as reservas das mesas.                                                  *
 //                                                                                                                    *
 //*********************************************************************************************************************
 //
 var xhttp = new XMLHttpRequest();
-recurso = "reserva";
+var recurso;
 var i = 0;
 
 const form = document.getElementById('signup');
@@ -21,6 +21,7 @@ const horarioChegada = form.elements['hora'];
 var AdminName;
 
 var DataReserva;
+var DataResEnvio;  // Variável de data da reserva para solicitação ao servidor no formato DD-MM-AAAA
 var UserName;      // O nome de usuário do cliente inserido pelo administrador
 var NumPessoas;
 var NumeroPessoas;
@@ -77,7 +78,7 @@ VerificaAdmin()
 
 // Fim do Programa
 
-function CarregaVariaveisFormnulario() {
+function CarregaVariaveisFormulario() {
     
     DataReserva = dataReserva.value;
     NomeUsuarioCliente = userName.value;
@@ -102,14 +103,14 @@ function CarregaVariaveisFormnulario() {
 //
 function VerificaAdmin() {    
 
-    EscreveEnvMsgSrv();
-    xhttp.open("POST", recurso, false);
+    recurso = "admin/";
+    xhttp.open("GET", recurso, false);
     try {
-        xhttp.send(MontaMsgServ("carregaAdmin", "null", "null", "null", "null", "null"));
+        xhttp.send();
         var xmlRec = xhttp.responseXML;
         grupo = xmlRec.getElementsByTagName("ADMIN");
         AdminName = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        EscreveTexto("Resposta do Servidor: informações do administrador", "infocom");
+        EscreveTexto("Recebidas as informações do administrador", "info1");
     
     } catch(err) {
         EscreveMsgErrSrv();
@@ -134,37 +135,46 @@ function VerificaAdmin() {
 //
 function VerificaData() {
     
-    CarregaVariaveisFormnulario()
-    
-    if (DataReserva == "") {
-        dataOK = false;
-        EscreveTexto("Entre com a data da reserva", "info1");
-    }
-    else {
-        dataOK = VerificaFormatoData(DataReserva);
-    }
-    
-    if (dataOK) {
-        EscreveEnvMsgSrv();
-        xhttp.open("POST", recurso, false);
-        try {
-            xhttp.send(MontaMsgServ("Data", "null", DataReserva, "null", "null", "null"));
-            var xmlRec = xhttp.responseXML;
-            CarregaMesas(xmlRec);
-            dataOK = true;
-        
-            EscreveTexto("Resposta do Servidor: reservas do dia " + DataReserva, "infocom");
-        
-        } catch(err) {
-            EscreveMsgErrSrv();
-            console.log("Erro " + err);
+    CarregaVariaveisFormulario();
+    if (DataReserva != "") {
+       if (VerificaFormatoData(DataReserva)) {
+        EscreveTexto("Enviada solicitação ao servidor", "info1");
+            recurso = "data/" + DataResEnvio;
+            xhttp.open("GET", recurso, false);
+            try {
+                xhttp.send();
+                var xmlRec = xhttp.responseXML;
+                CarregaMesas(xmlRec);
+                dataOK = true;
+                EscreveTexto("Recebido mapa de reservas do dia " + DataReserva, "info1");
+            
+            } catch(err) {
+                EscreveMsgErrSrv();
+                console.log("Erro " + err);
+            }
+        }
+        else {
+            EscreveTexto("Data inválida ou formato inválido. Use DD/MM/AAAA", "info1");
         }
     }
     else {
-        EscreveTexto("Data inválida", "info1");
+        EscreveTexto("Entre com a data da reserva. Formato: DD/MM/AAAA", "info1");
     }
 }
 
+//*********************************************************************************************************************
+// Nome da função: VerificaFormatoData                                                                                *
+//                                                                                                                    *
+// Data: 28/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: verifica a consistência da data digitada pelo usuário. Também gera a variável DataResEnvio para            *
+//         envio ao servidor.                                                                                         *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: se a data está OK retorna true.                                                                             *
+//*********************************************************************************************************************
+//
 function VerificaFormatoData(dataR) {
     resultado = true;
     var dia = 0;
@@ -192,7 +202,17 @@ function VerificaFormatoData(dataR) {
             }
         }
     }
-    
+    if (resultado) {
+        var Dia;
+        if (dia < 10) { Dia = "0" + dia; }
+        else { Dia = dia; }
+        var Mes;
+        if (mes < 10) { Mes = "0" + mes; }
+        else { Mes = mes; }
+        
+        DataResEnvio = Dia + "-" + Mes + "-" + ano;
+        
+    }
     return resultado;
 }
 
@@ -212,24 +232,21 @@ function VerificaFormatoData(dataR) {
 //
 function VerificaCliente() {
     
-    CarregaVariaveisFormnulario()
+    CarregaVariaveisFormulario();
+    clienteOK = false;
     
-    if (UserName == "") {
-        clienteOK = false;
-        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
-    }
-    else {
-        clienteOK = true;
-        EscreveEnvMsgSrv();
-        xhttp.open("POST", recurso, false);
+    if (UserName != "") {
+        recurso = "cliente/" + NomeUsuarioCliente;
+        xhttp.open("GET", recurso, false);
         try {
-            xhttp.send(MontaMsgServ("Cliente", NomeUsuarioCliente, "null", "null", "null", "null"));
+            xhttp.send();
             var xmlRec = xhttp.responseXML;
             CarregaCliente(xmlRec);
             
             if (clienteOK) {
+                EscreveTexto("Recebidas as informações do cliente", "info1");
                 EscreveTexto("Nome de usuário: " + NomeUsuarioCliente, "info2");
-                EscreveTexto("Nome: " + NomeCliente, "info3");
+                EscreveTexto("Nome completo: " + NomeCliente, "info3");
                 EscreveTexto("Celular: " + CelularCliente, "info4");
                 
                 var sufixo = "o";
@@ -245,14 +262,16 @@ function VerificaCliente() {
             }
             else {
                 EscreveTexto("Cliente não cadastrado", "info1");
+                LimpaCamposInfo();
             }
-            EscreveTexto("Resposta do Servidor: informações do cliente", "infocom");
-            document.getElementById("infocom").style.color = "#23257e";
-        
+            
         } catch(err) {
             EscreveMsgErrSrv();
             console.log("Erro " + err);
         }
+    }
+    else {
+        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
     }
 }
 
@@ -272,7 +291,7 @@ function VerificaCliente() {
 //
 function Entra() {
     
-    CarregaVariaveisFormnulario();
+    CarregaVariaveisFormulario();
     
     if (!dataOK) {
         EscreveTexto("Entre com a data da reserva", "info1");
@@ -315,19 +334,19 @@ function Entra() {
        
         EscreveTexto("Escolha a mesa", "info1");
     
-        EscreveEnvMsgSrv();
-        xhttp.open("POST", recurso, false);
-        try {
-            xhttp.send(MontaMsgServ("DataCliente", NomeUsuarioCliente, DataReserva, NumPessoas, HoraChegada, "null"));
-            var xmlRec = xhttp.responseXML;
-            CarregaCliente(xmlRec);
-            CarregaMesas(xmlRec);
-            EscreveTexto("Resposta do Servidor: data e cliente verificados", "infocom");
+        //EscreveEnvMsgSrv();
+        //xhttp.open("POST", recurso, false);
+        //try {
+        //    xhttp.send(MontaMsgServ("DataCliente", NomeUsuarioCliente, DataReserva, NumPessoas, HoraChegada, "null"));
+        //    var xmlRec = xhttp.responseXML;
+        //    CarregaCliente(xmlRec);
+        //    CarregaMesas(xmlRec);
+        //    EscreveTexto("Resposta do Servidor: data e cliente verificados", "infocom");
         
-        } catch(err) {
-            EscreveMsgErrSrv();
-            console.log("Erro " + err);
-        }
+        //} catch(err) {
+        //    EscreveMsgErrSrv();
+        //    console.log("Erro " + err);
+        //}
     }
 }
 
@@ -388,12 +407,12 @@ function reservaMesa(mesa) {
 //
 function Confirma() {
     
-    CarregaVariaveisFormnulario();
-    
-    EscreveEnvMsgSrv();
+    CarregaVariaveisFormulario();
+    VerificaFormatoData(dataReserva);
+    recurso = "confirma";
     xhttp.open("POST", recurso, false);
     try {
-        xhttp.send(MontaMsgServ("Confirma", UserName, DataReserva, NumPessoas, HoraChegada, MesaSelecionada));
+        xhttp.send(MontaMsgServ("Confirma", UserName, DataResEnvio, NumPessoas, HoraChegada, MesaSelecionada));
         var xmlRec = xhttp.responseXML;
         CarregaCliente(xmlRec);
         CarregaMesas(xmlRec);
@@ -401,13 +420,12 @@ function Confirma() {
         AtualizaMesa(MesaSelecionada, UserName, NumPessoas, HoraChegada);
         
         LimpaCamposInfo();
-        EscreveTexto("Confirmada a reserva da " + NomeMesa(MesaSelecionada), "info1");
-        EscreveTexto("Cliente: " + NomeCliente, "info2");
-        EscreveTexto("Data: " + DataReserva, "info3");
-        EscreveTexto("Número de pessoas: " + NumPessoas, "info4");
-        EscreveTexto("Horário de chegada: " + HoraChegada, "info5");
-        
-        EscreveTexto("Resposta do Servidor: confirmação da reserva", "infocom");
+        EscreveTexto("Recebida a confirmação da reserva ", "info1");
+        EscreveTexto("Confirmada a reserva da " + NomeMesa(MesaSelecionada), "info2");
+        EscreveTexto("Cliente: " + NomeCliente, "info3");
+        EscreveTexto("Data: " + DataReserva, "info4");
+        EscreveTexto("Número de pessoas: " + NumPessoas, "info5");
+        EscreveTexto("Horário de chegada: " + HoraChegada, "info6");
         
         dataOK = false;
         clienteOK = false;
@@ -645,38 +663,23 @@ function EscreveTexto(texto, idHTML) {
     document.getElementById(idHTML).innerHTML = texto;
 }
 
-function EscreveEnvMsgSrv() {
-    document.getElementById("infocom").innerHTML = "Enviada requisição ao Servidor";
-}
-
-function EscreveRspMsgSrv(msgrsp) {
-    document.getElementById("infocom").innerHTML = "Resposta do Servidor" + msgrsp;
-}
-
 function EscreveMsgErrSrv() {
-    document.getElementById("infocom").innerHTML = "O Servidor não respondeu";
+    document.getElementById("info1").innerHTML = "O Servidor não respondeu";
 }
 
-function LimpaCampoInfo(id) {
-    document.getElementById(id).innerHTML = "                      ";
+function LimpaCampoInfo1() {
+    document.getElementById("info1").innerHTML = "                      ";
 }
 
 function LimpaCamposInfo() {
-    document.getElementById("info1").innerHTML = "                      ";
     document.getElementById("info2").innerHTML = "                      ";
     document.getElementById("info3").innerHTML = "                      ";
     document.getElementById("info4").innerHTML = "                      ";
     document.getElementById("info5").innerHTML = "                      ";
+    document.getElementById("info6").innerHTML = "                      ";
+    document.getElementById("info7").innerHTML = "                      ";
+    document.getElementById("info8").innerHTML = "                      ";
+    document.getElementById("info9").innerHTML = "                      ";
+    document.getElementById("info10").innerHTML = "                      ";
+    document.getElementById("info11").innerHTML = "                      ";
 }
-
-function LimpaCampoInfoForm(id) {
-    document.getElementById(id).innerHTML = "                  ";
-}
-
-
-
-
-
-
-
-

@@ -4,12 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import praxsoft.SrvHTTP02.domain.Cliente;
 
 @Service
 public class VlglService {
 
-    // Arrays que guardam as informações do cliente e das mesas
-    private static String[] cliente = new String[10];
+    //private static String[] cliente = new String[10];
     private static String[][] mesa = new String[20][3];
 
     // Array usada para montagem da mensagem XML
@@ -35,6 +35,14 @@ public class VlglService {
     private static String horarioChegada;
     private static String mesaSelecionada;
 
+    public static void setNomeUsuarioCliente(String nomeUsuarioCliente) {
+        VlglService.nomeUsuarioCliente = nomeUsuarioCliente;
+    }
+
+    public static void setDataReserva(String dataReserva) {
+        VlglService.dataReserva = dataReserva;
+    }
+
     private static final String admin1 = "Ingrid";
     private static final String admin2 = "Guto";
     private static final String admin3 = "Bernardo";
@@ -59,100 +67,104 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: ExecutaComandos                                                                                 *
+    // Nome do Método: ConfirmaReserva                                                                                 *
     //	                                                                                                               *
-    // Data: 22/09/2021                                                                                                *
+    // Data: 28/09/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: recebe a mensagem enviada pelo cliente no modo administrador e executa os comandos solicitados.         *
+    // Funcao: recebe os dados da mensagem POST solicitando a confirmação da reserva, atualiza as variáveis e          *
+    //         grava o registro.                                                                                       *
     //                                                                                                                 *
-    // Entrada: string com a mensagem recebida do cliente e o nome do usuário que fez login.                           *
-    //          especiais.                                                                                             *
+    // Entrada: string com os dados da mensagem recebida no método POST                                                *
     //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
+    // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    public static ResponseEntity<?> ExecutaComandos(String dadosCliente, String idUsuario) {
-        String MsgXML = "";
-        String codigo = Auxiliar.LeParametroArquivo(dadosCliente, "Codigo:");
-        Auxiliar.Terminal("Recebida Requisição do Cliente - Código: " + codigo, false);
+    public static void ConfirmaReserva(String dadosMensagem ) {
 
-        if (VerificaAdmin(idUsuario)) {
-
-            switch (codigo) {
-                case "carregaAdmin" :
-                    MsgXML = MontaXMLadmin(idUsuario);
-                    break;
-
-                case "Data" :
-                    dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
-                    Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
-                    MsgXML = MontaXMLData();
-                    break;
-
-                case "Cliente" :
-                    nomeUsuarioCliente = Auxiliar.LeCampoArquivo(dadosCliente, "NomeUsuario:");
-                    Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
-                    nomeCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Nome:");
-                    Auxiliar.Terminal("Nome do Cliente: " + nomeCliente, false);
-                    celularCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Celular:");
-                    Auxiliar.Terminal("Celular do Cliente: " + celularCliente, false);
-                    observacao1Cliente = Auxiliar.LeCampoArquivo(dadosCliente, "Obs1:");
-                    Auxiliar.Terminal("Obs 1 Cliente: " + observacao1Cliente, false);
-                    observacao2Cliente = Auxiliar.LeCampoArquivo(dadosCliente, "Obs2:");
-                    Auxiliar.Terminal("Obs 2 Cliente: " + observacao2Cliente, false);
-                    idosoCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Idoso:");
-                    Auxiliar.Terminal("O Cliente é Idoso? " + idosoCliente, false);
-                    locomocaoCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Locomocao:");
-                    Auxiliar.Terminal("O cliente tem problema de locomoção? " + locomocaoCliente, false);
-                    exigenteCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Exigente:");
-                    Auxiliar.Terminal("O cliente é exigente? " + exigenteCliente, false);
-                    generoCliente = Auxiliar.LeCampoArquivo(dadosCliente, "Genero:");
-                    Auxiliar.Terminal("Gênero do cliente: " + generoCliente, false);
-                    adminRespCliente = Auxiliar.LeCampoArquivo(dadosCliente, "AdminResp:");
-                    Auxiliar.Terminal("Responsável pelo cadastro: " + adminRespCliente, false);
-                    MsgXML = MontaXMLCliente();
-                    break;
-
-                case "DataCliente" :
-                    dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
-                    Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
-                    nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
-                    Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
-                    numeroPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
-                    Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
-                    horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
-                    Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
-                    MsgXML = MontaXMLdataCliente();
-                    break;
-
-                case "Confirma" :
-                    dataReserva = Auxiliar.LeParametroArquivo(dadosCliente, "DataReserva:");
-                    Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
-                    nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosCliente, "NomeUsuario:");
-                    Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
-                    numeroPessoas = Auxiliar.LeParametroArquivo(dadosCliente, "NumPessoas:");
-                    Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
-                    horarioChegada = Auxiliar.LeParametroArquivo(dadosCliente,"HorarioCheg:");
-                    Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
-                    mesaSelecionada = Auxiliar.LeParametroArquivo(dadosCliente,"MesaSelec: ");
-                    Auxiliar.Terminal("Mesa Selecionada: " + mesaSelecionada, false);
-                    AtualizaArqData();
-                    MsgXML = MontaXMLdataCliente();
-                    break;
-            }
-        }
-
-        System.out.println(MsgXML);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+        dataReserva = Auxiliar.LeParametroArquivo(dadosMensagem, "DataReserva:");
+        Auxiliar.Terminal("Data da Reserva: " + dataReserva, false);
+        nomeUsuarioCliente = Auxiliar.LeParametroArquivo(dadosMensagem, "NomeUsuario:");
+        Auxiliar.Terminal("Nome de Usuário: " + nomeUsuarioCliente, false);
+        numeroPessoas = Auxiliar.LeParametroArquivo(dadosMensagem, "NumPessoas:");
+        Auxiliar.Terminal("Número de Pessoas: " + numeroPessoas, false);
+        horarioChegada = Auxiliar.LeParametroArquivo(dadosMensagem,"HorarioCheg:");
+        Auxiliar.Terminal("Horário de Chegada: " + horarioChegada, false);
+        mesaSelecionada = Auxiliar.LeParametroArquivo(dadosMensagem,"MesaSelec: ");
+        Auxiliar.Terminal("Mesa Selecionada: " + mesaSelecionada, false);
+        AtualizaArquivoReserva();
 
     }
 
     //******************************************************************************************************************
-    // Nome do Método: AtualizaArqData                                                                                 *
+    // Nome do Método: GeraCadastroCliente                                                                             *
+    //	                                                                                                               *
+    // Data: 28/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: recebe os dados de uma mensagem POST solicitando o cadastro de um cliente, atualiza as variáveis        *
+    //         e grava o registro.                                                                                     *
+    //                                                                                                                 *
+    // Entrada: string com os dados da mensagem recebida no método POST                                                *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    public static void GeraCadastroCliente(Cliente cliente) {
+
+        //Auxiliar.Terminal("Nome de usuário do cliente: " + cliente.getNomeUsuario(), false);
+        //Auxiliar.Terminal("Nome do cliente: " + cliente.getNome(), false);
+        //Auxiliar.Terminal("Celular do cliente: " + cliente.getCelular(), false);
+        //Auxiliar.Terminal("Observação 1: " + cliente.getObs1(), false);
+        //Auxiliar.Terminal("Observação 2: " + cliente.getObs2(), false);
+        //Auxiliar.Terminal("O cliente é idoso? " + cliente.getIdoso(), false);
+        //Auxiliar.Terminal("O cliente tem problema de locomoção? " + cliente.getLocomocao(), false);
+        //Auxiliar.Terminal("O cliente é exigente? " + cliente.getExigente(), false);
+        //Auxiliar.Terminal("Gênero: " + cliente.getGenero(), false);
+        //Auxiliar.Terminal("Admin responsável pelo cadastro: " + cliente.getAdminResp(), false);
+
+        cliente.MostraCamposTerminal();
+
+        String dadosArqNovo = "{\n";
+        dadosArqNovo = dadosArqNovo + "  NomeUsuario: " + cliente.getNomeUsuario() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Nome: " + cliente.getNome() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Celular: " + cliente.getCelular() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Obs1: " + cliente.getObs1() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Obs2: " + cliente.getObs2() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Idoso: " + cliente.getIdoso() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Locomocao: " + cliente.getLocomocao() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Exigente: " + cliente.getExigente() + "\n";
+        dadosArqNovo = dadosArqNovo + "  Genero: " + cliente.getGenero() + "\n";
+        dadosArqNovo = dadosArqNovo + "  AdminResp: " + cliente.getAdminResp() + "\n";
+        dadosArqNovo = dadosArqNovo + "}\n";
+
+        String caminho = "recursos/vlgl/clientes/";
+        String nomeArquivo = cliente.getNomeUsuario() + ".clt";
+
+        // Se o arquivo existe, renomeia para a.nomearquivo.clt e grava o novo arquivo de cadastro de cliente
+        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            Arquivo.Apaga(caminho, "a." + nomeArquivo);
+            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
+                Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " renomeado", false);
+                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                    Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                    clienteCadastrado = "sim";
+                } else {
+                    clienteCadastrado = "nao";
+                }
+
+            }
+        }
+        else { // Se o arquivo não existe, grava o novo arquivo de cadastro de cliente
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                clienteCadastrado = "sim";
+            } else {
+                clienteCadastrado = "nao";
+            }
+        }
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: AtualizaReserva                                                                                 *
     //	                                                                                                               *
     // Data: 24/09/2021                                                                                                *
     //                                                                                                                 *
@@ -165,16 +177,10 @@ public class VlglService {
     // Saida:                                                                                                          *
     //******************************************************************************************************************
     //
-    public static void AtualizaArqData() {
-
-        String dia = dataReserva.substring(0,2);
-        String mes = dataReserva.substring(3,5);
-        String ano = dataReserva.substring(6,10);
-
-        System.out.println("Dia: " + dia + " - Mes: " + mes + " - Ano: " + ano);
+    public static void AtualizaArquivoReserva() {
 
         String caminho = "recursos/vlgl/reservas/";
-        String nomeArquivo = dia + "-" + mes + "-" + ano + ".res";
+        String nomeArquivo = dataReserva + ".res";
 
         String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
         if (dadosArquivo != null) {
@@ -307,62 +313,6 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: CarregaClienteArray                                                                             *
-    //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
-    //                                                                                                                 *
-    // Saida: boolean (retorna false se o registro do cliente não for encontrado)                                      *
-    //******************************************************************************************************************
-    //
-    public static void CarregaClienteArray(int IdNv0, int IdNv1) {
-        if (nomeUsuarioCliente == null) { nomeUsuarioCliente = "null"; }
-        int numCampos = 6;
-
-        String caminho = "recursos/vlgl/clientes/";
-        String nomeArquivo = nomeUsuarioCliente + ".clt";
-        String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
-
-        if (registroCliente == null) {
-            clienteCadastrado = "nao";
-            for (int i = 0; i < numCampos; i++) {
-                cliente[i] = "null";
-            }
-        }
-        else {
-            clienteCadastrado = "sim";
-            cliente[0] = Auxiliar.LeCampoArquivo(registroCliente, "Id:");
-            cliente[1] = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
-            cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Celular:");
-            cliente[3] = Auxiliar.LeCampoArquivo(registroCliente, "Obs1:");
-            cliente[4] = Auxiliar.LeCampoArquivo(registroCliente, "Obs2:");
-            cliente[5] = Auxiliar.LeCampoArquivo(registroCliente, "Idoso:");
-            cliente[6] = Auxiliar.LeCampoArquivo(registroCliente, "Locomocao:");
-            cliente[7] = Auxiliar.LeCampoArquivo(registroCliente, "Exigente:");
-            cliente[8] = Auxiliar.LeCampoArquivo(registroCliente, "Genero:");
-            cliente[9] = Auxiliar.LeCampoArquivo(registroCliente, "AdminResp:");
-        }
-
-        // Grupo IdNv1: Variáveis de Informação do Cliente
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
-        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", cliente[0]);
-        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", cliente[1]);
-        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("CELULAR", cliente[2]);
-        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("OBS1", cliente[3]);
-        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("OBS2", cliente[4]);
-        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("IDOSO", cliente[5]);
-        MsgXMLArray[IdNv0][IdNv1][7] = Auxiliar.EntTagValue("LOCOMOCAO", cliente[6]);
-        MsgXMLArray[IdNv0][IdNv1][8] = Auxiliar.EntTagValue("EXIGENTE", cliente[7]);
-        MsgXMLArray[IdNv0][IdNv1][9] = Auxiliar.EntTagValue("GENERO", cliente[8]);
-        MsgXMLArray[IdNv0][IdNv1][10] = Auxiliar.EntTagValue("ADMINRSP", cliente[9]);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(10); // Número de elementos do Grupo
-
-    }
-
-    //******************************************************************************************************************
     // Nome do Método: CarregaDataArray                                                                                *
     //	                                                                                                               *
     // Data: 25/09/2021                                                                                                *
@@ -378,14 +328,8 @@ public class VlglService {
 
         if (dataReserva == null) { dataReserva = "null"; }
 
-        String dia = dataReserva.substring(0,2);
-        String mes = dataReserva.substring(3,5);
-        String ano = dataReserva.substring(6,10);
-
-        System.out.println("Dia: " + dia + " - Mes: " + mes + " - Ano: " + ano);
-
         String caminho = "recursos/vlgl/reservas/";
-        String nomeArquivo = dia + "-" + mes + "-" + ano + ".res";
+        String nomeArquivo = dataReserva + ".res";
         if (!Arquivo.Existe(caminho, nomeArquivo)) {
             EscreveArquivoReservaNovo(dataReserva);
         }
@@ -457,6 +401,8 @@ public class VlglService {
     //
     public static String MontaXMLadmin(String idAdmin) {
 
+        Auxiliar.Terminal("idAdmin: " + idAdmin, false);
+
         String nomeAdmin;
         String res1Admin;
         String res2Admin;
@@ -521,15 +467,72 @@ public class VlglService {
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public static String MontaXMLCliente() {
+    public static String MontaXMLCliente(String nomeUsuario) {
 
         MsgXMLArray[0][0][0][0] = "LOCAL001";    // Identificador do Local
         MsgXMLArray[0][0][0][1] = "02";          // Número de Grupos (ESTADO e CLIENTE)
 
-        CarregaClienteArray(0, 2);
+        CarregaClienteArray(nomeUsuario,0, 2);
         CarregaEstadoArray(0, 1);
 
         return(Auxiliar.StringXML(MsgXMLArray));
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: CarregaClienteArray                                                                             *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
+    //                                                                                                                 *
+    // Saida: boolean (retorna false se o registro do cliente não for encontrado)                                      *
+    //******************************************************************************************************************
+    //
+    public static void CarregaClienteArray(String nomeUsuario, int IdNv0, int IdNv1) {
+
+        int numCampos = 10;
+        String[] cliente = new String[numCampos];
+
+        String caminho = "recursos/vlgl/clientes/";
+        String nomeArquivo = nomeUsuario + ".clt";
+        String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        if (registroCliente == null) {
+            clienteCadastrado = "nao";
+            for (int i = 0; i < numCampos; i++) {
+                cliente[i] = "null";
+            }
+        }
+        else {
+            clienteCadastrado = "sim";
+            cliente[0] = Auxiliar.LeCampoArquivo(registroCliente, "NomeUsuario:");
+            cliente[1] = Auxiliar.LeCampoArquivo(registroCliente, "Nome:");
+            cliente[2] = Auxiliar.LeCampoArquivo(registroCliente, "Celular:");
+            cliente[3] = Auxiliar.LeCampoArquivo(registroCliente, "Obs1:");
+            cliente[4] = Auxiliar.LeCampoArquivo(registroCliente, "Obs2:");
+            cliente[5] = Auxiliar.LeCampoArquivo(registroCliente, "Idoso:");
+            cliente[6] = Auxiliar.LeCampoArquivo(registroCliente, "Locomocao:");
+            cliente[7] = Auxiliar.LeCampoArquivo(registroCliente, "Exigente:");
+            cliente[8] = Auxiliar.LeCampoArquivo(registroCliente, "Genero:");
+            cliente[9] = Auxiliar.LeCampoArquivo(registroCliente, "AdminResp:");
+        }
+
+        // Grupo IdNv1: Variáveis de Informação do Cliente
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
+        MsgXMLArray[IdNv0][IdNv1][1] = Auxiliar.EntTagValue("ID", cliente[0]);
+        MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", cliente[1]);
+        MsgXMLArray[IdNv0][IdNv1][3] = Auxiliar.EntTagValue("CELULAR", cliente[2]);
+        MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("OBS1", cliente[3]);
+        MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("OBS2", cliente[4]);
+        MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("IDOSO", cliente[5]);
+        MsgXMLArray[IdNv0][IdNv1][7] = Auxiliar.EntTagValue("LOCOMOCAO", cliente[6]);
+        MsgXMLArray[IdNv0][IdNv1][8] = Auxiliar.EntTagValue("EXIGENTE", cliente[7]);
+        MsgXMLArray[IdNv0][IdNv1][9] = Auxiliar.EntTagValue("GENERO", cliente[8]);
+        MsgXMLArray[IdNv0][IdNv1][10] = Auxiliar.EntTagValue("ADMINRSP", cliente[9]);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(10); // Número de elementos do Grupo
+
     }
 
     //******************************************************************************************************************
@@ -577,7 +580,7 @@ public class VlglService {
         MsgXMLArray[0][0][0][0] = "LOCAL001";    // Identificador do Local
         MsgXMLArray[0][0][0][1] = "03";          // Número de Grupos (ESTADO, CLIENTE e DATA)
 
-        CarregaClienteArray(0, 2);               // As informações do cliente são carregadas no grupo 2
+        CarregaClienteArray(nomeUsuarioCliente, 0, 2);
         CarregaDataArray(0, 3);                  // As informações de data são carregadas no grupo 3
         CarregaEstadoArray(0, 1);                // As informações de estado são carregadas no grupo 1
 

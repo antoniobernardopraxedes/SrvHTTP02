@@ -9,7 +9,7 @@
 //*********************************************************************************************************************
 //
 var xhttp = new XMLHttpRequest();
-var recurso = "reserva";
+var recurso;
 var i = 0;
 var grupo;
 
@@ -24,7 +24,8 @@ const locomocaoCliente = form.elements['locomocao'];
 const exigenteCliente = form.elements['exigente'];
 const generoCliente = form.elements['genero'];
 
-var NomeAdministrador;
+var NomeUsuarioAdmin;
+var NomeAdmin;
 
 var EstadoConfirma = "null";
 var EstadoData = "null";
@@ -51,6 +52,7 @@ VerificaAdmin()
 // Fim do Programa
 
 function CarregaVariaveisFormulario() {
+    
     NomeUsuarioCliente = nomeUsuarioCliente.value;
     NomeCliente = nomeCliente.value;
     CelularCliente = celularCliente.value;
@@ -60,7 +62,7 @@ function CarregaVariaveisFormulario() {
     LocomocaoCliente = locomocaoCliente.value;
     ExigenteCliente = exigenteCliente.value;
     GeneroCliente = generoCliente.value;
-    
+    AdminResp = NomeUsuarioAdmin;
 }
 
 //*********************************************************************************************************************
@@ -79,14 +81,15 @@ function CarregaVariaveisFormulario() {
 function VerificaAdmin() {    
 
     EscreveEnvMsgSrv();
-    xhttp.open("POST", recurso, false);
+    recurso = "admin";
+    xhttp.open("GET", recurso, false);
     try {
-        xhttp.send(MontaMsgServ("carregaAdmin", "null", "null", "null", "null", "null"));
+        xhttp.send(null);
         var xmlRec = xhttp.responseXML;
         grupo = xmlRec.getElementsByTagName("ADMIN");
-        NomeAdministrador = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        AdminResp = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-        EscreveTexto("Resposta do Servidor: informações do administrador", "infocom");
+        NomeUsuarioAdmin = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+        NomeAdmin = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+        EscreveTexto("Recebidas informações do administrador", "infocom");
     
     } catch(err) {
         EscreveMsgErrSrv();
@@ -120,16 +123,13 @@ function VerificaCliente() {
         EscreveTexto("Entre com o nome de usuário do cliente", "info1");
     }
     else {
-        clienteOK = true;
-        EscreveEnvMsgSrv();
-        xhttp.open("POST", recurso, false);
+        recurso = "cliente/" + NomeUsuarioCliente;
+        xhttp.open("GET", recurso, false);
         try {
-            xhttp.send(MontaMsgServ("Cliente", NomeUsuarioCliente, "null", "null", "null", "null"));
+            xhttp.send();
             var xmlRec = xhttp.responseXML;
             CarregaCliente(xmlRec);
-            
             EscreveInfoCliente();
-            
             EscreveTexto("Resposta do Servidor: informações do cliente", "infocom");
         
         } catch(err) {
@@ -157,24 +157,27 @@ function Cadastra() {
     
     CarregaVariaveisFormulario();
     
-    if (confirm("Confirma o cadastro do cliente?")) {
-        EscreveEnvMsgSrv();
-        xhttp.open("POST", recurso, false);
-        try {
-            xhttp.send(MontaMsgServ("Cliente"));
-            var xmlRec = xhttp.responseXML;
-            CarregaEstado(xmlRec);
-            CarregaCliente(xmlRec);
-            LimpaCamposInfo();
-            EscreveInfoCliente();
+    if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
         
+        recurso = "cadastra";
+        xhttp.open("POST", recurso, false);
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+        
+        try {
+            xhttp.send(MontaMsgJson());
+            var xmlRec = xhttp.responseXML;
+            
+            CarregaEstado(xmlRec);
+            LimpaCamposInfo();
+            
             if (EstadoCadastro == "sim") {
-                EscreveTexto("Resposta do Servidor: cliente cadastrado", "infocom");
+                CarregaCliente(xmlRec);
+                EscreveInfoCliente();
+                EscreveTexto("O cliente foi cadastrado", "infocom");
             }
             else {
-                EscreveTexto("Resposta do Servidor: falha ao cadastrar o cliente", "infocom");
+                EscreveTexto("Falha ao cadastrar o cliente", "infocom");
             }
-        
         } catch(err) {
             EscreveMsgErrSrv();
             console.log("Erro " + err);
@@ -244,7 +247,7 @@ function CarregaCliente(xmlMsg) {
 //*********************************************************************************************************************
 // Nome da função: MontaMsgServ                                                                                       *
 //                                                                                                                    *
-// Data: 27/09/2021                                                                                                   *
+// Data: 28/09/2021                                                                                                   *
 //                                                                                                                    *
 // Função: monta a mensagem de requisição ao servidor                                                                 *
 //                                                                                                                    *
@@ -253,21 +256,22 @@ function CarregaCliente(xmlMsg) {
 // Saída: não tem                                                                                                     *
 //*********************************************************************************************************************
 //
-function MontaMsgServ(codigoMsg) {
-    
-    msgServ = "Codigo: " + codigoMsg + "\n" +
-              "NomeUsuario: " + NomeUsuarioCliente + "\n" +
-              "Nome: " + NomeCliente + "\n" +
-              "Celular: " + CelularCliente + "\n" +
-              "Obs1: " + CelularCliente + "\n" +
-              "Obs2: " + CelularCliente + "\n" +
-              "Idoso: " + IdosoCliente + "\n" +
-              "Locomocao: " + LocomocaoCliente + "\n" +
-              "Exigente: " + ExigenteCliente + "\n" +
-              "Genero: " + GeneroCliente + "\n" +
-              "AdminResp: " + AdminResp + "\n";
-              
-    return msgServ;
+function MontaMsgJson() {
+        
+    var msgJson = "{\n" +
+                  "  \"nomeUsuario\" : \"" + NomeUsuarioCliente + "\",\n" +
+                  "  \"nome\" : \"" + NomeCliente + "\",\n" +
+                  "  \"celular\" : \"" + CelularCliente + "\",\n" +
+                  "  \"obs1\" : \"" + CelularCliente + "\",\n" +
+                  "  \"obs2\" : \"" + CelularCliente + "\",\n" +
+                  "  \"idoso\" : \"" + IdosoCliente + "\",\n" +
+                  "  \"locomocao\" : \"" + LocomocaoCliente + "\",\n" +
+                  "  \"exigente\" : \"" + ExigenteCliente + "\",\n" +
+                  "  \"genero\" : \"" + GeneroCliente + "\",\n" +
+                  "  \"adminResp\" : \"" + AdminResp + "\"\n" +
+                  "}";
+                  
+    return msgJson;
 }
 
 //*********************************************************************************************************************

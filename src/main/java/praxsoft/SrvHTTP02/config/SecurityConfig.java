@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //.antMatchers("/reservas").permitAll()
                 .antMatchers("/vlgl.*").permitAll()
-                .antMatchers("/reserva").permitAll()
+                .antMatchers("/vlgl/confirma").permitAll()
                 .antMatchers("/atualiza").permitAll()
                 .antMatchers("/local001.xml").permitAll()
                 .anyRequest().authenticated()

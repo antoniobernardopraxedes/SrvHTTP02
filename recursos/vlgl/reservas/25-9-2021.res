@@ -1,7 +1,7 @@
 {
-  OA00: IsisDias
-  NA00: 7
-  HA00: 12:00
+  OA00: livre
+  NA00: null
+  HA00: null
   OA01: livre
   NA01: null
   HA01: null
@@ -11,9 +11,9 @@
   OA03: livre
   NA03: null
   HA03: null
-  OA04: IsisDias
-  NA04: 4
-  HA04: 12:30
+  OA04: livre
+  NA04: null
+  HA04: null
   OA05: livre
   NA05: null
   HA05: null

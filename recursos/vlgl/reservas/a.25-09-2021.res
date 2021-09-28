@@ -5,9 +5,9 @@
   OA01: livre
   NA01: null
   HA01: null
-  OA02: livre
-  NA02: null
-  HA02: null
+  OA02: IsisDias
+  NA02: 4
+  HA02: 12:00
   OA03: LuccaBorges
   NA03: 04
   HA03: 12:00

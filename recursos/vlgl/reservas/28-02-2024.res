@@ -11,9 +11,9 @@
   OA03: livre
   NA03: null
   HA03: null
-  OA04: livre
-  NA04: null
-  HA04: null
+  OA04: IsisDias
+  NA04: 4
+  HA04: 12:30
   OA05: livre
   NA05: null
   HA05: null
@@ -32,9 +32,9 @@
   OB10: livre
   NB10: null
   HB10: null
-  OB11: livre
-  NB11: null
-  HB11: null
+  OB11: IsisDias
+  NB11: 4
+  HB11: 12:30
   OB12: livre
   NB12: null
   HB12: null
