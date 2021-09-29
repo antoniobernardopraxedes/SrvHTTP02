@@ -8,23 +8,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Cliente;
+import praxsoft.SrvHTTP02.domain.ReservaMesa;
 import praxsoft.SrvHTTP02.services.Auxiliar;
-import praxsoft.SrvHTTP02.services.SiteService;
 import praxsoft.SrvHTTP02.services.VlglService;
 
 @RestController
 public class VlglResources {
 
     @Autowired
-    private SiteService siteService;
-    //private VlglService vlglService;
+    private VlglService vlglService;
 
     @GetMapping(value = "/vlgl/admin")
     public ResponseEntity<?> EnviaDadosAdmin() {
         Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/admin", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String MsgXML = VlglService.MontaXMLadmin(auth.getName());
+        String MsgXML = vlglService.MontaXMLadmin(auth.getName());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -34,39 +33,38 @@ public class VlglResources {
 
     @GetMapping(value = "/vlgl/reservas")
     public ResponseEntity<?> ReservasVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
+        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/reservas", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String nomeArquivo;
-        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/reservas", false);
 
-        if (VlglService.VerificaAdmin(auth.getName())) {
+        if (vlglService.VerificaAdmin(auth.getName())) {
             nomeArquivo = "adminreservas.html";
         }
         else {
             nomeArquivo = "reservas.html";
         }
-        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/vlgl/cadastro")
     public ResponseEntity<?> CadastroVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
+        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/cadastro", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         String nomeArquivo = "";
-        if (VlglService.VerificaAdmin(auth.getName())) {
-            VlglService.IniciaVariaveis();;
+        if (vlglService.VerificaAdmin(auth.getName())) {
             nomeArquivo = "admincadastro.html";
         }
-        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
-    @GetMapping(value = "/vlgl/data/{recurso}")
-    public ResponseEntity<?> VerificaData(@PathVariable String recurso) {
-        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/data/" + recurso, false);
+    @GetMapping(value = "/vlgl/data/{dataReserva}")
+    public ResponseEntity<?> VerificaData(@PathVariable String dataReserva) {
+        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/data/" + dataReserva, false);
 
-        VlglService.setDataReserva(recurso);
-        String MsgXML = VlglService.MontaXMLData();
+        String MsgXML = vlglService.MontaXMLData(dataReserva);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
@@ -77,7 +75,7 @@ public class VlglResources {
     public ResponseEntity<?> VerificaCliente(@PathVariable String nomeUsuarioCliente) {
         Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/cliente/" + nomeUsuarioCliente, false);
 
-        String MsgXML = VlglService.MontaXMLCliente(nomeUsuarioCliente);
+        String MsgXML = vlglService.MontaXMLCliente(nomeUsuarioCliente);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
@@ -89,15 +87,19 @@ public class VlglResources {
                                               @RequestHeader(value = "User-Agent") String userAgent) {
 
         Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
-        return siteService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+
+        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
     @PostMapping(value = "/vlgl/confirma")
-    public ResponseEntity<?> ConfirmaReserva(@RequestBody String dadosMensagem) {
+    public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
         Auxiliar.Terminal("Método POST - Recurso solicitado: /vlgl/confirma", false);
 
-        VlglService.ConfirmaReserva(dadosMensagem);
-        String MsgXML = VlglService.MontaXMLdataCliente();
+        reservaMesa.MostraCamposTerminal();
+        boolean confirma = VlglService.AtualizaArquivo(reservaMesa);
+        String MsgXML = vlglService.MontaXMLConfirma(reservaMesa, confirma);
+
+        System.out.println(MsgXML);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
@@ -109,8 +111,7 @@ public class VlglResources {
         Auxiliar.Terminal("Método POST - Recurso solicitado: /vlgl/cadastra", false);
 
         VlglService.GeraCadastroCliente(cliente);
-        String MsgXML = VlglService.MontaXMLCliente(cliente.getNomeUsuario());
-        //System.out.println(MsgXML);
+        String MsgXML = vlglService.MontaXMLCliente(cliente.getNomeUsuario());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -121,7 +122,7 @@ public class VlglResources {
     @GetMapping(value = "/favicon.ico")
     public ResponseEntity<?> EnviaIcone() {
 
-        return siteService.LeArquivoMontaResposta("recursos/vlgl/", "favicon.ico", "null");
+        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", "favicon.ico", "null");
     }
 
 }

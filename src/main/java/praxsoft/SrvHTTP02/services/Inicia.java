@@ -8,11 +8,19 @@ import java.util.StringTokenizer;
 @Component
 public class Inicia {
 
-    @Autowired
-    private SupService supService;
+    //@Autowired
+    //private SupService supService;
+
     private static boolean opLocal;
     private static boolean verbose;
     private static String endIpConc;
+
+    private static String nomeUsuarioAdmin1;
+    private static String senhaAdmin1;
+    private static String nomeUsuarioAdmin2;
+    private static String senhaAdmin2;
+    private static String nomeUsuarioAdmin3;
+    private static String senhaAdmin3;
 
     public static boolean isOpLocal() {
         return opLocal;
@@ -22,6 +30,30 @@ public class Inicia {
     }
     public static String getEndIpConc() {
         return endIpConc;
+    }
+
+    public static String getNomeUsuarioAdmin1() {
+        return nomeUsuarioAdmin1;
+    }
+
+    public static String getSenhaAdmin1() {
+        return senhaAdmin1;
+    }
+
+    public static String getNomeUsuarioAdmin2() {
+        return nomeUsuarioAdmin2;
+    }
+
+    public static String getSenhaAdmin2() {
+        return senhaAdmin2;
+    }
+
+    public static String getNomeUsuarioAdmin3() {
+        return nomeUsuarioAdmin3;
+    }
+
+    public static String getSenhaAdmin3() {
+        return senhaAdmin3;
     }
 
     @PostConstruct
@@ -59,6 +91,13 @@ public class Inicia {
             String Verbose = Auxiliar.LeParametroArquivo(ArquivoConf, "Verbose:");
             String EndIpConcArduino = Auxiliar.LeParametroArquivo(ArquivoConf, "EndIpConcArduino:");
 
+            nomeUsuarioAdmin1 = Auxiliar.LeParametroArquivo(ArquivoConf, "NomeUsuarioAdmin1:");
+            senhaAdmin1 = Auxiliar.LeParametroArquivo(ArquivoConf, "SenhaAdmin1:");
+            nomeUsuarioAdmin2 = Auxiliar.LeParametroArquivo(ArquivoConf, "NomeUsuarioAdmin2:");
+            senhaAdmin2 = Auxiliar.LeParametroArquivo(ArquivoConf, "SenhaAdmin2:");
+            nomeUsuarioAdmin3 = Auxiliar.LeParametroArquivo(ArquivoConf, "NomeUsuarioAdmin3:");
+            senhaAdmin3 = Auxiliar.LeParametroArquivo(ArquivoConf, "SenhaAdmin3:");
+
             if (ModoOp.equals("local")) { opLocal = true; } else { opLocal = false; }
             if (Verbose.equals("true")) { verbose = true; } else { verbose = false; }
             endIpConc = EndIpConcArduino;
@@ -68,6 +107,13 @@ public class Inicia {
             else { System.out.println("Modo de Operação Remoto (Nuvem)"); }
             System.out.println("Verbose: " + verbose);
             System.out.println("Endereço IP do Concentrador Arduino: " + endIpConc);
+            System.out.println("");
+            System.out.println("Administrador Vlgl 1:" + nomeUsuarioAdmin1);
+            System.out.println("Senha Administrador Vlgl 1:" + senhaAdmin1);
+            System.out.println("Administrador Vlgl 2:" + nomeUsuarioAdmin2);
+            System.out.println("Senha Administrador Vlgl 2:" + senhaAdmin2);
+            System.out.println("Administrador Vlgl 3:" + nomeUsuarioAdmin3);
+            System.out.println("Senha Administrador Vlgl 3:" + senhaAdmin3);
             System.out.println("");
 
         } catch (Exception e) {

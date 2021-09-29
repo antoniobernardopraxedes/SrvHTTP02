@@ -2,52 +2,69 @@
   OA00: livre
   NA00: null
   HA00: null
+  AA00: null
   OA01: livre
   NA01: null
   HA01: null
+  AA01: null
   OA02: livre
   NA02: null
   HA02: null
+  AA02: null
   OA03: livre
   NA03: null
   HA03: null
+  AA03: null
   OA04: livre
   NA04: null
   HA04: null
+  AA04: null
   OA05: livre
   NA05: null
   HA05: null
+  AA05: null
   OA06: livre
   NA06: null
   HA06: null
+  AA06: null
   OA07: livre
   NA07: null
   HA07: null
+  AA07: null
   OA08: livre
   NA08: null
   HA08: null
+  AA08: null
   OB09: livre
   NB09: null
   HB09: null
+  AB09: null
   OB10: livre
   NB10: null
   HB10: null
+  AB10: null
   OB11: livre
   NB11: null
   HB11: null
+  AB11: null
   OB12: livre
   NB12: null
   HB12: null
+  AB12: null
   OB13: livre
   NB13: null
   HB13: null
+  AB13: null
   OB14: livre
   NB14: null
   HB14: null
+  AB14: null
   OB15: livre
   NB15: null
   HB15: null
+  AB15: null
   OB16: livre
   NB16: null
   HB16: null
+  AB16: null
 }

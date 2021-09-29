@@ -103,59 +103,6 @@ public class Auxiliar {
     }
 
     //******************************************************************************************************************
-    //                                                                                                                 *
-    // Nome do Método: StringXML()                                                                                     *
-    //	                                                                                                               *
-    // Funcao: monta uma String com a mensagem XML de resposta inserindo o valor das variáveis                         *
-    //                                                                                                                 *
-    // Entrada: array String com as Tags dos Níveis 0, 1 e 2 e os valores das variáveis de supervisão                  *
-    //                                                                                                                 *
-    // Saida: String com a mensagem XML                                                                                *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    public static String StringXML(String MsgXMLArray[][][][]) {
-        String MsgXML = "";
-        MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
-
-        char Dezena = MsgXMLArray[0][0][0][1].charAt(0);
-        char Unidade = MsgXMLArray[0][0][0][1].charAt(1);
-
-        // Obtem o Numero de Tags de Nivel 1
-        int NmTagNv1 = Auxiliar.TwoCharToInt(Dezena, Unidade);
-
-        // Repete até imprimir todas as Tags de Nível 1 e Nível 2
-        for (int i = 1; i <= NmTagNv1; i++) {
-
-            // Imprime a Tag de Nivel 1 de Início do Grupo
-            MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
-            char DzNumVar = MsgXMLArray[0][i][0][1].charAt(0);
-            char UnNumVar = MsgXMLArray[0][i][0][1].charAt(1);
-
-            // Obtém o Número de Variáveis do Grupo
-            int NumVar = Auxiliar.TwoCharToInt(DzNumVar, UnNumVar);
-
-            // Repeta até imprimir todas as Tags de Nível 2 e suas variáveis
-            for (int j = 1; j <= NumVar; j++) {
-
-                // Imprime as Tags de Nível 2 e os Valores das Variáveis
-                MsgXML = MsgXML + "    <" + MsgXMLArray[0][i][j][0] + ">"
-                        + MsgXMLArray[0][i][j][1]
-                        + "</" + MsgXMLArray[0][i][j][0] + ">\n";
-            }
-
-            // Imprime a Tag de Nivel 1 de Fim de Grupo
-            MsgXML = MsgXML + "  </" + MsgXMLArray[0][i][0][0] + ">\n";
-        }
-
-        // Imprime a Tag de Nivel 0 de Fim
-        MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">";
-
-        return (MsgXML);
-    }
-
-    //******************************************************************************************************************
     // Nome do Método: EntTagValue                                                                                     *
     //                                                                                                                 *
     // Funcao: monta um array de duas strings a partir de duas strings (Tag e Value).                                  *
