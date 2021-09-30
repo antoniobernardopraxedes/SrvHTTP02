@@ -610,4 +610,36 @@ public class Auxiliar {
         }
         return (valStr);
     }
+
+    //******************************************************************************************************************
+    // Nome da Rotina: IntToStr4                                                                                       *
+    //                                                                                                                 *
+    // Funcao: converte um inteiro positivo na faixa de 0000 a 9999 para uma string                                    *
+    //                                                                                                                 *
+    // Entrada: valor inteiro de 0 a 99                                                                                *
+    //                                                                                                                 *
+    // Saida: string de dois dígitos do número (formato 00 a 99). Se o valor estiver fora da faixa retorna 00          *
+    //                                                                                                                 *
+    //******************************************************************************************************************
+    //
+    public static String IntToStr4(int valInt) {
+        String valStr = "0000";
+
+        if ((valInt >= 0) && (valInt <= 9999)) {
+            if (valInt >= 1000) {
+                valStr = valInt + "";
+            } else {
+                if (valInt >= 100) {
+                    valStr = "0" + valInt;
+                } else {
+                    if (valInt >= 10) {
+                        valStr = "00" + valInt;
+                    } else {
+                        valStr = "000" + valInt;
+                    }
+                }
+            }
+        }
+        return (valStr);
+    }
 }

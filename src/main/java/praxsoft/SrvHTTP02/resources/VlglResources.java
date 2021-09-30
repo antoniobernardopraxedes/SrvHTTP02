@@ -65,6 +65,9 @@ public class VlglResources {
         Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/data/" + dataReserva, false);
 
         String MsgXML = vlglService.MontaXMLData(dataReserva);
+
+        System.out.println(MsgXML);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))

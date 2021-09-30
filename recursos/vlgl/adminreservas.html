@@ -20,13 +20,14 @@
               <td class="camponomeadmin" id="nomeadmin"></td>    
             </tr>
           </table>
+          <form id="signup">
           <table>
             <tr>
               <td>
-                <button type="button" onclick="VerificaCliente()" class="botaoentrarsupesq">Cadastra</button>
+                <button type="button" onclick="ConsultaReservaMesa()" class="botaoentrarsupesq">Consulta</button>
               </td>
               <td>
-                <button type="button" onclick="VerificaCliente()" class="botaoentrarsup">Limpa</button>
+                <td><input type="reset" value="Limpa" class="botaoentraresq" id="limpa"></td>
               </td>
               <td>
                 <button type="button" onclick="VerificaCliente()" class="botaoentrarsup">Cancela</button>
@@ -37,7 +38,7 @@
             </tr>
           </table>
           <table>
-            <form id="signup">          
+                      
               <tr>
                 <td colspan="2">
                   <label for="data"></label>
@@ -69,7 +70,7 @@
                   <input type="text" id="hora" name="hora" placeholder="Hora chegada" class = "campoform3">
                   <small></small>
                 <td class="linhainfform">
-                  <button type="button" onclick="Entra()" class="botaoentraresq">Entra</button>
+                  <button type="button" onclick="ReservaConfirma()" class="botaoentraresq" id="botaoresconf">Reserva</button>
                 </td>
               </tr>
             </form>
@@ -93,27 +94,16 @@
           <table>
             <tr>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('A00')" class="mesa" id="A00">Mesa Gazebo</button>
+                <button type="button" onclick="SelecionaMesa('A00')" class="mesa" id="A00">Mesa Gazebo (2 ou 4 pessoas)</button>
               </td>
               <td class="dataMapaMesas" id="dataMapa">--/--/----</td>  
             </tr>
             <tr>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('A01')" class="mesa" id="A01">Mesa A1</button>
+                <button type="button" onclick="SelecionaMesa('A01')" class="mesa" id="A01">Mesa A1 (8 a 12 pessoas)</button>
               </td>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('B09')" class="mesa" id="B09">Mesa B9</button>
-              </td>
-              <td class="mesas">
-                
-              </td>
-            </tr>
-            <tr>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('A02')" class="mesa" id="A02">Mesa A2</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('B10')" class="mesa" id="B10">Mesa B10</button>
+                <button type="button" onclick="SelecionaMesa('B09')" class="mesa" id="B09">Mesa B9 (2 a 4 pessoas)</button>
               </td>
               <td class="mesas">
                 
@@ -121,54 +111,10 @@
             </tr>
             <tr>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('A03')" class="mesa" id="A03">Mesa A3</button>
+                <button type="button" onclick="SelecionaMesa('A02')" class="mesa" id="A02">Mesa A2 (5 ou 6 pessoas)</button>
               </td>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('B11')" class="mesa" id="B11">Mesa B11</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I03">Mesa Interna 3</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('A04')" class="mesa" id="A04">Mesa A4</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('B12')" class="mesa" id="B12">Mesa B12</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I04">Mesa Interna 4</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('A05')" class="mesa" id="A05">Mesa A5</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('B13')" class="mesa" id="B13">Mesa B13</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I05">Mesa Interna 5</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('A06')" class="mesa" id="A06">Mesa A6</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('B14')" class="mesa" id="B14">Mesa B14</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('I01')" class="mesa" id="I06">Mesa Interna 6</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('A07')" class="mesa" id="A07">Mesa A7</button>
-              </td>
-              <td class="mesas">
-                <button type="button" onclick="reservaMesa('B15')" class="mesa" id="B15">Mesa B15</button>
+                <button type="button" onclick="SelecionaMesa('B10')" class="mesa" id="B10">Mesa B10 (4 ou 5 pessoas)</button>
               </td>
               <td class="mesas">
                 
@@ -176,10 +122,65 @@
             </tr>
             <tr>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('A08')" class="mesainf" id="A08">Mesa A8</button>
+                <button type="button" onclick="SelecionaMesa('A03')" class="mesa" id="A03">Mesa A3 (4 a 6 pessoas)</button>
               </td>
               <td class="mesas">
-                <button type="button" onclick="reservaMesa('B16')" class="mesainf" id="B16">Mesa B16</button>
+                <button type="button" onclick="SelecionaMesa('B11')" class="mesa" id="B11">Mesa B11 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('I01')" class="mesa" id="I03">Mesa Interna 3</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('A04')" class="mesa" id="A04">Mesa A4 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('B12')" class="mesa" id="B12">Mesa B12 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('I01')" class="mesa" id="I04">Mesa Interna 4</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('A05')" class="mesa" id="A05">Mesa A5 (2 a 15 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('B13')" class="mesa" id="B13">Mesa B13 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('I01')" class="mesa" id="I05">Mesa Interna 5</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('A06')" class="mesa" id="A06">Mesa A6 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('B14')" class="mesa" id="B14">Mesa B14 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('I01')" class="mesa" id="I06">Mesa Interna 6</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('A07')" class="mesa" id="A07">Mesa A7 (2 a 15 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('B15')" class="mesa" id="B15">Mesa B15 (2 a 4 pessoas)</button>
+              </td>
+              <td class="mesas">
+                
+              </td>
+            </tr>
+            <tr>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('A08')" class="mesainf" id="A08">Mesa A8 (2 a 15 pessoas)</button>
+              </td>
+              <td class="mesas">
+                <button type="button" onclick="SelecionaMesa('B16')" class="mesainf" id="B16">Mesa B16 (2 a 4 pessoas)</button>
               </td>
               <td class="mesas">
                 

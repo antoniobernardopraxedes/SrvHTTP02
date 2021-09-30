@@ -10,7 +10,7 @@ import praxsoft.SrvHTTP02.domain.ReservaMesa;
 @Service
 public class VlglService {
 
-    private String MsgXMLArray[][][][] = new String[1][4][70][2];
+    private String MsgXMLArray[][][][] = new String[1][4][120][2];
 
     //******************************************************************************************************************
     // Nome do Método: VerificaAdmin                                                                                   *
@@ -64,6 +64,9 @@ public class VlglService {
         dadosArqNovo = dadosArqNovo + "  AdminResp: " + cliente.getAdminResp() + "\n";
         dadosArqNovo = dadosArqNovo + "}\n";
 
+        Auxiliar.Terminal("Obs 1: " + cliente.getObs1(), false);
+        Auxiliar.Terminal("Obs 2: " + cliente.getObs2(), false);
+
         String caminho = "recursos/vlgl/clientes/";
         String nomeArquivo = cliente.getNomeUsuario() + ".clt";
 
@@ -103,34 +106,37 @@ public class VlglService {
         boolean confirma = false;
         String caminho = "recursos/vlgl/reservas/";
         String nomeArquivo = reservaMesa.getDataReserva() + ".res";
-        int numMesasTerraco = 16;
 
         String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
         if (dadosArquivo != null) {
-            String[][] dadosMesas = new String[17][4];
+
+            int numMesas = 17;
+            String nomeUsuarioMesa[] = new String[numMesas];
+            String nomeCompletoMesa[] = new String[numMesas];
+            String numeroPessoasMesa[] = new String[numMesas];
+            String horaChegadaMesa[] = new String[numMesas];
+            String adminResponsavelMesa[] = new String[numMesas];
+            String horaDataRegistroMesa[] = new String[numMesas];
+
             String indice;
+            String letra = "A";
             String token;
-            for (int i = 0; i < 9; i++) {
+
+            for (int i = 0; i < numMesas; i++) {
+                if (i > 8) { letra = "B"; }
                 indice = Auxiliar.IntToStr2(i);
-                token = "OA" + indice + ":";
-                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "NA" + indice + ":";
-                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "HA" + indice + ":";
-                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "AA" + indice + ":";
-                dadosMesas[i][3] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-            }
-            for (int i = 9; i < 17; i++) {
-                indice = Auxiliar.IntToStr2(i);
-                token = "OB" + indice + ":";
-                dadosMesas[i][0] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "NB" + indice + ":";
-                dadosMesas[i][1] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "HB" + indice + ":";
-                dadosMesas[i][2] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
-                token = "AB" + indice + ":";
-                dadosMesas[i][3] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NOU" + letra + indice + ":";   // Nome de usuário
+                nomeUsuarioMesa[i] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NOC" + letra + indice + ":";   // Nome Completo
+                nomeCompletoMesa[i] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "NUP" + letra + indice + ":";   // Número de pessoas
+                numeroPessoasMesa[i] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "HOC" + letra + indice + ":";   // Hora chegada
+                horaChegadaMesa[i] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "ADR" + letra + indice + ":";   // Admin responsável
+                adminResponsavelMesa[i] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
+                token = "HDR" + letra + indice + ":";   // Data e Hora de registro da reserva
+                horaDataRegistroMesa[i] = Auxiliar.LeParametroArquivo(dadosArquivo, token);
             }
 
             char ch10 = reservaMesa.getMesaSelecionada().charAt(1);
@@ -140,33 +146,48 @@ public class VlglService {
             Auxiliar.Terminal("Indice mesa: " + indiceMesa, false);
             reservaMesa.MostraCamposTerminal();
 
-            if ((indiceMesa >= 0) && (indiceMesa <= numMesasTerraco)) {
-                dadosMesas[indiceMesa][0] = reservaMesa.getNomeUsuario();
-                dadosMesas[indiceMesa][1] = reservaMesa.getNumPessoas();
-                dadosMesas[indiceMesa][2] = reservaMesa.getHoraChegada();
-                dadosMesas[indiceMesa][3] = reservaMesa.getAdminResp();
+            Auxiliar.LeDataHora();
+            if ((indiceMesa >= 0) && (indiceMesa < numMesas)) {
+                nomeUsuarioMesa[indiceMesa] = reservaMesa.getNomeUsuario();     // Nome de usuário
+                nomeCompletoMesa[indiceMesa] = reservaMesa.getNomeCliente();    // Nome Completo
+                numeroPessoasMesa[indiceMesa] = reservaMesa.getNumPessoas();    // Número de pessoas
+                horaChegadaMesa[indiceMesa] = reservaMesa.getHoraChegada();     // Hora chegada
+                adminResponsavelMesa[indiceMesa] = reservaMesa.getAdminResp();  // Admin responsável
+                String horaData = Auxiliar.ImprimeHoraData(Auxiliar.LeDataHora(), true);
+                horaDataRegistroMesa[indiceMesa] = horaData;                    // Hora e data de registro da reserva
             }
             else {
-                dadosMesas[indiceMesa][0] = "null";
-                dadosMesas[indiceMesa][1] = "null";
-                dadosMesas[indiceMesa][2] = "null";
-                dadosMesas[indiceMesa][3] = "null";
+                nomeUsuarioMesa[indiceMesa] = "null";
+                nomeCompletoMesa[indiceMesa] = "null";
+                numeroPessoasMesa[indiceMesa] = "null";
+                horaChegadaMesa[indiceMesa] = "null";
+                adminResponsavelMesa[indiceMesa] = "null";
+                horaDataRegistroMesa[indiceMesa] = "null";
             }
 
+            letra = "A";
             String dadosArqNovo = "{\n";
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < numMesas; i++) {
+                if (i > 8) { letra = "B"; }
                 indice = Auxiliar.IntToStr2(i);
-                dadosArqNovo = dadosArqNovo + "  OA" + indice + ": " + dadosMesas[i][0] + "\n";
-                dadosArqNovo = dadosArqNovo + "  NA" + indice + ": " + dadosMesas[i][1] + "\n";
-                dadosArqNovo = dadosArqNovo + "  HA" + indice + ": " + dadosMesas[i][2] + "\n";
-                dadosArqNovo = dadosArqNovo + "  AA" + indice + ": " + dadosMesas[i][3] + "\n";
-            }
-            for (int i = 9; i < 17; i++) {
-                indice = Auxiliar.IntToStr2(i);
-                dadosArqNovo = dadosArqNovo + "  OB" + indice + ": " + dadosMesas[i][0] + "\n";
-                dadosArqNovo = dadosArqNovo + "  NB" + indice + ": " + dadosMesas[i][1] + "\n";
-                dadosArqNovo = dadosArqNovo + "  HB" + indice + ": " + dadosMesas[i][2] + "\n";
-                dadosArqNovo = dadosArqNovo + "  AB" + indice + ": " + dadosMesas[i][3] + "\n";
+
+                token = "  NOU" + letra + indice + ": ";
+                dadosArqNovo = dadosArqNovo + token + nomeUsuarioMesa[i] + "\n";
+
+                token = "  NOC" + letra + indice + ": ";
+                dadosArqNovo = dadosArqNovo + token + nomeCompletoMesa[i] + "\n";
+
+                token = "  NUP" + letra + indice + ": ";
+                dadosArqNovo = dadosArqNovo + token + numeroPessoasMesa[i] + "\n";
+
+                token = "  HOC" + letra + indice + ": ";
+                dadosArqNovo = dadosArqNovo + token + horaChegadaMesa[i] + "\n";
+
+                token = "  ADR" + letra + indice + ": ";
+                dadosArqNovo = dadosArqNovo + token + adminResponsavelMesa[i] + "\n";
+
+                token = "  HDR" + letra + indice + ": ";
+                dadosArqNovo = dadosArqNovo + token + horaDataRegistroMesa[i] + "\n";
             }
             dadosArqNovo = dadosArqNovo + "}";
 
@@ -210,20 +231,19 @@ public class VlglService {
         String caminho = "recursos/vlgl/reservas/";
         String nomeArquivo = dataRes + ".res";
 
+        int numMesas = 17;
+        String Indice;
+        String letra = "A";
         String dadosArqNovo = "{\n";
-        for (int i = 0; i < 9; i++) {
-            String Indice = Auxiliar.IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  OA" + Indice + ": livre\n";
-            dadosArqNovo = dadosArqNovo + "  NA" + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  HA" + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  AA" + Indice + ": null\n";
-        }
-        for (int i = 9; i < 17; i++) {
-            String Indice = Auxiliar.IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  OB" + Indice + ": livre\n";
-            dadosArqNovo = dadosArqNovo + "  NB" + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  HB" + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  AB" + Indice + ": null\n";
+        for (int i = 0; i < numMesas; i++) {
+            if (i > 8) { letra = "B"; }
+            Indice = Auxiliar.IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": livre\n";
+            dadosArqNovo = dadosArqNovo + "  NOC" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  NUP" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HOC" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  ADR" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HDR" + letra + Indice + ": null\n";
         }
         dadosArqNovo = dadosArqNovo + "}";
 
@@ -267,7 +287,7 @@ public class VlglService {
         MsgXMLArray[IdNv0][IdNv1][2] = Auxiliar.EntTagValue("NOME", nomeAdmin);
         MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(2);
 
-        String msgRsp = StringXML(MsgXMLArray);
+        String msgRsp = StringXML();
 
         return(msgRsp);
     }
@@ -292,7 +312,7 @@ public class VlglService {
 
         CarregaClienteArray(nomeUsuario,0, 1);
 
-        return(StringXML(MsgXMLArray));
+        return(StringXML());
     }
 
     //******************************************************************************************************************
@@ -370,7 +390,7 @@ public class VlglService {
 
         CarregaDataArray(dataReserva,0, 1);
 
-        return(StringXML(MsgXMLArray));
+        return(StringXML());
     }
 
     //******************************************************************************************************************
@@ -395,7 +415,7 @@ public class VlglService {
         CarregaEstadoArray(reservaMesa, confirma, 0, 1);
         CarregaDataArray(reservaMesa.getDataReserva(),0, 2);
 
-        return(StringXML(MsgXMLArray));
+        return(StringXML());
     }
 
     //******************************************************************************************************************
@@ -422,7 +442,7 @@ public class VlglService {
         MsgXMLArray[IdNv0][IdNv1][4] = Auxiliar.EntTagValue("ID", reservaMesa.getNomeUsuario());
         MsgXMLArray[IdNv0][IdNv1][5] = Auxiliar.EntTagValue("NOME", reservaMesa.getNomeCliente());
         MsgXMLArray[IdNv0][IdNv1][6] = Auxiliar.EntTagValue("NUMPES", reservaMesa.getNumPessoas());
-        MsgXMLArray[IdNv0][IdNv1][7] = Auxiliar.EntTagValue("HORARIO", reservaMesa.getHoraChegada());
+        MsgXMLArray[IdNv0][IdNv1][7] = Auxiliar.EntTagValue("HORARES", reservaMesa.getHoraChegada());
         MsgXMLArray[IdNv0][IdNv1][8] = Auxiliar.EntTagValue("ADMINRESP", reservaMesa.getAdminResp());
         MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(8);
     }
@@ -447,66 +467,73 @@ public class VlglService {
             EscreveArquivoReservaNovo(dataReserva);
         }
 
-        String registroMesas = Arquivo.LeTexto(caminho, nomeArquivo);
-        String[][] mesa = new String[20][4];
+        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
+        //String[][] mesa = new String[20][4];
 
-        if (registroMesas != null) {
-            for (int i = 0; i < 9; i++) {
-                String token = "OA" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                token = "NA" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                token = "HA" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                token = "AA" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][3] = Auxiliar.LeParametroArquivo(registroMesas, token);
+        if (dadosArquivo != null) {
+
+            System.out.println("Leu o arquivo: " + caminho + nomeArquivo);
+
+            int numMesas = 17;
+            String nomeUsuarioMesa[] = new String[numMesas];
+            String nomeCompletoMesa[] = new String[numMesas];
+            String numeroPessoasMesa[] = new String[numMesas];
+            String horaChegadaMesa[] = new String[numMesas];
+            String adminResponsavelMesa[] = new String[numMesas];
+            String horaDataRegistroMesa[] = new String[numMesas];
+
+            String indice;
+            String letra = "A";
+            String tag;
+
+            for (int k = 0; k < numMesas; k++) {
+                if (k > 8) { letra = "B"; }
+                indice = Auxiliar.IntToStr2(k);
+                tag = "NOU" + letra + indice + ":";   // Nome de usuário
+                nomeUsuarioMesa[k] = Auxiliar.LeParametroArquivo(dadosArquivo, tag);
+                tag = "NOC" + letra + indice + ":";   // Nome Completo
+                nomeCompletoMesa[k] = Auxiliar.LeParametroArquivo(dadosArquivo, tag);
+                tag = "NUP" + letra + indice + ":";   // Número de pessoas
+                numeroPessoasMesa[k] = Auxiliar.LeParametroArquivo(dadosArquivo, tag);
+                tag = "HOC" + letra + indice + ":";   // Hora chegada
+                horaChegadaMesa[k] = Auxiliar.LeParametroArquivo(dadosArquivo, tag);
+                tag = "ADR" + letra + indice + ":";   // Admin responsável
+                adminResponsavelMesa[k] = Auxiliar.LeParametroArquivo(dadosArquivo, tag);
+                tag = "HDR" + letra + indice + ":";   // Data e Hora de registro da reserva
+                horaDataRegistroMesa[k] = Auxiliar.LeParametroArquivo(dadosArquivo, tag);
             }
-            for (int i = 9; i < 17; i++) {
-                String token = "OB" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][0] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                token = "NB" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][1] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                token = "HB" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][2] = Auxiliar.LeParametroArquivo(registroMesas, token);
-                token = "AB" + Auxiliar.IntToStr2(i) + ":";
-                mesa[i][3] = Auxiliar.LeParametroArquivo(registroMesas, token);
+
+            MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
+            int i = 1;
+            letra = "A";
+
+            for (int k = 0; k < numMesas; k++) {
+                indice = Auxiliar.IntToStr2(k);
+                if (k > 8) { letra = "B"; }
+
+                tag = "NOU" + letra + indice;
+                MsgXMLArray[IdNv0][IdNv1][i++] = Auxiliar.EntTagValue(tag, nomeUsuarioMesa[k]);
+
+                tag = "NOC" + letra + indice;   // Nome Completo
+                MsgXMLArray[IdNv0][IdNv1][i++] = Auxiliar.EntTagValue(tag, nomeCompletoMesa[k]);
+
+                tag = "NUP" + letra + indice;   // Número de pessoas
+                MsgXMLArray[IdNv0][IdNv1][i++] = Auxiliar.EntTagValue(tag, numeroPessoasMesa[k]);
+
+                tag = "HOC" + letra + indice;   // Hora chegada
+                MsgXMLArray[IdNv0][IdNv1][i++] = Auxiliar.EntTagValue(tag, horaChegadaMesa[k]);
+
+                tag = "ADR" + letra + indice;   // Admin responsável
+                MsgXMLArray[IdNv0][IdNv1][i++] = Auxiliar.EntTagValue(tag, adminResponsavelMesa[k]);
+
+                tag = "HDR" + letra + indice;   // Data e Hora de registro da reserva
+                MsgXMLArray[IdNv0][IdNv1][i++] = Auxiliar.EntTagValue(tag, horaDataRegistroMesa[k]);
             }
-        }
+            String numElementosGrupo = Auxiliar.IntToStr4(i - 1);
+            MsgXMLArray[IdNv0][IdNv1][0][1] = numElementosGrupo;
 
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
-        int i = 0;
-        int numTags1 = 9;
-        for (int k = 0; k < numTags1; k++) {
-            String token = "OA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
-            token = "NA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
-            token = "HA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
-            token = "AA" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][3]);
+            System.out.println("Número de elementos: " + MsgXMLArray[IdNv0][IdNv1][0][1]);
         }
-
-        int numTags2 = 8;
-        for (int k = numTags1; k < (numTags1 + numTags2); k++) {
-            String token = "OB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][0]);
-            token = "NB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][1]);
-            token = "HB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][2]);
-            token = "AB" + Auxiliar.IntToStr2(k);
-            i = i + 1;
-            MsgXMLArray[IdNv0][IdNv1][i] = Auxiliar.EntTagValue(token, mesa[k][3]);
-        }
-        MsgXMLArray[IdNv0][IdNv1][0][1] = Auxiliar.IntToStr2(i);
     }
 
     //******************************************************************************************************************
@@ -521,7 +548,7 @@ public class VlglService {
     //	                                                                                                               *
     //******************************************************************************************************************
     //
-    public String StringXML(String MsgXMLArray[][][][]) {
+    public String StringXML() {
         String MsgXML = "";
         MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
@@ -537,11 +564,12 @@ public class VlglService {
 
             // Imprime a Tag de Nivel 1 de Início do Grupo
             MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
-            char DzNumVar = MsgXMLArray[0][i][0][1].charAt(0);
-            char UnNumVar = MsgXMLArray[0][i][0][1].charAt(1);
+            //char DzNumVar = MsgXMLArray[0][i][0][1].charAt(0);
+            //char UnNumVar = MsgXMLArray[0][i][0][1].charAt(1);
 
             // Obtém o Número de Variáveis do Grupo
-            int NumVar = Auxiliar.TwoCharToInt(DzNumVar, UnNumVar);
+            //int NumVar = Auxiliar.TwoCharToInt(DzNumVar, UnNumVar);
+            int NumVar = Auxiliar.StringToInt(MsgXMLArray[0][i][0][1]);
 
             // Repeta até imprimir todas as Tags de Nível 2 e suas variáveis
             for (int j = 1; j <= NumVar; j++) {

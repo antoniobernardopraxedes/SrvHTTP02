@@ -34,6 +34,7 @@ var EstadoNumPes = "null";
 var EstadoHorario = "null";
 
 var NomeUsuarioCliente = "null";
+var NomeUsuarioClienteRec = "null";
 var NomeCliente = "null";
 var CelularCliente = "null";
 var Obs1Cliente = "null";
@@ -80,22 +81,25 @@ function CarregaVariaveisFormulario() {
 //
 function VerificaAdmin() {    
 
-    EscreveEnvMsgSrv();
-    recurso = "admin";
-    xhttp.open("GET", recurso, false);
-    try {
-        xhttp.send(null);
-        var xmlRec = xhttp.responseXML;
-        grupo = xmlRec.getElementsByTagName("ADMIN");
-        NomeUsuarioAdmin = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-        NomeAdmin = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        EscreveTexto("Recebidas informações do administrador", "infocom");
+    let requisicao = new XMLHttpRequest();
+    recurso = "admin/";
+    requisicao.open("GET", recurso, true);
+    requisicao.timeout = 2000;
+    EscreveMsgEnvSrv();
+    requisicao.send(null);
     
-    } catch(err) {
-        EscreveMsgErrSrv();
-        console.log("Erro " + err);
-    }
-    EscreveTexto("Admin: " + NomeAdministrador, "nomeadmin");
+    requisicao.onload = function() {
+        let XMLRec = requisicao.responseXML;
+        grupo = XMLRec.getElementsByTagName("ADMIN");
+        NomeUsuarioAdmin = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+        NomeAdmin = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+        EscreveTexto("Admin: " + NomeAdmin, "nomeadmin");
+        EscreveTexto("Servidor: recebidas informações do administrador", "infocom");
+    };
+    
+    requisicao.ontimeout = function(e) {
+        EscreveTexto("O servidor não respondeu à requisição", "infocom");
+    };
     
 }
 
@@ -116,27 +120,44 @@ function VerificaAdmin() {
 function VerificaCliente() {
     
     CarregaVariaveisFormulario();
+    clienteOK = false;
     
-    LimpaCamposInfo();
-    if (NomeUsuarioCliente == "") {
-        clienteOK = false;
-        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
+    if (NomeUsuarioCliente != "") {
+        
+        let requisicao = new XMLHttpRequest();
+        recurso = "cliente/" + NomeUsuarioCliente;
+        requisicao.open("GET", recurso, true);
+        requisicao.timeout = 2000;
+        EscreveMsgEnvSrv();
+        requisicao.send(null);
+    
+        requisicao.onload = function() {
+            let XMLRec = requisicao.responseXML;
+            CarregaCliente(XMLRec);
+            
+            if (clienteOK) {
+                EscreveTexto("Servidor: recebidas informações do cliente", "infocom");
+                LimpaCamposInfo();
+                EscreveInfoCliente();
+                
+                EscreveTexto("Atualiza", "botaocadastra");
+            }
+            else {
+                EscreveTexto("Servidor: cliente não cadastrado", "infocom");
+                LimpaCamposInfo();
+                EscreveTexto("Cliente não cadastrado", "info1");
+                EscreveTexto("Cadastra", "botaocadastra");
+            }
+         };
+         
+         requisicao.ontimeout = function(e) {
+                EscreveTexto("O servidor não respondeu à requisição", "info1");
+         };
     }
     else {
-        recurso = "cliente/" + NomeUsuarioCliente;
-        xhttp.open("GET", recurso, false);
-        try {
-            xhttp.send();
-            var xmlRec = xhttp.responseXML;
-            CarregaCliente(xmlRec);
-            EscreveInfoCliente();
-            EscreveTexto("Resposta do Servidor: informações do cliente", "infocom");
-        
-        } catch(err) {
-            EscreveMsgErrSrv();
-            console.log("Erro " + err);
-        }
+        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
     }
+
 }
 
 //*********************************************************************************************************************
@@ -156,32 +177,46 @@ function VerificaCliente() {
 function Cadastra() {
     
     CarregaVariaveisFormulario();
+    LimpaCamposInfo();
     
-    if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
+    if (NomeUsuarioCliente != "") {
+        if (NomeCliente != "") {
+            if (CelularCliente != "") {
+                if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
         
-        recurso = "cadastra";
-        xhttp.open("POST", recurso, false);
-        xhttp.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+                    let requisicao = new XMLHttpRequest();
+                    recurso = "cadastra";
+                    requisicao.open("POST", recurso, true);
+                    requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+                    requisicao.timeout = 2000;
+                    EscreveMsgEnvSrv();
+                    requisicao.send(MontaMsgJson());
         
-        try {
-            xhttp.send(MontaMsgJson());
-            var xmlRec = xhttp.responseXML;
-            
-            CarregaEstado(xmlRec);
-            LimpaCamposInfo();
-            
-            if (EstadoCadastro == "sim") {
-                CarregaCliente(xmlRec);
-                EscreveInfoCliente();
-                EscreveTexto("O cliente foi cadastrado", "infocom");
+                    requisicao.onload = function() {
+                        let XMLRec = requisicao.responseXML;
+                        CarregaCliente(XMLRec);
+                
+                        if (clienteOK) {
+                            EscreveTexto("O cliente foi cadastrado", "infocom");
+                            EscreveInfoCliente();
+                        }
+                        else {
+                            LimpaCamposInfo();
+                            EscreveTexto("Servidor: Falha ao cadastrar o cliente", "infocom");
+                        }
+                    };
+                }
             }
             else {
-                EscreveTexto("Falha ao cadastrar o cliente", "infocom");
+                EscreveTexto("Entre com o número do celular do cliente", "info1");
             }
-        } catch(err) {
-            EscreveMsgErrSrv();
-            console.log("Erro " + err);
         }
+        else {
+            EscreveTexto("Entre com o nome completo do cliente", "info1");
+        }
+    }
+    else {
+        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
     }
 }
 
@@ -223,7 +258,7 @@ function CarregaEstado(xmlMsg) {
 function CarregaCliente(xmlMsg) {
     
     grupo = xmlMsg.getElementsByTagName("CLIENTE");
-    NomeUsuarioCliente = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+    NomeUsuarioClienteRec = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
     NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
     CelularCliente = grupo[i].getElementsByTagName("CELULAR")[0].childNodes[0].nodeValue;
     Obs1Cliente = grupo[i].getElementsByTagName("OBS1")[0].childNodes[0].nodeValue;
@@ -236,11 +271,11 @@ function CarregaCliente(xmlMsg) {
     
     AdminResp = grupo[i].getElementsByTagName("ADMINRSP")[0].childNodes[0].nodeValue;
         
-    if (NomeUsuarioCliente == "null") {
-        clienteOK = false;
+    if (NomeUsuarioClienteRec == NomeUsuarioCliente) {
+        clienteOK = true;
     }
     else {
-        clienteOK = true;
+        clienteOK = false;
     }
 }
 
@@ -257,13 +292,16 @@ function CarregaCliente(xmlMsg) {
 //*********************************************************************************************************************
 //
 function MontaMsgJson() {
+    
+    if (Obs1Cliente == "") Obs1Cliente = "não informada";
+    if (Obs1Cliente == "") Obs1Cliente = "não informada";
         
     var msgJson = "{\n" +
                   "  \"nomeUsuario\" : \"" + NomeUsuarioCliente + "\",\n" +
                   "  \"nome\" : \"" + NomeCliente + "\",\n" +
                   "  \"celular\" : \"" + CelularCliente + "\",\n" +
-                  "  \"obs1\" : \"" + CelularCliente + "\",\n" +
-                  "  \"obs2\" : \"" + CelularCliente + "\",\n" +
+                  "  \"obs1\" : \"" + Obs1Cliente + "\",\n" +
+                  "  \"obs2\" : \"" + Obs2Cliente + "\",\n" +
                   "  \"idoso\" : \"" + IdosoCliente + "\",\n" +
                   "  \"locomocao\" : \"" + LocomocaoCliente + "\",\n" +
                   "  \"exigente\" : \"" + ExigenteCliente + "\",\n" +
@@ -288,24 +326,26 @@ function MontaMsgJson() {
 //
 function EscreveInfoCliente() {
 
+    LimpaCamposInfo();
     if (clienteOK) {
-        EscreveTexto("Cliente Cadastrado", "info1");
-        EscreveTexto("Nome de usuário: " + NomeUsuarioCliente, "info2");
-        EscreveTexto("Nome Completo: " + NomeCliente, "info3");
-        EscreveTexto("Celular: " + CelularCliente, "info4");
+        EscreveTexto("Nome de usuário: " + NomeUsuarioCliente, "info1");
+        EscreveTexto("Nome Completo: " + NomeCliente, "info2");
+        EscreveTexto("Celular: " + CelularCliente, "info3");
                                 
         var sufixo = "o";
         if (GeneroCliente == "Feminino") sufixo = "a";                
-        EscreveTexto("Idos" + sufixo + ": " + IdosoCliente, "info5");
-        EscreveTexto("Dificuldade de locomoção: " + LocomocaoCliente, "info6");
-        EscreveTexto("Exigente: " + ExigenteCliente, "info7");
-        EscreveTexto("Gênero: " + GeneroCliente, "info8");
-        EscreveTexto("Obs 1: " + Obs1Cliente, "info9");
-        EscreveTexto("Obs 2: " + Obs2Cliente, "info10");
-        EscreveTexto("Responsãvel pelo cadastro: " + AdminResp, "info12");
+        EscreveTexto("Idos" + sufixo + ": " + IdosoCliente, "info4");
+        EscreveTexto("Dificuldade de locomoção: " + LocomocaoCliente, "info5");
+        EscreveTexto("Exigente: " + ExigenteCliente, "info6");
+        EscreveTexto("Gênero: " + GeneroCliente, "info7");
+        EscreveTexto("Obs 1: " + Obs1Cliente, "info8");
+        EscreveTexto("Obs 2: " + Obs2Cliente, "info9");
+        EscreveTexto("Responsável pelo cadastro: " + AdminResp, "info10");
+        EscreveTexto("Atualiza", "botaocadastra");
     }
     else {
         EscreveTexto("Cliente não cadastrado", "info1");
+        EscreveTexto("Cadastra", "botaocadastra");
     }
 }
 
@@ -325,9 +365,12 @@ function EscreveTexto(texto, idHTML) {
     document.getElementById(idHTML).innerHTML = texto;
 }
 
-function EscreveEnvMsgSrv() {
-    document.getElementById("infocom").innerHTML = "Enviada requisição ao Servidor";
-    document.getElementById("infocom").style.color = "#23257e";
+function EscreveMsgEnvSrv() {
+    document.getElementById("infocom").innerHTML = "Enviada requisição. Aguardando resposta do servidor";
+}
+
+function EscreveMsgErrSrv() {
+    document.getElementById("info1").innerHTML = "O Servidor não respondeu";
 }
 
 function EscreveRspMsgSrv(msgrsp) {

@@ -7,7 +7,6 @@ body{
 .linhaesq {
   display: flex;  /* aligns all child elements (flex items) in a row */
   max-width: 570px;
-  margin: auto;
 }
 
 .linhadir {
@@ -19,6 +18,7 @@ body{
 .colesq {
   flex: 1;        /* distributes space on the line equally among items */
   width: 570px;
+  margin-left: 50px;
   margin-right: 10px;
   align-content: center;
   border:solid;
@@ -146,8 +146,8 @@ body{
   height: 25px;
   font-size: 16px;
   padding-left: 120px;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 7px;
+  padding-bottom: 8px;
   border-bottom: solid;
   border-width: 1px;
   border-color: gray;

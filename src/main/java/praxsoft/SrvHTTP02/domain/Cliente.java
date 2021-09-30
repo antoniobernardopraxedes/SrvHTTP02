@@ -28,10 +28,12 @@ public class Cliente {
     }
 
     public String getObs1() {
+        if (obs1.equals("")) { obs1 = "não informada"; }
         return obs1;
     }
 
     public String getObs2() {
+        if (obs2.equals("")) { obs2 = "não informada"; }
         return obs2;
     }
 
