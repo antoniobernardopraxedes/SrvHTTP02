@@ -50,33 +50,17 @@ var numPessoasOK = false;
 var horaChegadaOK = false;
 var consultaMesa = false;
 var BotaoReservaConfirma = false; // false = Reserva e true = Confirma
+var HabilitaSelMesa = false;
 
 var MesaSelecionada;
-
-//var OA00;   var NA00;   var HA00;   var AA00;
-//var OA01;   var NA01;   var HA01;   var AA01;
-//var OA02;   var NA02;   var HA02;   var AA02;
-//var OA03;   var NA03;   var HA03;   var AA03;
-//var OA04;   var NA04;   var HA04;   var AA04;
-//var OA05;   var NA05;   var HA05;   var AA05;
-//var OA06;   var NA06;   var HA06;   var AA06;
-//var OA07;   var NA07;   var HA07;   var AA07;
-//var OA08;   var NA08;   var HA08;   var AA08;
-//var OB09;   var NB09;   var HB09;   var AB09;
-//var OB10;   var NB10;   var HB10;   var AB10;
-//var OB11;   var NB11;   var HB11;   var AB11;
-//var OB12;   var NB12;   var HB12;   var AB12;
-//var OB13;   var NB13;   var HB13;   var AB13;
-//var OB14;   var NB14;   var HB14;   var AB14;
-//var OB15;   var NB15;   var HB15;   var AB15;
-//var OB16;   var NB16;   var HB16;   var AB16;
 
 MesaNomeUsuario = new Array(17);
 MesaNomeCliente = new Array(17);
 MesaNumPes = new Array(17);
 MesaHoraCheg = new Array(17);
 MesaAdminResp = new Array(17);
-MesaHoraDataReg = new Array(17);
+MesaHoraReg = new Array(17);
+MesaDataReg = new Array(17);
 
 for (let i = 0; i < 17; i++) {
     MesaNomeUsuario[i] = "null";
@@ -84,7 +68,8 @@ for (let i = 0; i < 17; i++) {
     MesaNumPes[i] = "null";
     MesaHoraCheg[i] = "null";
     MesaAdminResp[i] = "null";
-    MesaHoraDataReg[i] = "null";
+    MesaHoraReg[i] = "null";
+    MesaDataReg[i] = "null";
 }
 
 var NomeDaMesa;
@@ -305,7 +290,8 @@ function VerificaCliente() {
          };
          
          requisicao.ontimeout = function(e) {
-                EscreveTexto("O servidor não respondeu à requisição", "info1");
+             EscreveTexto("O servidor não respondeu à requisição", "info1");
+             console.log("Erro: " + e);
          };
     }
     else {
@@ -399,8 +385,10 @@ function Reserva() {
         condicao = false;
     }
      
-    if (condicao) EscreveTexto("Selecione a mesa para reserva", "info1");
-    
+    if (condicao) {
+        EscreveTexto("Selecione a mesa para reserva", "info1");
+        HabilitaSelMesa = true;
+    }
 }
 
 //*********************************************************************************************************************
@@ -419,48 +407,52 @@ function Reserva() {
 //
 function SelecionaMesa(mesa) {
     
-    if (!consultaMesa) {
+    if (HabilitaSelMesa) {
+        if (!consultaMesa) {
     
-        DataReserva = dataReserva.value;
-        NomeUsuarioCliente = userName.value;
-        NumPessoas = numPessoas.value;
-        MesaSelecionada = mesa;
+            DataReserva = dataReserva.value;
+            NomeUsuarioCliente = userName.value;
+            NumPessoas = numPessoas.value;
+            MesaSelecionada = mesa;
     
-        if (numPessoasOK) {
-            if (clienteOK) {
-                if (mesa == "A00") {
-                    impMesa = "Gazebo";
+            if (numPessoasOK) {
+                if (clienteOK) {
+                    LimpaCamposInfo();
+                    EscreveTexto("Confirma a reserva da " + NomeMesa(mesa) + "?", "info1");
+                    EscreveTexto("Cliente: " + NomeCliente, "info2");
+                    EscreveTexto("Data: " + DataReserva, "info3");
+                    EscreveTexto("Número de pessoas: " + NumPessoas, "info4");
+                    EscreveTexto("Horário de chegada: " + HoraChegada, "info5");
+                    BotaoReservaConfirma = true;
+                    EscreveTexto("Confirma", "botaoresconf");
                 }
+            }
+            else {
                 LimpaCamposInfo();
-                EscreveTexto("Confirma a reserva da " + NomeMesa(mesa) + "?", "info1");
-                EscreveTexto("Cliente: " + NomeCliente, "info2");
-                EscreveTexto("Data: " + DataReserva, "info3");
-                EscreveTexto("Número de pessoas: " + NumPessoas, "info4");
-                EscreveTexto("Horário de chegada: " + HoraChegada, "info5");
-                BotaoReservaConfirma = true;
-                EscreveTexto("Confirma", "botaoresconf");
+                EscreveTexto("Entre com o número de pessoas", "info1");
             }
         }
         else {
             LimpaCamposInfo();
-            EscreveTexto("Entre com o número de pessoas", "info1");
+            let numMesa = parseInt(mesa[1] + mesa[2]);
+            let usuario = MesaNomeUsuario[numMesa];
+            if (usuario != "livre") {
+                EscreveTexto("Reserva da " + NomeMesa(mesa) + " para " + DataReserva, "info2");
+                EscreveTexto("Nome de usuário: " + usuario, "info3");
+                EscreveTexto("Nome completo: " + MesaNomeCliente[numMesa], "info4");
+                EscreveTexto("Número de pessoas: " + MesaNumPes[numMesa], "info5");
+                EscreveTexto("Horário de chegada: " + MesaHoraCheg[numMesa], "info6");
+                EscreveTexto("Responsável pela reserva: " + MesaAdminResp[numMesa], "info7");
+                EscreveTexto("Data do registro da reserva: " + MesaDataReg[numMesa], "info8");
+                EscreveTexto("Hora do registro da reserva: " + MesaHoraReg[numMesa], "info9");
+                consultaMesa = false;
+            }
+            else {
+                EscreveTexto(NomeMesa(mesa) + " livre", "info2");
+            }
         }
+        HabilitaSelMesa = false;
     }
-    else {
-        LimpaCamposInfo();
-        let numMesa = parseInt(mesa[1] + mesa[2]);
-        let usuario = MesaNomeUsuario[numMesa];
-        if (usuario != "livre") {
-            EscreveTexto("Reserva da " + NomeMesa(mesa) + " para " + DataReserva, "info2");
-            EscreveTexto("Nome de usuário: " + usuario, "info3");
-            EscreveTexto("Número de pessoas: " + MesaNumPes[numMesa], "info4");
-            EscreveTexto("Horário de chegada: " + MesaHoraCheg[numMesa], "info5");    
-        }
-        else {
-            EscreveTexto(NomeMesa(mesa) + " livre", "info2");
-        }
-    }
-    if (consultaMesa) consultaMesa = false;
 }
 
 //*********************************************************************************************************************
@@ -484,7 +476,7 @@ function Confirma() {
     VerificaFormatoData(dataReserva);
     
     let requisicao = new XMLHttpRequest();
-    let recurso = "confirma";
+    let recurso = "reserva";
     requisicao.open("POST", recurso, true);
     requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
     requisicao.timeout = 2000;
@@ -501,17 +493,17 @@ function Confirma() {
         let confirmaEstado = grupo[0].getElementsByTagName("CONFIRMA")[0].childNodes[0].nodeValue;
         let mesaEstado = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
         let dataEstado = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
-        let idEstado = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+        let nomeUsuarioEstado = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
         let nomeEstado = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
         let numpesEstado = grupo[0].getElementsByTagName("NUMPES")[0].childNodes[0].nodeValue;
         let horarioEstado = grupo[0].getElementsByTagName("HORARES")[0].childNodes[0].nodeValue;
         
         if (confirmaEstado == "sim") {
             LimpaCamposInfo();
-            EscreveTexto("Recebida a confirmação da reserva ", "info1");
+            EscreveTexto("Servidor: confirmação da reserva ", "info1");
             EscreveTexto("Confirmada a reserva da " + NomeMesa(mesaEstado), "info2");
             EscreveTexto("Data: " + dataEstado, "info3");
-            EscreveTexto("Nome de usuário: " + nomeEstado, "info4");
+            EscreveTexto("Nome de usuário: " + nomeUsuarioEstado, "info4");
             EscreveTexto("Nome completo: " + nomeEstado, "info5");
             EscreveTexto("Número de pessoas: " + numpesEstado, "info6");
             EscreveTexto("Horário de chegada: " + horarioEstado, "info7");
@@ -528,9 +520,29 @@ function Confirma() {
     
     requisicao.ontimeout = function(e) {
         EscreveTexto("O servidor não respondeu à requisição", "info1");
+        console.log("Erro: " + e);
     };
     BotaoReservaConfirma = false;
     EscreveTexto("Reserva", "botaoresconf");
+}
+
+//*********************************************************************************************************************
+// Nome da função: ExcluiReserva                                                                                      *
+//                                                                                                                    *
+// Data: 01/10/2021                                                                                                   *
+//                                                                                                                    *
+// Função: é chamada cada vez que o usuário pressiona o botão Exclui. Envia uma mensagem para o servidor com          *
+//         as informações sobre a solicitação de exclusão reserva da mesa. O servidor deve responder uma mensagem     *
+//         confirmando a exclusão da reserva.                                                                         *
+//         apresenta na tela.                                                                                         *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function ExcluiReserva() {
+    
 }
 
 //*********************************************************************************************************************
@@ -552,6 +564,7 @@ function ConsultaReservaMesa() {
     
     if (DataReserva != "") {
        VerificaData();
+       HabilitaSelMesa = true;
        consultaMesa = true;
     }
     else {
@@ -589,7 +602,8 @@ function CarregaMesas(msgXML) {
         MesaNumPes[i] = grupo[0].getElementsByTagName("NUP" + sufixo)[0].childNodes[0].nodeValue;
         MesaHoraCheg[i] = grupo[0].getElementsByTagName("HOC" + sufixo)[0].childNodes[0].nodeValue;
         MesaAdminResp[i] = grupo[0].getElementsByTagName("ADR" + sufixo)[0].childNodes[0].nodeValue;
-        MesaHoraDataReg[i] = grupo[0].getElementsByTagName("HDR" + sufixo)[0].childNodes[0].nodeValue;
+        MesaHoraReg[i] = grupo[0].getElementsByTagName("HOR" + sufixo)[0].childNodes[0].nodeValue;
+        MesaDataReg[i] = grupo[0].getElementsByTagName("DTR" + sufixo)[0].childNodes[0].nodeValue;
         
         AtualizaMesa(sufixo, MesaNomeUsuario[i], MesaNumPes[i], MesaHoraCheg[i]);
     }

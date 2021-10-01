@@ -8,12 +8,11 @@ import java.util.StringTokenizer;
 @Component
 public class Inicia {
 
-    //@Autowired
-    //private SupService supService;
-
     private static boolean opLocal;
     private static boolean verbose;
     private static String endIpConc;
+
+    private static String diretorioBd;
 
     private static String nomeUsuarioAdmin1;
     private static String senhaAdmin1;
@@ -31,30 +30,14 @@ public class Inicia {
     public static String getEndIpConc() {
         return endIpConc;
     }
+    public static String getDiretorioBd() { return diretorioBd; }
 
-    public static String getNomeUsuarioAdmin1() {
-        return nomeUsuarioAdmin1;
-    }
-
-    public static String getSenhaAdmin1() {
-        return senhaAdmin1;
-    }
-
-    public static String getNomeUsuarioAdmin2() {
-        return nomeUsuarioAdmin2;
-    }
-
-    public static String getSenhaAdmin2() {
-        return senhaAdmin2;
-    }
-
-    public static String getNomeUsuarioAdmin3() {
-        return nomeUsuarioAdmin3;
-    }
-
-    public static String getSenhaAdmin3() {
-        return senhaAdmin3;
-    }
+    public static String getNomeUsuarioAdmin1() { return nomeUsuarioAdmin1; }
+    public static String getSenhaAdmin1() { return senhaAdmin1; }
+    public static String getNomeUsuarioAdmin2() { return nomeUsuarioAdmin2; }
+    public static String getSenhaAdmin2() { return senhaAdmin2; }
+    public static String getNomeUsuarioAdmin3() { return nomeUsuarioAdmin3; }
+    public static String getSenhaAdmin3() { return senhaAdmin3; }
 
     @PostConstruct
     public void ProcedimentosInicializacao() {
@@ -77,36 +60,46 @@ public class Inicia {
     //	                                                                                                               *
     //******************************************************************************************************************
     //
-    public boolean LeArquivoConfiguracao() {
+    public void LeArquivoConfiguracao() {
         boolean lidoArqConf = true;
-        String ArquivoConf = null;
+        String arquivoConf;
         String caminho = "recursos/";
         String nomeArquivo = "srvhttp02.cnf";
 
-        try {
-            Arquivo arquivo = new Arquivo();
-            ArquivoConf = arquivo.LeTexto(caminho, nomeArquivo);
+        arquivoConf = Arquivo.LeTexto(caminho, nomeArquivo);
 
-            String ModoOp = Auxiliar.LeParametroArquivo(ArquivoConf, "ModoOp:");
-            String Verbose = Auxiliar.LeParametroArquivo(ArquivoConf, "Verbose:");
-            String EndIpConcArduino = Auxiliar.LeParametroArquivo(ArquivoConf, "EndIpConcArduino:");
+        if (arquivoConf != null) {
 
-            nomeUsuarioAdmin1 = Auxiliar.LeParametroArquivo(ArquivoConf, "NomeUsuarioAdmin1:");
-            senhaAdmin1 = Auxiliar.LeParametroArquivo(ArquivoConf, "SenhaAdmin1:");
-            nomeUsuarioAdmin2 = Auxiliar.LeParametroArquivo(ArquivoConf, "NomeUsuarioAdmin2:");
-            senhaAdmin2 = Auxiliar.LeParametroArquivo(ArquivoConf, "SenhaAdmin2:");
-            nomeUsuarioAdmin3 = Auxiliar.LeParametroArquivo(ArquivoConf, "NomeUsuarioAdmin3:");
-            senhaAdmin3 = Auxiliar.LeParametroArquivo(ArquivoConf, "SenhaAdmin3:");
+            String ModoOp = Auxiliar.LeParametroArquivo(arquivoConf, "ModoOp:");
+            String Verbose = Auxiliar.LeParametroArquivo(arquivoConf, "Verbose:");
+            String EndIpConcArduino = Auxiliar.LeParametroArquivo(arquivoConf, "EndIpConcArduino:");
+            String DiretorioBD = Auxiliar.LeParametroArquivo(arquivoConf, "DiretorioBD:");
 
-            if (ModoOp.equals("local")) { opLocal = true; } else { opLocal = false; }
-            if (Verbose.equals("true")) { verbose = true; } else { verbose = false; }
+            nomeUsuarioAdmin1 = Auxiliar.LeParametroArquivo(arquivoConf, "NomeUsuarioAdmin1:");
+            senhaAdmin1 = Auxiliar.LeParametroArquivo(arquivoConf, "SenhaAdmin1:");
+            nomeUsuarioAdmin2 = Auxiliar.LeParametroArquivo(arquivoConf, "NomeUsuarioAdmin2:");
+            senhaAdmin2 = Auxiliar.LeParametroArquivo(arquivoConf, "SenhaAdmin2:");
+            nomeUsuarioAdmin3 = Auxiliar.LeParametroArquivo(arquivoConf, "NomeUsuarioAdmin3:");
+            senhaAdmin3 = Auxiliar.LeParametroArquivo(arquivoConf, "SenhaAdmin3:");
+
+            opLocal = false;
+            if (ModoOp.equals("local")) { opLocal = true; }
+
+            verbose = false;
+            if (Verbose.equals("true")) { verbose = true; }
+
             endIpConc = EndIpConcArduino;
+            diretorioBd = DiretorioBD;
 
             System.out.println("\nLido Arquivo de Configuração\n");
-            if (opLocal) { System.out.println("Modo de Operação Local"); }
-            else { System.out.println("Modo de Operação Remoto (Nuvem)"); }
+            if (opLocal) {
+                System.out.println("Modo de Operação Local");
+            } else {
+                System.out.println("Modo de Operação Remoto (Nuvem)");
+            }
             System.out.println("Verbose: " + verbose);
             System.out.println("Endereço IP do Concentrador Arduino: " + endIpConc);
+            System.out.println("Diretorio do banco de dados: " + diretorioBd);
             System.out.println("");
             System.out.println("Administrador Vlgl 1:" + nomeUsuarioAdmin1);
             System.out.println("Senha Administrador Vlgl 1:" + senhaAdmin1);
@@ -115,13 +108,9 @@ public class Inicia {
             System.out.println("Administrador Vlgl 3:" + nomeUsuarioAdmin3);
             System.out.println("Senha Administrador Vlgl 3:" + senhaAdmin3);
             System.out.println("");
-
-        } catch (Exception e) {
-            Auxiliar.Terminal("Arquivo de Configuração nao encontrado.", false);
-            lidoArqConf = false;
         }
-
-        return lidoArqConf;
+        else {
+            Auxiliar.Terminal("Arquivo de Configuração nao encontrado.", false);
+        }
     }
-
 }

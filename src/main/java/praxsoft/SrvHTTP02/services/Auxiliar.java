@@ -85,6 +85,35 @@ public class Auxiliar {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: ImpHoraData                                                                                     *
+    //                                                                                                                 *
+    // Funcao: gera uma string com a data e a hora recebida em um array de bytes                                       *
+    //                                                                                                                 *
+    // Entrada: Array[6] [0] = Hora, [1] = Minutos, [2] = Segundos, [3] = Dia, [4] = Mês, [5] = Ano, [6] = Ano         *
+    //                                                                                                                 *
+    // Saida: string no formato HH:MM:SS - DD/MM/AAAA                                                                  *                                                                                 *
+    //                                                                                                                 *
+    //******************************************************************************************************************
+    //
+    public static String ImpHoraData(byte[] DH) {
+
+        String Msg = "";
+        if (DH[0] < 10) { Msg = Msg + "0"; }
+        Msg = Msg + DH[0] + ":";
+        if (DH[1] < 10) { Msg = Msg + "0"; }
+        Msg = Msg + DH[1] + ":";
+        if (DH[2] < 10) { Msg = Msg + "0"; }
+        Msg = Msg + DH[2] + "  ";
+
+        if (DH[3] < 10) { Msg = Msg + "0"; }
+        Msg = Msg + DH[3] + "/";
+        if (DH[4] < 10) { Msg = Msg + "0"; }
+        Msg = Msg + DH[4] + "/" + DH[5] + DH[6];
+
+        return (Msg);
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: Terminal                                                                                        *
     //                                                                                                                 *
     // Funcao: imprime uma mensagem no Terminal precedidsa pela hora e a data                                          *

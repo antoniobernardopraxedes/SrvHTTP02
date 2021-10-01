@@ -94,12 +94,12 @@ public class VlglResources {
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
-    @PostMapping(value = "/vlgl/confirma")
+    @PostMapping(value = "/vlgl/reserva")
     public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
-        Auxiliar.Terminal("Método POST - Recurso solicitado: /vlgl/confirma", false);
+        Auxiliar.Terminal("Solicitação de reserva de mesa", false);
 
         reservaMesa.MostraCamposTerminal();
-        boolean confirma = VlglService.AtualizaArquivo(reservaMesa);
+        boolean confirma = vlglService.AtualizaArquivo(reservaMesa);
         String MsgXML = vlglService.MontaXMLConfirma(reservaMesa, confirma);
 
         System.out.println(MsgXML);
