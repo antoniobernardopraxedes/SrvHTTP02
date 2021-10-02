@@ -5,6 +5,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import praxsoft.SrvHTTP02.domain.Cliente;
+import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
 
 import java.time.LocalDateTime;
@@ -53,7 +54,6 @@ public class VlglService {
     public static void GeraCadastroCliente(Cliente cliente) {
 
         cliente.MostraCamposTerminal();
-        //String caminho = "recursos/vlgl/clientes/";
         String caminho = Inicia.getDiretorioBd() + "clientes/";
         String nomeArquivo = cliente.getNomeUsuario() + ".clt";
 
@@ -91,243 +91,53 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: AtualizaArquivo                                                                                 *
+    // Nome do Método: AtualizaReservaMesa                                                                             *
     //	                                                                                                               *
     // Data: 24/09/2021                                                                                                *
     //                                                                                                                 *
     // Funcao: lê um arquivo de data com as informações das mesas, atualiza a reserva confirmada e grava novamente     *
     //         o arquivo.                                                                                              *
     //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD-MM-AAAA, string com o nome de usuário do cliente,           *
-    //          string com o número de pessoas e string com a hora de chegada                                          *
+    // Entrada: objeto da classe ReservaMesa com as informações sobre a reserva solicitada                             *
     //                                                                                                                 *
-    // Saida:                                                                                                          *
+    // Saida: boolean true se a operação foi realizada corretamente                                                    *
     //******************************************************************************************************************
     //
-    public boolean AtualizaArquivo(ReservaMesa reservaMesa) {
+    public boolean AtualizaReservaMesa(ReservaMesa reservaMesa) {
 
-        boolean confirma = false;
-        //String caminho = "recursos/vlgl/reservas/";
-        String caminho = Inicia.getDiretorioBd() + "reservas/";
-        String nomeArquivo = reservaMesa.getDataReserva() + ".res";
+        DadosMesa dadosMesa = LeArquivoReservaMesa(reservaMesa.getDataReserva());
 
-        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
-        if (dadosArquivo != null) {
+        String[] nomeUsuario = dadosMesa.getNomeUsuario();
+        String[] nomeCompleto = dadosMesa.getNomeCompleto();
+        String[] numeroPessoas = dadosMesa.getNumeroPessoas();
+        String[] horaChegada = dadosMesa.getHoraChegada();
+        String[] adminResponsavel = dadosMesa.getAdminResponsavel();
+        String[] horaRegistro = dadosMesa.getHoraRegistro();
+        String[] dataRegistro = dadosMesa.getDataRegistro();
 
-            int numMesas = 17;
-            String[] nomeUsuarioMesa = new String[numMesas];
-            String[] nomeCompletoMesa = new String[numMesas];
-            String[] numeroPessoasMesa = new String[numMesas];
-            String[] horaChegadaMesa = new String[numMesas];
-            String[] adminResponsavelMesa = new String[numMesas];
-            String[] horaRegistroMesa = new String[numMesas];
-            String[] dataRegistroMesa = new String[numMesas];
+        char ch10 = reservaMesa.getMesaSelecionada().charAt(1);
+        char ch1 = reservaMesa.getMesaSelecionada().charAt(2);
+        int indiceMesa = Auxiliar.TwoCharToInt(ch10, ch1);
+        Auxiliar.Terminal("Indice da mesa: " + indiceMesa, false);
+        reservaMesa.MostraCamposTerminal();
 
-            String sufixo;
-            String letra = "A";
+        nomeUsuario[indiceMesa] = reservaMesa.getNomeUsuario();
+        nomeCompleto[indiceMesa] = reservaMesa.getNomeCliente();
+        numeroPessoas[indiceMesa] = reservaMesa.getNumPessoas();
+        horaChegada[indiceMesa] = reservaMesa.getHoraChegada();
+        adminResponsavel[indiceMesa] = reservaMesa.getAdminResp();
+        horaRegistro[indiceMesa] = ImpHora();
+        dataRegistro[indiceMesa] = ImpData();
 
-            for (int i = 0; i < numMesas; i++) {
-                if (i > 8) { letra = "B"; }
-                sufixo = letra + IntToStr2(i);
-                nomeUsuarioMesa[i] = LeParametroArquivo(dadosArquivo, "NOU" + sufixo + ":");
-                nomeCompletoMesa[i] = LeParametroArquivo(dadosArquivo, "NOC" + sufixo + ":");
-                numeroPessoasMesa[i] = LeParametroArquivo(dadosArquivo, "NUP" + sufixo + ":");
-                horaChegadaMesa[i] = LeParametroArquivo(dadosArquivo, "HOC" + sufixo + ":");
-                adminResponsavelMesa[i] = LeParametroArquivo(dadosArquivo, "ADR" + sufixo + ":");
-                horaRegistroMesa[i] = LeParametroArquivo(dadosArquivo, "HOR" + sufixo + ":");
-                dataRegistroMesa[i] = LeParametroArquivo(dadosArquivo, "DTR" + sufixo + ":");
-            }
+       dadosMesa.setNomeUsuario(nomeUsuario);
+       dadosMesa.setNomeCompleto(nomeCompleto);
+       dadosMesa.setNumeroPessoas(numeroPessoas);
+       dadosMesa.setHoraChegada(horaChegada);
+       dadosMesa.setAdminResponsavel(adminResponsavel);
+       dadosMesa.setHoraRegistro(horaRegistro);
+       dadosMesa.setDataRegistro(dataRegistro);
 
-            char ch10 = reservaMesa.getMesaSelecionada().charAt(1);
-            char ch1 = reservaMesa.getMesaSelecionada().charAt(2);
-            int indiceMesa = Auxiliar.TwoCharToInt(ch10, ch1);
-
-            Auxiliar.Terminal("Indice mesa: " + indiceMesa, false);
-            reservaMesa.MostraCamposTerminal();
-
-            if ((indiceMesa >= 0) && (indiceMesa < numMesas)) {
-                nomeUsuarioMesa[indiceMesa] = reservaMesa.getNomeUsuario();     // Nome de usuário
-                nomeCompletoMesa[indiceMesa] = reservaMesa.getNomeCliente();    // Nome Completo
-                numeroPessoasMesa[indiceMesa] = reservaMesa.getNumPessoas();    // Número de pessoas
-                horaChegadaMesa[indiceMesa] = reservaMesa.getHoraChegada();     // Hora chegada
-                adminResponsavelMesa[indiceMesa] = reservaMesa.getAdminResp();  // Admin responsável
-                horaRegistroMesa[indiceMesa] = ImpHora();                       // Hora de registro da reserva
-                dataRegistroMesa[indiceMesa] = ImpData();                       // Data de registro da reserva
-            }
-            else {
-                nomeUsuarioMesa[indiceMesa] = "null";
-                nomeCompletoMesa[indiceMesa] = "null";
-                numeroPessoasMesa[indiceMesa] = "null";
-                horaChegadaMesa[indiceMesa] = "null";
-                adminResponsavelMesa[indiceMesa] = "null";
-                horaRegistroMesa[indiceMesa] = "null";
-                dataRegistroMesa[indiceMesa] = "null";
-            }
-
-            String indice;
-            String token;
-            letra = "A";
-            String dadosArqNovo = "{\n";
-            for (int i = 0; i < numMesas; i++) {
-                if (i > 8) { letra = "B"; }
-                sufixo = letra + IntToStr2(i);
-
-                dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + nomeUsuarioMesa[i] + "\n";
-                dadosArqNovo = dadosArqNovo + "  NOC" + sufixo + ": " + nomeCompletoMesa[i] + "\n";
-                dadosArqNovo = dadosArqNovo + "  NUP" + sufixo + ": " + numeroPessoasMesa[i] + "\n";
-                dadosArqNovo = dadosArqNovo + "  HOC" + sufixo + ": " + horaChegadaMesa[i] + "\n";
-                dadosArqNovo = dadosArqNovo + "  ADR" + sufixo + ": " + adminResponsavelMesa[i] + "\n";
-                dadosArqNovo = dadosArqNovo + "  HOR" + sufixo + ": " + horaRegistroMesa[i] + "\n";
-                dadosArqNovo = dadosArqNovo + "  DTR" + sufixo + ": " + dataRegistroMesa[i] + "\n";
-            }
-            dadosArqNovo = dadosArqNovo + "}";
-
-            Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " lido e modificado", false);
-            if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
-                Arquivo.Apaga(caminho, "a." + nomeArquivo);
-            }
-            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
-                Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
-                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                    Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
-                    confirma = true;
-                }
-            }
-        }
-        else {
-            Auxiliar.Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
-        }
-        return confirma;
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: EscreveArquivoReservaNovo                                                                       *
-    //	                                                                                                               *
-    // Data: 27/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: cria um arquivo de reservas novo para a data especificada                                               *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
-    //                                                                                                                 *
-    // Saida:                                                                                                          *
-    //******************************************************************************************************************
-    //
-    public static void EscreveArquivoReservaNovo(String dataRes) {
-
-        //String caminho = "recursos/vlgl/reservas/";
-        String caminho = Inicia.getDiretorioBd() + "reservas/";
-        String nomeArquivo = dataRes + ".res";
-
-        int numMesas = 17;
-        String Indice;
-        String letra = "A";
-        String dadosArqNovo = "{\n";
-        for (int i = 0; i < numMesas; i++) {
-            if (i > 8) { letra = "B"; }
-            Indice = Auxiliar.IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": livre\n";
-            dadosArqNovo = dadosArqNovo + "  NOC" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  NUP" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  HOC" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  ADR" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  HOR" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  DTR" + letra + Indice + ": null\n";
-        }
-        dadosArqNovo = dadosArqNovo + "}";
-
-        if (!Arquivo.Existe(caminho, "a." + nomeArquivo)) {
-            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                Auxiliar.Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
-            } else {
-                Auxiliar.Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
-            }
-        }
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: LeArquivoMontaResposta                                                                          *
-    //	                                                                                                               *
-    // Data: 29/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: lê um arquivo e monta a mensagem de resposta com o conteúdo do arquivo e o tipo. Este método é          *
-    //         destinado a ler arquivos do tipo HTML (.html e .htm, CSS (.css), Javascript (.js) e de imagem           *
-    //         (.jpg e .ico). Se o cliente é u dispositivo móvel, o método muda o diretório de leitura dos arquivos    *
-    //         .css e .js                                                                                              *
-    //                                                                                                                 *
-    // Entrada: string com o caminho, string com o nome do arquivo e string com o UserAgent do cabeçalho HTTP          *
-    //                                                                                                                 *
-    // Saida: ResponseEntity de resposta HTML                                                                          *
-    //******************************************************************************************************************
-    //
-    public ResponseEntity<?> LeArquivoMontaResposta(String caminho, String nomeArquivo, String userAgent) {
-
-        String tipo = "text/plain";
-        if (nomeArquivo.endsWith(".html")) {
-            tipo = "text/html";
-        }
-        if (nomeArquivo.endsWith(".css")) {
-            tipo = "text/css";
-            if (userAgent.toLowerCase().contains("mobile")) {
-                caminho = caminho + "css_m/";
-            }
-            else {
-                caminho = caminho + "css/";
-            }
-        }
-        if (nomeArquivo.endsWith(".js")) {
-            tipo = "text/javascript";
-            if (userAgent.toLowerCase().contains("mobile")) {
-                caminho = caminho + "js_m/";
-            }
-            else {
-                caminho = caminho + "js/";
-            }
-        }
-        if (nomeArquivo.endsWith(".jpg") || nomeArquivo.endsWith(".ico")) {
-            tipo = "image/jpeg";
-            caminho = caminho + "img/";
-        }
-        if (nomeArquivo.endsWith(".png")) {
-            tipo = "image/png";
-            caminho = caminho + "img/";
-        }
-
-        if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
-            byte[] arquivoByte = Arquivo.LeArquivoByte(caminho, nomeArquivo);
-            if (arquivoByte.length == 0) {
-                return ResponseEntity
-                        .status(HttpStatus.NOT_FOUND )
-                        .contentType(MediaType.valueOf("text/html"))
-                        .body(msgArqNaoEncontrado(nomeArquivo));
-            }
-            else {
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .contentType(MediaType.valueOf(tipo))
-                        .body(arquivoByte);
-            }
-        }
-        else {
-            String arquivoTxt = Arquivo.LeTexto(caminho, nomeArquivo);
-
-            if (arquivoTxt == null) {
-                return ResponseEntity
-                        .status(HttpStatus.NOT_FOUND )
-                        .contentType(MediaType.valueOf("text/html"))
-                        .body(msgArqNaoEncontrado(nomeArquivo));
-            }
-            else {
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .contentType(MediaType.valueOf(tipo))
-                        .body(arquivoTxt);
-            }
-        }
-    }
-
-    private String msgArqNaoEncontrado(String nomeArquivo) {
-
-        return ("<p></p><h3>File not found: " + nomeArquivo + "</h3>");
+        return EscreveArquivoReservaMesa(reservaMesa.getDataReserva(), dadosMesa);
     }
 
     //******************************************************************************************************************
@@ -438,6 +248,251 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: LeArquivoMontaResposta                                                                          *
+    //	                                                                                                               *
+    // Data: 29/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo e monta a mensagem de resposta com o conteúdo do arquivo e o tipo. Este método é          *
+    //         destinado a ler arquivos do tipo HTML (.html e .htm, CSS (.css), Javascript (.js) e de imagem           *
+    //         (.jpg e .ico). Se o cliente é u dispositivo móvel, o método muda o diretório de leitura dos arquivos    *
+    //         .css e .js                                                                                              *
+    //                                                                                                                 *
+    // Entrada: string com o caminho, string com o nome do arquivo e string com o UserAgent do cabeçalho HTTP          *
+    //                                                                                                                 *
+    // Saida: ResponseEntity de resposta HTML                                                                          *
+    //******************************************************************************************************************
+    //
+    public ResponseEntity<?> LeArquivoMontaResposta(String caminho, String nomeArquivo, String userAgent) {
+
+        String tipo = "text/plain";
+        if (nomeArquivo.endsWith(".html")) {
+            tipo = "text/html";
+        }
+        if (nomeArquivo.endsWith(".css")) {
+            tipo = "text/css";
+            if (userAgent.toLowerCase().contains("mobile")) {
+                caminho = caminho + "css_m/";
+            }
+            else {
+                caminho = caminho + "css/";
+            }
+        }
+        if (nomeArquivo.endsWith(".js")) {
+            tipo = "text/javascript";
+            if (userAgent.toLowerCase().contains("mobile")) {
+                caminho = caminho + "js_m/";
+            }
+            else {
+                caminho = caminho + "js/";
+            }
+        }
+        if (nomeArquivo.endsWith(".jpg") || nomeArquivo.endsWith(".ico")) {
+            tipo = "image/jpeg";
+            caminho = caminho + "img/";
+        }
+        if (nomeArquivo.endsWith(".png")) {
+            tipo = "image/png";
+            caminho = caminho + "img/";
+        }
+
+        if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
+            byte[] arquivoByte = Arquivo.LeArquivoByte(caminho, nomeArquivo);
+            if (arquivoByte.length == 0) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND )
+                        .contentType(MediaType.valueOf("text/html"))
+                        .body(msgArqNaoEncontrado(nomeArquivo));
+            }
+            else {
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.valueOf(tipo))
+                        .body(arquivoByte);
+            }
+        }
+        else {
+            String arquivoTxt = Arquivo.LeTexto(caminho, nomeArquivo);
+
+            if (arquivoTxt == null) {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND )
+                        .contentType(MediaType.valueOf("text/html"))
+                        .body(msgArqNaoEncontrado(nomeArquivo));
+            }
+            else {
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .contentType(MediaType.valueOf(tipo))
+                        .body(arquivoTxt);
+            }
+        }
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: LeArquivoReservaMesa                                                                            *
+    //	                                                                                                               *
+    // Data: 02/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de registro de reserva das mesas. Se o arquivo não for encontrado, cria um novo arquivo   *
+    //
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
+    //                                                                                                                 *
+    // Saida: objeto da classe DadosMesa com as informações das reservas das mesas na data especificada                *
+    //******************************************************************************************************************
+    //
+    private DadosMesa LeArquivoReservaMesa(String dataReserva) {
+
+        String caminho = Inicia.getDiretorioBd() + "reservas/";
+        String nomeArquivo = dataReserva + ".res";
+        if (!Arquivo.Existe(caminho, nomeArquivo)) {
+            EscreveArquivoReservaNovo(dataReserva);
+        }
+        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
+        DadosMesa dadosMesa = new DadosMesa();
+
+        if (dadosArquivo != null) {
+
+            int numMesas = 17;
+            String[] nomeUsuario = new String[numMesas];
+            String[] nomeCompleto = new String[numMesas];
+            String[] numeroPessoas = new String[numMesas];
+            String[] horaChegada = new String[numMesas];
+            String[] adminResponsavel = new String[numMesas];
+            String[] horaRegistro = new String[numMesas];
+            String[] dataRegistro = new String[numMesas];
+
+            String sufixo;
+            String letra = "A";
+
+            for (int i = 0; i < numMesas; i++) {
+                if (i > 8) { letra = "B"; }
+                sufixo = letra + IntToStr2(i);
+                nomeUsuario[i] = LeParametroArquivo(dadosArquivo, "NOU" + sufixo + ":");
+                nomeCompleto[i] = LeCampoArquivo(dadosArquivo, "NOC" + sufixo + ":");
+                numeroPessoas[i] = LeParametroArquivo(dadosArquivo, "NUP" + sufixo + ":");
+                horaChegada[i] = LeParametroArquivo(dadosArquivo, "HOC" + sufixo + ":");
+                adminResponsavel[i] = LeParametroArquivo(dadosArquivo, "ADR" + sufixo + ":");
+                horaRegistro[i] = LeParametroArquivo(dadosArquivo, "HOR" + sufixo + ":");
+                dataRegistro[i] = LeParametroArquivo(dadosArquivo, "DTR" + sufixo + ":");
+            }
+            dadosMesa.setNomeUsuario(nomeUsuario);
+            dadosMesa.setNomeCompleto(nomeCompleto);
+            dadosMesa.setNumeroPessoas(numeroPessoas);
+            dadosMesa.setHoraChegada(horaChegada);
+            dadosMesa.setAdminResponsavel(adminResponsavel);
+            dadosMesa.setHoraRegistro(horaRegistro);
+            dadosMesa.setDataRegistro(dataRegistro);
+        }
+        else {
+            Auxiliar.Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
+        }
+        return dadosMesa;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EscreveArquivoReservaMesa                                                                       *
+    //	                                                                                                               *
+    // Data: 02/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: escreve um arquivo de registro de reservas na data especificada                                         *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA e objeto da classe DadosMesa com as informações     *
+    //          de reserva de todas as mesas para a data especificada                                                  *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi executada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    private boolean EscreveArquivoReservaMesa(String DataReserva, DadosMesa dadosMesa) {
+
+        boolean confirma = false;
+        String caminho = Inicia.getDiretorioBd() + "reservas/";
+        String nomeArquivo = DataReserva + ".res";
+
+        int numMesas = 17;
+        String[] nomeUsuario = dadosMesa.getNomeUsuario();
+        String[] nomeCompleto = dadosMesa.getNomeCompleto();
+        String[] numeroPessoas = dadosMesa.getNumeroPessoas();
+        String[] horaChegada = dadosMesa.getHoraChegada();
+        String[] adminResponsavel = dadosMesa.getAdminResponsavel();
+        String[] horaRegistro = dadosMesa.getHoraRegistro();
+        String[] dataRegistro = dadosMesa.getDataRegistro();
+
+        String sufixo;
+        String letra = "A";
+        String dadosArqNovo = "{\n";
+
+        for (int i = 0; i < numMesas; i++) {
+            if (i > 8) { letra = "B"; }
+            sufixo = letra + IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + nomeUsuario[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  NOC" + sufixo + ": " + nomeCompleto[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  NUP" + sufixo + ": " + numeroPessoas[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  HOC" + sufixo + ": " + horaChegada[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  ADR" + sufixo + ": " + adminResponsavel[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  HOR" + sufixo + ": " + horaRegistro[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  DTR" + sufixo + ": " + dataRegistro[i] + "\n";
+        }
+        dadosArqNovo = dadosArqNovo + "}";
+
+        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            Arquivo.Apaga(caminho, "a." + nomeArquivo);
+        }
+        if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
+            Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
+                confirma = true;
+            }
+        }
+        return confirma;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EscreveArquivoReservaNovo                                                                       *
+    //	                                                                                                               *
+    // Data: 27/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: cria um arquivo de reservas novo para a data especificada                                               *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    private static void EscreveArquivoReservaNovo(String dataRes) {
+
+        //String caminho = "recursos/vlgl/reservas/";
+        String caminho = Inicia.getDiretorioBd() + "reservas/";
+        String nomeArquivo = dataRes + ".res";
+
+        int numMesas = 17;
+        String Indice;
+        String letra = "A";
+        String dadosArqNovo = "{\n";
+        for (int i = 0; i < numMesas; i++) {
+            if (i > 8) { letra = "B"; }
+            Indice = Auxiliar.IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": livre\n";
+            dadosArqNovo = dadosArqNovo + "  NOC" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  NUP" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HOC" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  ADR" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HOR" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  DTR" + letra + Indice + ": null\n";
+        }
+        dadosArqNovo = dadosArqNovo + "}";
+
+        if (!Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                Auxiliar.Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
+            } else {
+                Auxiliar.Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
+            }
+        }
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: CarregaEstadoArray                                                                              *
     //	                                                                                                               *
     // Data: 25/09/2021                                                                                                *
@@ -469,133 +524,130 @@ public class VlglService {
     //******************************************************************************************************************
     // Nome do Método: CarregaClienteArray                                                                             *
     //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
+    // Data: 02/10/2021                                                                                                *
     //                                                                                                                 *
     // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
     //                                                                                                                 *
     // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
     //                                                                                                                 *
-    // Saida: boolean (retorna false se o registro do cliente não for encontrado)                                      *
+    // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
     private void CarregaClienteArray(String nomeUsuario, int IdNv0, int IdNv1) {
 
-        int numCampos = 10;
-        String[] cliente = new String[numCampos];
+        Cliente cliente = LeArquivoCadastroCliente(nomeUsuario);
 
-        //String caminho = "recursos/vlgl/clientes/";
+        int i = 0;
+        MsgXMLArray[IdNv0][IdNv1][i++][0] = "CLIENTE";
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", cliente.getNomeUsuario());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", cliente.getNome());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("CELULAR", cliente.getCelular());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS1", cliente.getObs1());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS2", cliente.getObs2());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("IDOSO", cliente.getIdoso());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("LOCOMOCAO", cliente.getLocomocao());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("EXIGENTE", cliente.getExigente());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("GENERO", cliente.getGenero());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADMINRSP", cliente.getAdminResp());
+        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
+
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: LeArquivoCadastroCliente                                                                        *
+    //	                                                                                                               *
+    // Data: 02/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de cadastro de cliente                                                                    *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente                                                                *
+    //                                                                                                                 *
+    // Saida: objeto da classe Cliente com as informações do cliente. Se o registro do cliente não for encontrado,     *
+    //        retorna com todos os campos iguais a "null"                                                              *
+    //******************************************************************************************************************
+    //
+    private Cliente LeArquivoCadastroCliente(String nomeUsuario) {
+
         String caminho = Inicia.getDiretorioBd() + "clientes/";
         String nomeArquivo = nomeUsuario + ".clt";
         String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
 
-        if (registroCliente == null) {
-            for (int i = 0; i < numCampos; i++) {
-                cliente[i] = "null";
-            }
+        Cliente cliente = new Cliente();
+
+        if (registroCliente != null) {
+            cliente.setNomeUsuario(LeCampoArquivo(registroCliente, "NomeUsuario:"));
+            cliente.setNome(LeCampoArquivo(registroCliente, "Nome:"));
+            cliente.setCelular(LeCampoArquivo(registroCliente, "Celular:"));
+            cliente.setObs1(LeCampoArquivo(registroCliente, "Obs1:"));
+            cliente.setObs2(LeCampoArquivo(registroCliente, "Obs2:"));
+            cliente.setIdoso(LeCampoArquivo(registroCliente, "Idoso:"));
+            cliente.setLocomocao(LeCampoArquivo(registroCliente, "Locomocao:"));
+            cliente.setExigente(LeCampoArquivo(registroCliente, "Exigente:"));
+            cliente.setGenero(LeCampoArquivo(registroCliente, "Genero:"));
+            cliente.setAdminResp(LeCampoArquivo(registroCliente, "AdminResp:"));
         }
         else {
-            cliente[0] = LeCampoArquivo(registroCliente, "NomeUsuario:");
-            cliente[1] = LeCampoArquivo(registroCliente, "Nome:");
-            cliente[2] = LeCampoArquivo(registroCliente, "Celular:");
-            cliente[3] = LeCampoArquivo(registroCliente, "Obs1:");
-            cliente[4] = LeCampoArquivo(registroCliente, "Obs2:");
-            cliente[5] = LeCampoArquivo(registroCliente, "Idoso:");
-            cliente[6] = LeCampoArquivo(registroCliente, "Locomocao:");
-            cliente[7] = LeCampoArquivo(registroCliente, "Exigente:");
-            cliente[8] = LeCampoArquivo(registroCliente, "Genero:");
-            cliente[9] = LeCampoArquivo(registroCliente, "AdminResp:");
+            cliente.setNomeUsuario("null");
+            cliente.setNome("null");
+            cliente.setCelular("null");
+            cliente.setObs1("null");
+            cliente.setObs2("null");
+            cliente.setIdoso("null");
+            cliente.setLocomocao("null");
+            cliente.setExigente("null");
+            cliente.setGenero("null");
+            cliente.setAdminResp("null");
         }
-
-        // Grupo IdNv1: Variáveis de Informação do Cliente
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "CLIENTE";
-        MsgXMLArray[IdNv0][IdNv1][1] = EntTagValue("ID", cliente[0]);
-        MsgXMLArray[IdNv0][IdNv1][2] = EntTagValue("NOME", cliente[1]);
-        MsgXMLArray[IdNv0][IdNv1][3] = EntTagValue("CELULAR", cliente[2]);
-        MsgXMLArray[IdNv0][IdNv1][4] = EntTagValue("OBS1", cliente[3]);
-        MsgXMLArray[IdNv0][IdNv1][5] = EntTagValue("OBS2", cliente[4]);
-        MsgXMLArray[IdNv0][IdNv1][6] = EntTagValue("IDOSO", cliente[5]);
-        MsgXMLArray[IdNv0][IdNv1][7] = EntTagValue("LOCOMOCAO", cliente[6]);
-        MsgXMLArray[IdNv0][IdNv1][8] = EntTagValue("EXIGENTE", cliente[7]);
-        MsgXMLArray[IdNv0][IdNv1][9] = EntTagValue("GENERO", cliente[8]);
-        MsgXMLArray[IdNv0][IdNv1][10] = EntTagValue("ADMINRSP", cliente[9]);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(10); // Número de elementos do Grupo
-
+        return cliente;
     }
 
     //******************************************************************************************************************
     // Nome do Método: CarregaDataArray                                                                                *
     //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
+    // Data: 02/10/2021                                                                                                *
     //                                                                                                                 *
     // Funcao: carrega as informações das reservas das mesas na data no array usado para montar a mensagem XML.        *
     //                                                                                                                 *
     // Entrada: string com a data da reserva, int com o índice do local e int com o índice do grupo                    *
     //                                                                                                                 *
-    // Saida: boolean (retorna false se o registro do cliente não for encontrado)                                      *
+    // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
     private void CarregaDataArray(String dataReserva, int IdNv0, int IdNv1) {
 
-        //String caminho = "recursos/vlgl/reservas/";
-        String caminho = Inicia.getDiretorioBd() + "reservas/";
-        String nomeArquivo = dataReserva + ".res";
-        if (!Arquivo.Existe(caminho, nomeArquivo)) {
-            EscreveArquivoReservaNovo(dataReserva);
-        }
+        DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
 
-        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
+        String[] nomeUsuario = dadosMesa.getNomeUsuario();
+        String[] nomeCompleto = dadosMesa.getNomeCompleto();
+        String[] numeroPessoas = dadosMesa.getNumeroPessoas();
+        String[] horaChegada = dadosMesa.getHoraChegada();
+        String[] adminResponsavel = dadosMesa.getAdminResponsavel();
+        String[] horaRegistro = dadosMesa.getHoraRegistro();
+        String[] dataRegistro = dadosMesa.getDataRegistro();
 
-        if (dadosArquivo != null) {
+        int numMesas = 17;
+        int i = 0;
 
-            int numMesas = 17;
-            String[] nomeUsuarioMesa = new String[numMesas];
-            String[] nomeCompletoMesa = new String[numMesas];
-            String[] numeroPessoasMesa = new String[numMesas];
-            String[] horaChegadaMesa = new String[numMesas];
-            String[] adminResponsavelMesa = new String[numMesas];
-            String[] horaRegistroMesa = new String[numMesas];
-            String[] dataRegistroMesa = new String[numMesas];
+        MsgXMLArray[IdNv0][IdNv1][i++][0] = "MESAS";
 
-            String sufixo;
+        for (int k = 0; k < numMesas; k++) {
             String letra = "A";
-
-            for (int k = 0; k < numMesas; k++) {
-                if (k > 8) { letra = "B"; }
-                sufixo = letra + IntToStr2(k);
-                nomeUsuarioMesa[k] = LeParametroArquivo(dadosArquivo, "NOU" + sufixo + ":");
-                nomeCompletoMesa[k] = LeCampoArquivo(dadosArquivo, "NOC" + sufixo + ":");
-                numeroPessoasMesa[k] = LeParametroArquivo(dadosArquivo, "NUP" + sufixo + ":");
-                horaChegadaMesa[k] = LeParametroArquivo(dadosArquivo, "HOC" + sufixo + ":");
-                adminResponsavelMesa[k] = LeParametroArquivo(dadosArquivo, "ADR" + sufixo + ":");
-                horaRegistroMesa[k] = LeParametroArquivo(dadosArquivo, "HOR" + sufixo + ":");
-                dataRegistroMesa[k] = LeParametroArquivo(dadosArquivo, "DTR" + sufixo + ":");
-            }
-
-            MsgXMLArray[IdNv0][IdNv1][0][0] = "MESAS";
-            int i = 1;
-            letra = "A";
-
-            for (int k = 0; k < numMesas; k++) {
-                if (k > 8) { letra = "B"; }
-                sufixo = letra + IntToStr2(k);
-
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOU" + sufixo, nomeUsuarioMesa[k]);
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOC" + sufixo, nomeCompletoMesa[k]);
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUP" + sufixo, numeroPessoasMesa[k]);
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOC" + sufixo, horaChegadaMesa[k]);
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADR" + sufixo, adminResponsavelMesa[k]);
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOR" + sufixo, horaRegistroMesa[k]);
-                MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DTR" + sufixo, dataRegistroMesa[k]);
-            }
-            String numElementosGrupo = IntToStr4(i - 1);
-            MsgXMLArray[IdNv0][IdNv1][0][1] = numElementosGrupo;
-
-            System.out.println("Número de elementos: " + MsgXMLArray[IdNv0][IdNv1][0][1]);
+            if (k > 8) { letra = "B"; }
+            String sufixo = letra + IntToStr2(k);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOU" + sufixo, nomeUsuario[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOC" + sufixo, nomeCompleto[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUP" + sufixo, numeroPessoas[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOC" + sufixo, horaChegada[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADR" + sufixo, adminResponsavel[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOR" + sufixo, horaRegistro[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DTR" + sufixo, dataRegistro[k]);
         }
+        String numElementosGrupo = IntToStr4(i - 1);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = numElementosGrupo;
+
     }
 
     //******************************************************************************************************************
-    //                                                                                                                 *
     // Nome do Método: StringXML()                                                                                     *
     //	                                                                                                               *
     // Funcao: monta uma String com a mensagem XML de resposta inserindo o valor das variáveis                         *
@@ -865,6 +917,11 @@ public class VlglService {
         keyvalue[0] = Key;
         keyvalue[1] = Value;
         return (keyvalue);
+    }
+
+    private String msgArqNaoEncontrado(String nomeArquivo) {
+
+        return ("<p></p><h3>File not found: " + nomeArquivo + "</h3>");
     }
 
 }

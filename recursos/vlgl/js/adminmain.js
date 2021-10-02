@@ -74,6 +74,7 @@ for (let i = 0; i < 17; i++) {
 
 var NomeDaMesa;
 var CapacidadeMesa;
+var IdMesaConsulta;
 
 VerificaAdmin()
 
@@ -141,6 +142,7 @@ function VerificaAdmin() {
 //
 function VerificaData() {
     
+    consultaMesa = false;
     CarregaVariaveisFormulario();
     consultaMesa = false;
     
@@ -158,14 +160,12 @@ function VerificaData() {
                 let XMLRec = requisicao.responseXML;
                 CarregaMesas(XMLRec);
                 dataOK = true;
-                
                 if (consultaMesa) {
-                    EscreveTexto("Data: " + DataReserva + " - Selecione a mesa para consulta", "info1");
+                    EscreveTexto("Selecione a mesa para consulta", "info1");
                 }
                 else {
                     EscreveTexto("Recebido mapa de reservas do dia " + DataReserva, "info1");
                 }
-                
                 EscreveTexto(DataReserva, "dataMapa");
             };
             
@@ -252,6 +252,7 @@ function VerificaFormatoData(dataR) {
 //
 function VerificaCliente() {
     
+    consultaMesa = false;
     CarregaVariaveisFormulario();
     clienteOK = false;
     
@@ -315,6 +316,7 @@ function VerificaCliente() {
 //
 function ReservaConfirma() {
     
+    consultaMesa = false;
     if (BotaoReservaConfirma) {
         Confirma();
         
@@ -433,19 +435,19 @@ function SelecionaMesa(mesa) {
             }
         }
         else {
+            IdMesaConsulta = mesa;
             LimpaCamposInfo();
             let numMesa = parseInt(mesa[1] + mesa[2]);
-            let usuario = MesaNomeUsuario[numMesa];
-            if (usuario != "livre") {
+            if (MesaNomeUsuario[numMesa] != "livre") {
                 EscreveTexto("Reserva da " + NomeMesa(mesa) + " para " + DataReserva, "info2");
-                EscreveTexto("Nome de usuário: " + usuario, "info3");
+                EscreveTexto("Nome de usuário: " + MesaNomeUsuario[numMesa], "info3");
                 EscreveTexto("Nome completo: " + MesaNomeCliente[numMesa], "info4");
                 EscreveTexto("Número de pessoas: " + MesaNumPes[numMesa], "info5");
                 EscreveTexto("Horário de chegada: " + MesaHoraCheg[numMesa], "info6");
                 EscreveTexto("Responsável pela reserva: " + MesaAdminResp[numMesa], "info7");
                 EscreveTexto("Data do registro da reserva: " + MesaDataReg[numMesa], "info8");
                 EscreveTexto("Hora do registro da reserva: " + MesaHoraReg[numMesa], "info9");
-                consultaMesa = false;
+                //consultaMesa = false;
             }
             else {
                 EscreveTexto(NomeMesa(mesa) + " livre", "info2");
@@ -453,6 +455,7 @@ function SelecionaMesa(mesa) {
         }
         HabilitaSelMesa = false;
     }
+    console.log("consultaMesa = " + consultaMesa);
 }
 
 //*********************************************************************************************************************
@@ -543,6 +546,34 @@ function Confirma() {
 //
 function ExcluiReserva() {
     
+    if (consultaMesa) {
+    
+        let requisicao = new XMLHttpRequest();
+        let recurso = "reserva/exclui/" + DataResEnvio + "/" + IdMesaConsulta;
+        requisicao.open("DELETE", recurso, true);
+        requisicao.timeout = 2000;
+        EscreveMsgEnvSrv();
+        requisicao.send(null);
+    
+        requisicao.onload = function() {
+            let XMLRec = requisicao.responseXML;
+            CarregaMesas(XMLRec);
+            dataOK = true;
+            EscreveTexto("Recebido mapa de reservas do dia " + DataReserva, "info1");
+            EscreveTexto(DataReserva, "dataMapa");
+            
+        };
+         
+        requisicao.ontimeout = function(e) {
+            EscreveTexto("O servidor não respondeu à requisição", "info1");
+            console.log("Erro: " + e);
+        };
+        consultaMesa = false;
+    }
+    else {
+     EscreveTexto("Antes de excluir, é preciso consultar a mesa", "info1");
+    }
+    
 }
 
 //*********************************************************************************************************************
@@ -570,6 +601,7 @@ function ConsultaReservaMesa() {
     else {
         EscreveTexto("Entre com a data da reserva e verifique", "info1");
     }
+    console.log("consultaMesa = " + consultaMesa);
 }
 
 //*********************************************************************************************************************

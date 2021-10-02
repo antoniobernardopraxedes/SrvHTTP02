@@ -9,16 +9,14 @@ public class ReservaMesa {
     private String dataReserva;
     private String numPessoas;
     private String horaChegada;
-    private String mesaSelecionada;
     private String adminResp;
+    private String mesaSelecionada;
 
     public String getNomeUsuario() {
         return nomeUsuario;
     }
 
-    public String getNomeCliente() {
-        return nomeCliente;
-    }
+    public String getNomeCliente() { return nomeCliente; }
 
     public String getDataReserva() {
         return dataReserva;
@@ -28,17 +26,16 @@ public class ReservaMesa {
         return numPessoas;
     }
 
-    public String getHoraChegada() {
-        return horaChegada;
+    public String getHoraChegada() { return horaChegada; }
+
+    public String getAdminResp() {
+        return adminResp;
     }
 
     public String getMesaSelecionada() {
         return mesaSelecionada;
     }
 
-    public String getAdminResp() {
-        return adminResp;
-    }
 
     public void MostraCamposTerminal() {
         Auxiliar.Terminal("Nome de usuário: " + nomeUsuario, false);

@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Cliente;
+import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
 import praxsoft.SrvHTTP02.services.Auxiliar;
 import praxsoft.SrvHTTP02.services.VlglService;
@@ -99,7 +100,8 @@ public class VlglResources {
         Auxiliar.Terminal("Solicitação de reserva de mesa", false);
 
         reservaMesa.MostraCamposTerminal();
-        boolean confirma = vlglService.AtualizaArquivo(reservaMesa);
+
+        boolean confirma = vlglService.AtualizaReservaMesa(reservaMesa);
         String MsgXML = vlglService.MontaXMLConfirma(reservaMesa, confirma);
 
         System.out.println(MsgXML);
@@ -116,6 +118,19 @@ public class VlglResources {
         VlglService.GeraCadastroCliente(cliente);
         String MsgXML = vlglService.MontaXMLCliente(cliente.getNomeUsuario());
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/xml"))
+                .body(MsgXML);
+    }
+
+    @DeleteMapping(value = "/vlgl/reserva/exclui/{dataReserva}/{idMesa}")
+    public ResponseEntity<?> ExcluiReserva(@PathVariable String dataReserva, @PathVariable String idMesa) {
+        Auxiliar.Terminal("Requisição de exclusão: " + dataReserva + " - Mesa: " + idMesa, false);
+
+        String MsgXML = vlglService.MontaXMLData(dataReserva);
+
+        System.out.println(MsgXML);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))

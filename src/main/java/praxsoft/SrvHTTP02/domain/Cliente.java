@@ -37,25 +37,35 @@ public class Cliente {
         return obs2;
     }
 
-    public String getIdoso() {
-        return idoso;
-    }
+    public String getIdoso() { return idoso; }
 
-    public String getLocomocao() {
-        return locomocao;
-    }
+    public String getLocomocao() { return locomocao; }
 
-    public String getExigente() {
-        return exigente;
-    }
+    public String getExigente() { return exigente; }
 
-    public String getGenero() {
-        return genero;
-    }
+    public String getGenero() { return genero; }
 
-    public String getAdminResp() {
-        return adminResp;
-    }
+    public String getAdminResp() { return adminResp; }
+
+    public void setNomeUsuario(String nomeUsuario) { this.nomeUsuario = nomeUsuario; }
+
+    public void setNome(String nome) { this.nome = nome; }
+
+    public void setCelular(String celular) { this.celular = celular; }
+
+    public void setObs1(String obs1) { this.obs1 = obs1; }
+
+    public void setObs2(String obs2) { this.obs2 = obs2; }
+
+    public void setIdoso(String idoso) { this.idoso = idoso; }
+
+    public void setLocomocao(String locomocao) { this.locomocao = locomocao; }
+
+    public void setExigente(String exigente) { this.exigente = exigente; }
+
+    public void setGenero(String genero) { this.genero = genero; }
+
+    public void setAdminResp(String adminResp) { this.adminResp = adminResp; }
 
     public void MostraCamposTerminal() {
         Auxiliar.Terminal("Nome de usuário do cliente: " + nomeUsuario, false);
