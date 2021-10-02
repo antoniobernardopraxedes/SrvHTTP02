@@ -70,9 +70,6 @@ public class VlglService {
         dadosArqNovo = dadosArqNovo + "  AdminResp: " + cliente.getAdminResp() + "\n";
         dadosArqNovo = dadosArqNovo + "}\n";
 
-        Auxiliar.Terminal("Obs 1: " + cliente.getObs1(), false);
-        Auxiliar.Terminal("Obs 2: " + cliente.getObs2(), false);
-
         // Se o arquivo existe, renomeia para a.nomearquivo.clt e grava o novo arquivo de cadastro de cliente
         if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
             Arquivo.Apaga(caminho, "a." + nomeArquivo);
@@ -107,35 +104,15 @@ public class VlglService {
 
         DadosMesa dadosMesa = LeArquivoReservaMesa(reservaMesa.getDataReserva());
 
-        String[] nomeUsuario = dadosMesa.getNomeUsuario();
-        String[] nomeCompleto = dadosMesa.getNomeCompleto();
-        String[] numeroPessoas = dadosMesa.getNumeroPessoas();
-        String[] horaChegada = dadosMesa.getHoraChegada();
-        String[] adminResponsavel = dadosMesa.getAdminResponsavel();
-        String[] horaRegistro = dadosMesa.getHoraRegistro();
-        String[] dataRegistro = dadosMesa.getDataRegistro();
+        int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
 
-        char ch10 = reservaMesa.getMesaSelecionada().charAt(1);
-        char ch1 = reservaMesa.getMesaSelecionada().charAt(2);
-        int indiceMesa = Auxiliar.TwoCharToInt(ch10, ch1);
-        Auxiliar.Terminal("Indice da mesa: " + indiceMesa, false);
-        reservaMesa.MostraCamposTerminal();
-
-        nomeUsuario[indiceMesa] = reservaMesa.getNomeUsuario();
-        nomeCompleto[indiceMesa] = reservaMesa.getNomeCliente();
-        numeroPessoas[indiceMesa] = reservaMesa.getNumPessoas();
-        horaChegada[indiceMesa] = reservaMesa.getHoraChegada();
-        adminResponsavel[indiceMesa] = reservaMesa.getAdminResp();
-        horaRegistro[indiceMesa] = ImpHora();
-        dataRegistro[indiceMesa] = ImpData();
-
-       dadosMesa.setNomeUsuario(nomeUsuario);
-       dadosMesa.setNomeCompleto(nomeCompleto);
-       dadosMesa.setNumeroPessoas(numeroPessoas);
-       dadosMesa.setHoraChegada(horaChegada);
-       dadosMesa.setAdminResponsavel(adminResponsavel);
-       dadosMesa.setHoraRegistro(horaRegistro);
-       dadosMesa.setDataRegistro(dataRegistro);
+        dadosMesa.setNomeUsuario(reservaMesa.getNomeUsuario(), indiceMesa);
+        dadosMesa.setNomeCompleto(reservaMesa.getNomeCliente(), indiceMesa);
+        dadosMesa.setNumeroPessoas(reservaMesa.getNumPessoas(), indiceMesa);
+        dadosMesa.setHoraChegada(reservaMesa.getHoraChegada(), indiceMesa);
+        dadosMesa.setAdminResponsavel(reservaMesa.getAdminResp(), indiceMesa);
+        dadosMesa.setHoraRegistro(ImpHora(), indiceMesa);
+        dadosMesa.setDataRegistro(ImpData(), indiceMesa);
 
         return EscreveArquivoReservaMesa(reservaMesa.getDataReserva(), dadosMesa);
     }
@@ -166,7 +143,7 @@ public class VlglService {
         MsgXMLArray[0][0][0][1] = "01";
 
         int IdNv1 = 1;  // Grupo 1: Variáveis de Informação do Administrador
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "ADMIN";    // Carrega a Tag do Grupo 1
+        MsgXMLArray[IdNv0][IdNv1][0][0] = "ADMIN";
         MsgXMLArray[IdNv0][IdNv1][1] = EntTagValue("ID", idAdmin);
         MsgXMLArray[IdNv0][IdNv1][2] = EntTagValue("NOME", nomeAdmin);
         MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(2);
@@ -191,8 +168,8 @@ public class VlglService {
     //
     public String MontaXMLCliente(String nomeUsuario) {
 
-        MsgXMLArray[0][0][0][0] = "LOCAL001";    // Identificador do Local
-        MsgXMLArray[0][0][0][1] = "01";          // Número de Grupos (ESTADO e CLIENTE)
+        MsgXMLArray[0][0][0][0] = "LOCAL001";
+        MsgXMLArray[0][0][0][1] = "01";
 
         CarregaClienteArray(nomeUsuario,0, 1);
 
@@ -354,35 +331,20 @@ public class VlglService {
         if (dadosArquivo != null) {
 
             int numMesas = 17;
-            String[] nomeUsuario = new String[numMesas];
-            String[] nomeCompleto = new String[numMesas];
-            String[] numeroPessoas = new String[numMesas];
-            String[] horaChegada = new String[numMesas];
-            String[] adminResponsavel = new String[numMesas];
-            String[] horaRegistro = new String[numMesas];
-            String[] dataRegistro = new String[numMesas];
-
             String sufixo;
             String letra = "A";
 
             for (int i = 0; i < numMesas; i++) {
                 if (i > 8) { letra = "B"; }
                 sufixo = letra + IntToStr2(i);
-                nomeUsuario[i] = LeParametroArquivo(dadosArquivo, "NOU" + sufixo + ":");
-                nomeCompleto[i] = LeCampoArquivo(dadosArquivo, "NOC" + sufixo + ":");
-                numeroPessoas[i] = LeParametroArquivo(dadosArquivo, "NUP" + sufixo + ":");
-                horaChegada[i] = LeParametroArquivo(dadosArquivo, "HOC" + sufixo + ":");
-                adminResponsavel[i] = LeParametroArquivo(dadosArquivo, "ADR" + sufixo + ":");
-                horaRegistro[i] = LeParametroArquivo(dadosArquivo, "HOR" + sufixo + ":");
-                dataRegistro[i] = LeParametroArquivo(dadosArquivo, "DTR" + sufixo + ":");
+                dadosMesa.setNomeUsuario(LeParametroArquivo(dadosArquivo, "NOU" + sufixo + ":"), i);
+                dadosMesa.setNomeCompleto(LeCampoArquivo(dadosArquivo, "NOC" + sufixo + ":"), i);
+                dadosMesa.setNumeroPessoas(LeParametroArquivo(dadosArquivo, "NUP" + sufixo + ":"), i);
+                dadosMesa.setHoraChegada(LeParametroArquivo(dadosArquivo, "HOC" + sufixo + ":"), i);
+                dadosMesa.setAdminResponsavel(LeParametroArquivo(dadosArquivo, "ADR" + sufixo + ":"), i);
+                dadosMesa.setHoraRegistro(LeParametroArquivo(dadosArquivo, "HOR" + sufixo + ":"), i);
+                dadosMesa.setDataRegistro(LeParametroArquivo(dadosArquivo, "DTR" + sufixo + ":"), i);
             }
-            dadosMesa.setNomeUsuario(nomeUsuario);
-            dadosMesa.setNomeCompleto(nomeCompleto);
-            dadosMesa.setNumeroPessoas(numeroPessoas);
-            dadosMesa.setHoraChegada(horaChegada);
-            dadosMesa.setAdminResponsavel(adminResponsavel);
-            dadosMesa.setHoraRegistro(horaRegistro);
-            dadosMesa.setDataRegistro(dataRegistro);
         }
         else {
             Auxiliar.Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
