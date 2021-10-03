@@ -3,12 +3,4 @@ Verbose: true
 EndIpConcArduino: 192.168.0.150
 DiretorioBD: /home/antonio/bd/ 
 
-NomeUsuarioAdmin1: Ingrid
-SenhaAdmin1: moqueca
-
-NomeUsuarioAdmin2: Guto
-SenhaAdmin2: 270672
-
-NomeUsuarioAdmin3: Bernardo
-SenhaAdmin3: cl030379
 

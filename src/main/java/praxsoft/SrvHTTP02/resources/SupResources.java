@@ -34,8 +34,8 @@ public class SupResources {
     @GetMapping(value = "/local001.xml")
     public ResponseEntity<?> atualizaVariaveis() {
 
-        if (Inicia.isOpLocal()) {
-            String EndConcArd = Inicia.getEndIpConc();
+        if (Arquivo.isOpLocal()) {
+            String EndConcArd = Arquivo.getEndIpConc();
             byte[] MsgRec = supService.ClienteCoAPUDP(EndConcArd, "estados", numComando);
             numComando = 0;
         }

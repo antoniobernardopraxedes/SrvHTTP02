@@ -7,36 +7,12 @@ import org.springframework.stereotype.Service;
 import praxsoft.SrvHTTP02.domain.Cliente;
 import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
-
 import java.time.LocalDateTime;
-import java.util.StringTokenizer;
 
 @Service
 public class VlglService {
 
     private String[][][][] MsgXMLArray = new String[1][4][120][2];
-
-    //******************************************************************************************************************
-    // Nome do Método: VerificaAdmin                                                                                   *
-    //	                                                                                                               *
-    // Data: 22/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: verifica se o usuário que fez o login é administrador.                                                  *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário que fez login.                                                            *
-    //                                                                                                                 *
-    // Saida: boolean se o usuário é administrador = true / se o usuário não é administrador = false                   *
-    //******************************************************************************************************************
-    //
-    public boolean VerificaAdmin(String idUsuario) {
-        boolean adminOK = false;
-
-        if(Inicia.getNomeUsuarioAdmin1().equals(idUsuario)) { adminOK = true; }
-        if(Inicia.getNomeUsuarioAdmin2().equals(idUsuario)) { adminOK = true; }
-        if(Inicia.getNomeUsuarioAdmin3().equals(idUsuario)) { adminOK = true; }
-
-        return adminOK;
-    }
 
     //******************************************************************************************************************
     // Nome do Método: GeraCadastroCliente                                                                             *
@@ -51,10 +27,11 @@ public class VlglService {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    public static void GeraCadastroCliente(Cliente cliente) {
+    public boolean GeraCadastroCliente(Cliente cliente) {
 
+        boolean confirma = false;
         cliente.MostraCamposTerminal();
-        String caminho = Inicia.getDiretorioBd() + "clientes/";
+        String caminho = Arquivo.getDiretorioBd() + "clientes/";
         String nomeArquivo = cliente.getNomeUsuario() + ".clt";
 
         String dadosArqNovo = "{\n";
@@ -77,18 +54,48 @@ public class VlglService {
                 Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " renomeado", false);
                 if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
                     Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                    confirma = true;
                 }
             }
         }
         else { // Se o arquivo não existe, grava o novo arquivo de cadastro de cliente
             if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
                 Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                confirma = true;
             }
         }
+        return confirma;
     }
 
     //******************************************************************************************************************
-    // Nome do Método: AtualizaReservaMesa                                                                             *
+    // Nome do Método: ExcluiCadastroCliente                                                                           *
+    //	                                                                                                               *
+    // Data: 03/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: recebe o nome de usuário de um cliente em uma mensagem DELETE solicitando a exclusão do cadastro        *
+    //          deste cliente. Se o cliente existir, apaga o arquivo de cadastro correspondente.                       *                                                                                     *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente                                                                *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    public boolean ExcluiCadastroCliente(String nomeUsuario) {
+
+        boolean confirma = false;
+        String caminho = Arquivo.getDiretorioBd() + "clientes/";
+        String nomeArquivo = nomeUsuario + ".clt";
+
+        if (Arquivo.Existe(caminho, nomeArquivo)) {
+            if (Arquivo.Apaga(caminho, nomeArquivo)) {
+                confirma = true;
+            }
+        }
+        return confirma;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: ReservaMesa                                                                                     *
     //	                                                                                                               *
     // Data: 24/09/2021                                                                                                *
     //                                                                                                                 *
@@ -100,7 +107,7 @@ public class VlglService {
     // Saida: boolean true se a operação foi realizada corretamente                                                    *
     //******************************************************************************************************************
     //
-    public boolean AtualizaReservaMesa(ReservaMesa reservaMesa) {
+    public boolean ReservaMesa(ReservaMesa reservaMesa) {
 
         DadosMesa dadosMesa = LeArquivoReservaMesa(reservaMesa.getDataReserva());
 
@@ -115,6 +122,36 @@ public class VlglService {
         dadosMesa.setDataRegistro(ImpData(), indiceMesa);
 
         return EscreveArquivoReservaMesa(reservaMesa.getDataReserva(), dadosMesa);
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: ExcluiReservaMesa                                                                               *
+    //	                                                                                                               *
+    // Data: 03/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de data com as informações de reserva das mesas, exclui a reserva da mesa selecionada     *
+    //         e grava novamente o arquivo.                                                                            *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva e identificador da mesa                                                   *
+    //                                                                                                                 *
+    // Saida: boolean true se a operação foi realizada corretamente                                                    *
+    //******************************************************************************************************************
+    //
+    public boolean ExcluiReservaMesa(String dataReserva, String idMesa) {
+
+        DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+
+        int indiceMesa = Integer.parseInt(idMesa.substring(1,3));
+
+        dadosMesa.setNomeUsuario("livre", indiceMesa);
+        dadosMesa.setNomeCompleto("null", indiceMesa);
+        dadosMesa.setNumeroPessoas("null", indiceMesa);
+        dadosMesa.setHoraChegada("null", indiceMesa);
+        dadosMesa.setAdminResponsavel("null", indiceMesa);
+        dadosMesa.setHoraRegistro("null", indiceMesa);
+        dadosMesa.setDataRegistro("null", indiceMesa);
+
+        return EscreveArquivoReservaMesa(dataReserva, dadosMesa);
     }
 
     //******************************************************************************************************************
@@ -133,24 +170,19 @@ public class VlglService {
     //
     public String MontaXMLadmin(String idAdmin) {
 
-        String nomeAdmin = "null";
-        if (Inicia.getNomeUsuarioAdmin1().equals(idAdmin)) { nomeAdmin = "Ingrid Loyane F. Silva"; }
-        if (Inicia.getNomeUsuarioAdmin2().equals(idAdmin)) { nomeAdmin = "Gouthier Dias"; }
-        if (Inicia.getNomeUsuarioAdmin3().equals(idAdmin)) { nomeAdmin = "Antonio Bernardo Praxedes"; }
+        String nomeAdmin = idAdmin;
 
+        int i = 0;
         int IdNv0 = 0;
-        MsgXMLArray[0][0][0][0] = "LOCAL001";
-        MsgXMLArray[0][0][0][1] = "01";
+        int IdNv1 = 1;
+        IniciaMsgXML("LOCAL001", 1);
 
-        int IdNv1 = 1;  // Grupo 1: Variáveis de Informação do Administrador
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "ADMIN";
-        MsgXMLArray[IdNv0][IdNv1][1] = EntTagValue("ID", idAdmin);
-        MsgXMLArray[IdNv0][IdNv1][2] = EntTagValue("NOME", nomeAdmin);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(2);
+        MsgXMLArray[IdNv0][IdNv1][i++][0] = "ADMIN";
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", idAdmin);
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", nomeAdmin);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
 
-        String msgRsp = StringXML();
-
-        return(msgRsp);
+        return(StringXML());
     }
 
     //******************************************************************************************************************
@@ -168,10 +200,8 @@ public class VlglService {
     //
     public String MontaXMLCliente(String nomeUsuario) {
 
-        MsgXMLArray[0][0][0][0] = "LOCAL001";
-        MsgXMLArray[0][0][0][1] = "01";
-
-        CarregaClienteArray(nomeUsuario,0, 1);
+        IniciaMsgXML("LOCAL001", 1);
+        CarregaClienteArray(nomeUsuario, 1);
 
         return(StringXML());
     }
@@ -191,35 +221,63 @@ public class VlglService {
     //
     public String MontaXMLData(String dataReserva) {
 
-        MsgXMLArray[0][0][0][0] = "LOCAL001";
-        MsgXMLArray[0][0][0][1] = "01";
-
-        CarregaDataArray(dataReserva,0, 1);
+        IniciaMsgXML("LOCAL001", 1);
+        CarregaDataArray(dataReserva, 1);
 
         return(StringXML());
     }
 
     //******************************************************************************************************************
-    // Nome do Método: MontaXMLConfirma                                                                                *
+    // Nome do Método: MontaXMLReserva                                                                                 *
     //	                                                                                                               *
     // Data: 29/09/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes aos dados de reserva de mesa e também as             *
-    //         informações de disponibilidade das mesas lidas de um arquivo do tipo texto que tem o nome no            *
-    //         formato DD-MM-AAAA.res                                                                                  *
+    // Funcao: monta uma string XML com as informações de estado e as informações de disponibilidade das mesas na      *
+    //         data especificada                                                                                       *
     //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa                                                                           *
+    // Entrada: objeto da classe ReservaMesa e boolean confirma                                                        *
     //                                                                                                                 *
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public String MontaXMLConfirma(ReservaMesa reservaMesa, boolean confirma) {
+    public String MontaXMLReserva(ReservaMesa reservaMesa, boolean confirma) {
 
-        MsgXMLArray[0][0][0][0] = "LOCAL001";
-        MsgXMLArray[0][0][0][1] = "02";
+        IniciaMsgXML("LOCAL001", 2);
+        CarregaEstadoArray(reservaMesa, confirma, false, 1);
+        CarregaDataArray(reservaMesa.getDataReserva(), 2);
 
-        CarregaEstadoArray(reservaMesa, confirma, 0, 1);
-        CarregaDataArray(reservaMesa.getDataReserva(),0, 2);
+        return(StringXML());
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLExclui                                                                                  *
+    //	                                                                                                               *
+    // Data: 29/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações de estado e as informações de disponibilidade das mesas na      *
+    //         data especificada                                                                                       *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva, string com o identificador da mesa e string com o nome de usuário do     *
+    //          administrador que está fazendo a exclusão da reserva                                                   *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public String MontaXMLExclui(String dataReserva, String idMesa, String idAdmin, boolean confirma) {
+
+        ReservaMesa reservaMesa = new ReservaMesa();
+        reservaMesa.setNomeUsuario("null");
+        reservaMesa.setNomeCliente("null");
+        reservaMesa.setDataReserva(dataReserva);
+        reservaMesa.setNumPessoas("null");
+        reservaMesa.setHoraChegada("null");
+        reservaMesa.setMesaSelecionada(idMesa);
+        reservaMesa.setAdminResp(idAdmin);
+        reservaMesa.setNomeCliente("null");
+
+        IniciaMsgXML("LOCAL001", 2);
+        CarregaEstadoArray(reservaMesa, false, confirma, 1);
+        CarregaDataArray(dataReserva, 2);
 
         return(StringXML());
     }
@@ -273,7 +331,7 @@ public class VlglService {
         }
 
         if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
-            byte[] arquivoByte = Arquivo.LeArquivoByte(caminho, nomeArquivo);
+            byte[] arquivoByte = Arquivo.LeByte(caminho, nomeArquivo);
             if (arquivoByte.length == 0) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND )
@@ -320,7 +378,7 @@ public class VlglService {
     //
     private DadosMesa LeArquivoReservaMesa(String dataReserva) {
 
-        String caminho = Inicia.getDiretorioBd() + "reservas/";
+        String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = dataReserva + ".res";
         if (!Arquivo.Existe(caminho, nomeArquivo)) {
             EscreveArquivoReservaNovo(dataReserva);
@@ -337,13 +395,13 @@ public class VlglService {
             for (int i = 0; i < numMesas; i++) {
                 if (i > 8) { letra = "B"; }
                 sufixo = letra + IntToStr2(i);
-                dadosMesa.setNomeUsuario(LeParametroArquivo(dadosArquivo, "NOU" + sufixo + ":"), i);
-                dadosMesa.setNomeCompleto(LeCampoArquivo(dadosArquivo, "NOC" + sufixo + ":"), i);
-                dadosMesa.setNumeroPessoas(LeParametroArquivo(dadosArquivo, "NUP" + sufixo + ":"), i);
-                dadosMesa.setHoraChegada(LeParametroArquivo(dadosArquivo, "HOC" + sufixo + ":"), i);
-                dadosMesa.setAdminResponsavel(LeParametroArquivo(dadosArquivo, "ADR" + sufixo + ":"), i);
-                dadosMesa.setHoraRegistro(LeParametroArquivo(dadosArquivo, "HOR" + sufixo + ":"), i);
-                dadosMesa.setDataRegistro(LeParametroArquivo(dadosArquivo, "DTR" + sufixo + ":"), i);
+                dadosMesa.setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"), i);
+                dadosMesa.setNomeCompleto(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"), i);
+                dadosMesa.setNumeroPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"), i);
+                dadosMesa.setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"), i);
+                dadosMesa.setAdminResponsavel(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"), i);
+                dadosMesa.setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"), i);
+                dadosMesa.setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"), i);
             }
         }
         else {
@@ -368,7 +426,7 @@ public class VlglService {
     private boolean EscreveArquivoReservaMesa(String DataReserva, DadosMesa dadosMesa) {
 
         boolean confirma = false;
-        String caminho = Inicia.getDiretorioBd() + "reservas/";
+        String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = DataReserva + ".res";
 
         int numMesas = 17;
@@ -425,7 +483,7 @@ public class VlglService {
     private static void EscreveArquivoReservaNovo(String dataRes) {
 
         //String caminho = "recursos/vlgl/reservas/";
-        String caminho = Inicia.getDiretorioBd() + "reservas/";
+        String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = dataRes + ".res";
 
         int numMesas = 17;
@@ -455,67 +513,6 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: CarregaEstadoArray                                                                              *
-    //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: carrega as informações de estado no array usado para montar a mensagem XML.                             *
-    //                                                                                                                 *
-    // Entrada: int com o índice do local e int com o índice do grupo                                                  *
-    //                                                                                                                 *
-    // Saida: não tem                                                                                                  *
-    //******************************************************************************************************************
-    //
-    private void CarregaEstadoArray(ReservaMesa reservaMesa, boolean confirma, int IdNv0, int IdNv1) {
-
-        String confirmaStr = "não";
-        if (confirma) { confirmaStr = "sim"; }
-
-        MsgXMLArray[IdNv0][IdNv1][0][0] = "ESTADO";
-        MsgXMLArray[IdNv0][IdNv1][1] = EntTagValue("CONFIRMA", confirmaStr);
-        MsgXMLArray[IdNv0][IdNv1][2] = EntTagValue("MESA", reservaMesa.getMesaSelecionada());
-        MsgXMLArray[IdNv0][IdNv1][3] = EntTagValue("DATA", reservaMesa.getDataReserva());
-        MsgXMLArray[IdNv0][IdNv1][4] = EntTagValue("ID", reservaMesa.getNomeUsuario());
-        MsgXMLArray[IdNv0][IdNv1][5] = EntTagValue("NOME", reservaMesa.getNomeCliente());
-        MsgXMLArray[IdNv0][IdNv1][6] = EntTagValue("NUMPES", reservaMesa.getNumPessoas());
-        MsgXMLArray[IdNv0][IdNv1][7] = EntTagValue("HORARES", reservaMesa.getHoraChegada());
-        MsgXMLArray[IdNv0][IdNv1][8] = EntTagValue("ADMINRESP", reservaMesa.getAdminResp());
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(8);
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: CarregaClienteArray                                                                             *
-    //	                                                                                                               *
-    // Data: 02/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
-    //                                                                                                                 *
-    // Saida: não tem                                                                                                  *
-    //******************************************************************************************************************
-    //
-    private void CarregaClienteArray(String nomeUsuario, int IdNv0, int IdNv1) {
-
-        Cliente cliente = LeArquivoCadastroCliente(nomeUsuario);
-
-        int i = 0;
-        MsgXMLArray[IdNv0][IdNv1][i++][0] = "CLIENTE";
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", cliente.getNomeUsuario());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", cliente.getNome());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("CELULAR", cliente.getCelular());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS1", cliente.getObs1());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS2", cliente.getObs2());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("IDOSO", cliente.getIdoso());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("LOCOMOCAO", cliente.getLocomocao());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("EXIGENTE", cliente.getExigente());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("GENERO", cliente.getGenero());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADMINRSP", cliente.getAdminResp());
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
-
-    }
-
-    //******************************************************************************************************************
     // Nome do Método: LeArquivoCadastroCliente                                                                        *
     //	                                                                                                               *
     // Data: 02/10/2021                                                                                                *
@@ -530,23 +527,23 @@ public class VlglService {
     //
     private Cliente LeArquivoCadastroCliente(String nomeUsuario) {
 
-        String caminho = Inicia.getDiretorioBd() + "clientes/";
+        String caminho = Arquivo.getDiretorioBd() + "clientes/";
         String nomeArquivo = nomeUsuario + ".clt";
         String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
 
         Cliente cliente = new Cliente();
 
         if (registroCliente != null) {
-            cliente.setNomeUsuario(LeCampoArquivo(registroCliente, "NomeUsuario:"));
-            cliente.setNome(LeCampoArquivo(registroCliente, "Nome:"));
-            cliente.setCelular(LeCampoArquivo(registroCliente, "Celular:"));
-            cliente.setObs1(LeCampoArquivo(registroCliente, "Obs1:"));
-            cliente.setObs2(LeCampoArquivo(registroCliente, "Obs2:"));
-            cliente.setIdoso(LeCampoArquivo(registroCliente, "Idoso:"));
-            cliente.setLocomocao(LeCampoArquivo(registroCliente, "Locomocao:"));
-            cliente.setExigente(LeCampoArquivo(registroCliente, "Exigente:"));
-            cliente.setGenero(LeCampoArquivo(registroCliente, "Genero:"));
-            cliente.setAdminResp(LeCampoArquivo(registroCliente, "AdminResp:"));
+            cliente.setNomeUsuario(Arquivo.LeCampo(registroCliente, "NomeUsuario:"));
+            cliente.setNome(Arquivo.LeCampo(registroCliente, "Nome:"));
+            cliente.setCelular(Arquivo.LeCampo(registroCliente, "Celular:"));
+            cliente.setObs1(Arquivo.LeCampo(registroCliente, "Obs1:"));
+            cliente.setObs2(Arquivo.LeCampo(registroCliente, "Obs2:"));
+            cliente.setIdoso(Arquivo.LeCampo(registroCliente, "Idoso:"));
+            cliente.setLocomocao(Arquivo.LeCampo(registroCliente, "Locomocao:"));
+            cliente.setExigente(Arquivo.LeCampo(registroCliente, "Exigente:"));
+            cliente.setGenero(Arquivo.LeCampo(registroCliente, "Genero:"));
+            cliente.setAdminResp(Arquivo.LeCampo(registroCliente, "AdminResp:"));
         }
         else {
             cliente.setNomeUsuario("null");
@@ -564,6 +561,73 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: CarregaEstadoArray                                                                              *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: carrega as informações de estado no array usado para montar a mensagem XML.                             *
+    //                                                                                                                 *
+    // Entrada: int com o índice do local e int com o índice do grupo                                                  *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    private void CarregaEstadoArray(ReservaMesa reservaMesa, boolean confirma, boolean exclui, int IdNv1) {
+
+        String confirmaStr = "não"; if (confirma) { confirmaStr = "sim"; }
+        String excluiStr = "não"; if (exclui) { excluiStr = "sim"; }
+
+        int i = 0;
+        int IdNv0 = 0;
+        MsgXMLArray[IdNv0][IdNv1][i++][0] = "ESTADO";
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("RESERVA", confirmaStr);
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("EXCLUI", excluiStr);
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("MESA", reservaMesa.getMesaSelecionada());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DATA", reservaMesa.getDataReserva());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", reservaMesa.getNomeUsuario());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", reservaMesa.getNomeCliente());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUMPES", reservaMesa.getNumPessoas());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HORARES", reservaMesa.getHoraChegada());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADMINRESP", reservaMesa.getAdminResp());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HORAREG", ImpHora());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DATAREG", ImpData());
+        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: CarregaClienteArray                                                                             *
+    //	                                                                                                               *
+    // Data: 02/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    private void CarregaClienteArray(String nomeUsuario, int IdNv1) {
+
+        Cliente cliente = LeArquivoCadastroCliente(nomeUsuario);
+
+        int i = 0;
+        int IdNv0 = 0;
+        MsgXMLArray[IdNv0][IdNv1][i++][0] = "CLIENTE";
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", cliente.getNomeUsuario());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", cliente.getNome());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("CELULAR", cliente.getCelular());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS1", cliente.getObs1());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS2", cliente.getObs2());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("IDOSO", cliente.getIdoso());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("LOCOMOCAO", cliente.getLocomocao());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("EXIGENTE", cliente.getExigente());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("GENERO", cliente.getGenero());
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADMINRSP", cliente.getAdminResp());
+        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
+
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: CarregaDataArray                                                                                *
     //	                                                                                                               *
     // Data: 02/10/2021                                                                                                *
@@ -575,7 +639,7 @@ public class VlglService {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    private void CarregaDataArray(String dataReserva, int IdNv0, int IdNv1) {
+    private void CarregaDataArray(String dataReserva, int IdNv1) {
 
         DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
 
@@ -589,7 +653,7 @@ public class VlglService {
 
         int numMesas = 17;
         int i = 0;
-
+        int IdNv0 = 0;
         MsgXMLArray[IdNv0][IdNv1][i++][0] = "MESAS";
 
         for (int k = 0; k < numMesas; k++) {
@@ -621,36 +685,21 @@ public class VlglService {
     //******************************************************************************************************************
     //
     private String StringXML() {
-        String MsgXML = "";
-        MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";         // Imprime a Tag de Nivel 0
+        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";
 
-        // Obtem o Numero de Tags de Nivel 1
         int NmTagNv1 = Integer.parseInt(MsgXMLArray[0][0][0][1]);
-
-        // Repete até imprimir todas as Tags de Nível 1 e Nível 2
         for (int i = 1; i <= NmTagNv1; i++) {
-
-            // Imprime a Tag de Nivel 1 de Início do Grupo
             MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
 
-            // Obtém o Número de Variáveis do Grupo
             int NumVar = Integer.parseInt(MsgXMLArray[0][i][0][1]);
-
-            // Repeta até imprimir todas as Tags de Nível 2 e suas variáveis
             for (int j = 1; j <= NumVar; j++) {
-
-                // Imprime as Tags de Nível 2 e os Valores das Variáveis
                 MsgXML = MsgXML + "    <" + MsgXMLArray[0][i][j][0] + ">"
-                        + MsgXMLArray[0][i][j][1]
-                        + "</" + MsgXMLArray[0][i][j][0] + ">\n";
+                                          + MsgXMLArray[0][i][j][1]
+                                   + "</" + MsgXMLArray[0][i][j][0] + ">\n";
             }
-
-            // Imprime a Tag de Nivel 1 de Fim de Grupo
             MsgXML = MsgXML + "  </" + MsgXMLArray[0][i][0][0] + ">\n";
         }
-
-        // Imprime a Tag de Nivel 0 de Fim
         MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">";
 
         return (MsgXML);
@@ -666,18 +715,18 @@ public class VlglService {
     // Saida: string com o parâmetro lido após o token                                                                 *
     //******************************************************************************************************************
     //
-    private String LeParametroArquivo(String arquivo, String token){
-        int Indice = arquivo.lastIndexOf(token);
-        int indiceF = arquivo.length() - 1;
-        String parametro = null;
-        if (Indice >= 0) {
-            Indice = Indice + token.length() + 1;
-            String Substring = arquivo.substring(Indice, indiceF);
-            StringTokenizer parseToken = new StringTokenizer(Substring);
-            parametro = parseToken.nextToken();
-        }
-        return parametro;
-    }
+    //private String LeParametroArquivo(String arquivo, String token){
+    //    int Indice = arquivo.lastIndexOf(token);
+    //    int indiceF = arquivo.length() - 1;
+    //    String parametro = null;
+    //    if (Indice >= 0) {
+    //        Indice = Indice + token.length() + 1;
+    //        String Substring = arquivo.substring(Indice, indiceF);
+    //        StringTokenizer parseToken = new StringTokenizer(Substring);
+    //        parametro = parseToken.nextToken();
+    //    }
+    //    return parametro;
+    //}
 
     //******************************************************************************************************************
     // Nome do Método: LeCampoArquivo                                                                                  *
@@ -689,25 +738,25 @@ public class VlglService {
     // Saida: string com o parâmetro lido após o token                                                                 *
     //******************************************************************************************************************
     //
-    private String LeCampoArquivo(String arquivo, String token) {
-        String campo;
-        try {
-            int indiceToken = arquivo.indexOf(token);
-            if (indiceToken > 0) {
-                int indiceAposToken = indiceToken + token.length();
+    //private String LeCampoArquivo(String arquivo, String token) {
+    //    String campo;
+    //    try {
+    //        int indiceToken = arquivo.indexOf(token);
+    //        if (indiceToken > 0) {
+    //            int indiceAposToken = indiceToken + token.length();
 
-                String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
-                int indiceCRLF = arquivoAposToken.indexOf("\n");
+    //            String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
+    //            int indiceCRLF = arquivoAposToken.indexOf("\n");
 
-                return arquivoAposToken.substring(1, indiceCRLF);
-            }
-            else {
-                return "null";
-            }
-        } catch (Exception e) {
-            return "null";
-        }
-    }
+    //            return arquivoAposToken.substring(1, indiceCRLF);
+    //        }
+    //        else {
+    //            return "null";
+    //        }
+    //    } catch (Exception e) {
+    //        return "null";
+    //    }
+    //}
 
     //******************************************************************************************************************
     // Nome do Método: ImpHora                                                                                         *
@@ -884,6 +933,11 @@ public class VlglService {
     private String msgArqNaoEncontrado(String nomeArquivo) {
 
         return ("<p></p><h3>File not found: " + nomeArquivo + "</h3>");
+    }
+
+    private void IniciaMsgXML(String tag0, int numGrupos) {
+        MsgXMLArray[0][0][0][0] = tag0;
+        MsgXMLArray[0][0][0][1] = IntToStr2(numGrupos);
     }
 
 }

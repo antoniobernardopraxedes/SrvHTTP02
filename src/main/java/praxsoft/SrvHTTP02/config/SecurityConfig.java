@@ -5,35 +5,36 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
+import praxsoft.SrvHTTP02.services.Arquivo;
+//import praxsoft.SrvHTTP02.services.Inicia;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    //private static String[] nomeUsuario = new String[3];
+    //private static String[] senha = new String[3];
+    //private static String[] nome = new String[3];
+
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-        int numUsuarios = 5;
-        String[][] usuarioSenha = new String[numUsuarios][2];
-        usuarioSenha[0][0] = "Ingrid";       usuarioSenha[0][1] = "moqueca";
-        usuarioSenha[1][0] = "Bernardo";       usuarioSenha[1][1] = "cl030379";
-        usuarioSenha[2][0] = "IsisDias";    usuarioSenha[2][1] = "25052009";
-        usuarioSenha[3][0] = "LuccaBorges";    usuarioSenha[3][1] = "25052009";
-        usuarioSenha[4][0] = "SofiaDias";    usuarioSenha[4][1] = "15122007";
+        Arquivo.LeConfiguracao();
+        Arquivo.MostraDadosConfiguracao();
+        Arquivo.LeUsuarios();
+        Arquivo.MostraUsuarios();
 
-        for (int i = 0; i < numUsuarios; i++) {
+        for (int i = 0; i < Arquivo.getNumUsuarios(); i++) {
             auth.inMemoryAuthentication()
-                    .withUser(usuarioSenha[i][0]).password("{noop}" + usuarioSenha[i][1]).roles("USER");
+                .withUser(Arquivo.getNomeUsuario(i)).password("{noop}" + Arquivo.getSenhaUsuario(i)).roles("USER");
         }
-
     }
 
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                //.antMatchers("/reservas").permitAll()
-                .antMatchers("/vlgl.*").permitAll()
-                .antMatchers("/vlgl/confirma").permitAll()
+                .antMatchers("/vlgl/cadastra").permitAll()
+                .antMatchers("/vlgl/reserva/*").permitAll()
                 .antMatchers("/atualiza").permitAll()
                 .antMatchers("/local001.xml").permitAll()
                 .anyRequest().authenticated()
@@ -44,4 +45,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
 
     }
+/*
+    private void LeUsuariosArquivoConf() {
+        String arquivoConf;
+        String caminho = "recursos/";
+        String nomeArquivo = "srvhttp02.cnf";
+
+        arquivoConf = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        if (arquivoConf != null) {
+            nomeUsuario[0] = Arquivo.LeParametro(arquivoConf, "NomeUsuarioAdmin1:");
+            senha[0] = Arquivo.LeParametro(arquivoConf, "SenhaAdmin1:");
+            nome[0] = Arquivo.LeCampo(arquivoConf, "NomeAdmin1:");
+
+            nomeUsuario[1] = Arquivo.LeParametro(arquivoConf, "NomeUsuarioAdmin2:");
+            senha[1] = Arquivo.LeParametro(arquivoConf, "SenhaAdmin2:");
+            nome[1] = Arquivo.LeCampo(arquivoConf, "NomeAdmin2:");
+
+            nomeUsuario[2] = Arquivo.LeParametro(arquivoConf, "NomeUsuarioAdmin3:");
+            senha[2] = Arquivo.LeParametro(arquivoConf, "SenhaAdmin3:");
+            nome[2] = Arquivo.LeCampo(arquivoConf, "NomeAdmin3:");
+        }
+
+        System.out.println("");
+        int numUsuarios = 3;
+        for (int i = 0; i < numUsuarios; i++) {
+            System.out.print("Administrador " + (i + 1) + " - Nome de usuário: " + getNomeUsuario(i));
+            System.out.print(" - Senha: " + getSenha(i));
+            System.out.println(" - Nome: " + getNome(i));
+        }
+    }
+    */
+
 }

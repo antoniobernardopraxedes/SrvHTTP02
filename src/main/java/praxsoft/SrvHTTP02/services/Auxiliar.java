@@ -126,7 +126,7 @@ public class Auxiliar {
     //******************************************************************************************************************
     //
     public static void Terminal(String Msg, boolean Opcao) {
-        if (Inicia.isVerbose()) {
+        if (Arquivo.isVerbose()) {
             System.out.println(ImprimeHoraData(LeDataHora(), Opcao) + " - " + Msg);
         }
     }

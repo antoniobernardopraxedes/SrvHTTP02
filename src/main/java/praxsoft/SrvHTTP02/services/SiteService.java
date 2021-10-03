@@ -42,7 +42,7 @@ public class SiteService {
         }
 
         if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
-            byte[] arquivoByte = Arquivo.LeArquivoByte(caminho, nomeArquivo);
+            byte[] arquivoByte = Arquivo.LeByte(caminho, nomeArquivo);
             if (arquivoByte.length == 0) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND )

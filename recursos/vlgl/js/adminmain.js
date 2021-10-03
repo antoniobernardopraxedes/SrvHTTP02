@@ -50,9 +50,7 @@ var numPessoasOK = false;
 var horaChegadaOK = false;
 var consultaMesa = false;
 var BotaoReservaConfirma = false; // false = Reserva e true = Confirma
-var HabilitaSelMesa = false;
-
-var MesaSelecionada;
+var HabilitaExclusao = false;
 
 MesaNomeUsuario = new Array(17);
 MesaNomeCliente = new Array(17);
@@ -72,6 +70,7 @@ for (let i = 0; i < 17; i++) {
     MesaDataReg[i] = "null";
 }
 
+var MesaSelecionada;
 var NomeDaMesa;
 var CapacidadeMesa;
 var IdMesaConsulta;
@@ -119,7 +118,7 @@ function VerificaAdmin() {
         NomeUsuarioAdmin = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
         NomeAdmin = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
         EscreveTexto("Admin: " + NomeAdmin, "nomeadmin");
-        EscreveTexto("Recebidas as informações do administrador", "info1");
+        EscreveTexto("Servidor: informações do administrador", "info1");
     };
     
     requisicao.ontimeout = function(e) {
@@ -150,7 +149,7 @@ function VerificaData() {
        if (VerificaFormatoData(DataReserva)) {
             
             let requisicao = new XMLHttpRequest();
-            let recurso = "data/" + DataResEnvio;
+            let recurso = "reservas/data/" + DataResEnvio;
             requisicao.open("GET", recurso, true);
             requisicao.timeout = 2000;
             EscreveMsgEnvSrv();
@@ -259,7 +258,7 @@ function VerificaCliente() {
     if (UserName != "") {
         
         let requisicao = new XMLHttpRequest();
-        let recurso = "cliente/" + NomeUsuarioCliente;
+        let recurso = "cadastro/cliente/" + NomeUsuarioCliente;
         requisicao.open("GET", recurso, true);
         requisicao.timeout = 2000;
         EscreveMsgEnvSrv();
@@ -318,7 +317,7 @@ function ReservaConfirma() {
     
     consultaMesa = false;
     if (BotaoReservaConfirma) {
-        Confirma();
+        ConfirmaReserva();
         
     }
     else {
@@ -408,7 +407,7 @@ function Reserva() {
 //*********************************************************************************************************************
 //
 function SelecionaMesa(mesa) {
-    
+    console.log("HabilitaSelMesa = " + HabilitaSelMesa + " - consultaMesa = " + consultaMesa);
     if (HabilitaSelMesa) {
         if (!consultaMesa) {
     
@@ -434,11 +433,12 @@ function SelecionaMesa(mesa) {
                 EscreveTexto("Entre com o número de pessoas", "info1");
             }
         }
-        else {
+        else { // Se o flag de habilitação de consulta de mesa é true, mostra os dados da mesa
+            EscreveTexto("Detalhes da reserva:", "info1");
             IdMesaConsulta = mesa;
             LimpaCamposInfo();
             let numMesa = parseInt(mesa[1] + mesa[2]);
-            if (MesaNomeUsuario[numMesa] != "livre") {
+            if (MesaNomeUsuario[MesaSelecionada] != "livre") {
                 EscreveTexto("Reserva da " + NomeMesa(mesa) + " para " + DataReserva, "info2");
                 EscreveTexto("Nome de usuário: " + MesaNomeUsuario[numMesa], "info3");
                 EscreveTexto("Nome completo: " + MesaNomeCliente[numMesa], "info4");
@@ -447,7 +447,8 @@ function SelecionaMesa(mesa) {
                 EscreveTexto("Responsável pela reserva: " + MesaAdminResp[numMesa], "info7");
                 EscreveTexto("Data do registro da reserva: " + MesaDataReg[numMesa], "info8");
                 EscreveTexto("Hora do registro da reserva: " + MesaHoraReg[numMesa], "info9");
-                //consultaMesa = false;
+                consultaMesa = false;
+                HabilitaExclusao = true;  // Após a consulta da mesa, habilita a função de exclusão de reserva
             }
             else {
                 EscreveTexto(NomeMesa(mesa) + " livre", "info2");
@@ -459,7 +460,7 @@ function SelecionaMesa(mesa) {
 }
 
 //*********************************************************************************************************************
-// Nome da função: Confirma                                                                                           *
+// Nome da função: ConfirmaReserva                                                                                    *
 //                                                                                                                    *
 // Data: 30/09/2021                                                                                                   *
 //                                                                                                                    *
@@ -473,13 +474,13 @@ function SelecionaMesa(mesa) {
 // Saída: não tem                                                                                                     *
 //*********************************************************************************************************************
 //
-function Confirma() {
+function ConfirmaReserva() {
     
     CarregaVariaveisFormulario();
     VerificaFormatoData(dataReserva);
     
     let requisicao = new XMLHttpRequest();
-    let recurso = "reserva";
+    let recurso = "reservas";
     requisicao.open("POST", recurso, true);
     requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
     requisicao.timeout = 2000;
@@ -493,7 +494,7 @@ function Confirma() {
         AtualizaMesa(MesaSelecionada, UserName, NumPessoas, HoraChegada);
         
         grupo = XMLRec.getElementsByTagName("ESTADO");
-        let confirmaEstado = grupo[0].getElementsByTagName("CONFIRMA")[0].childNodes[0].nodeValue;
+        let confirmaEstado = grupo[0].getElementsByTagName("RESERVA")[0].childNodes[0].nodeValue;
         let mesaEstado = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
         let dataEstado = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
         let nomeUsuarioEstado = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
@@ -546,29 +547,54 @@ function Confirma() {
 //
 function ExcluiReserva() {
     
-    if (consultaMesa) {
-    
-        let requisicao = new XMLHttpRequest();
-        let recurso = "reserva/exclui/" + DataResEnvio + "/" + IdMesaConsulta;
-        requisicao.open("DELETE", recurso, true);
-        requisicao.timeout = 2000;
-        EscreveMsgEnvSrv();
-        requisicao.send(null);
-    
-        requisicao.onload = function() {
-            let XMLRec = requisicao.responseXML;
-            CarregaMesas(XMLRec);
-            dataOK = true;
-            EscreveTexto("Recebido mapa de reservas do dia " + DataReserva, "info1");
-            EscreveTexto(DataReserva, "dataMapa");
+    if (HabilitaExclusao) {  // Se o flag de habilitação de exclusão é true, envia solicitação ao servidor
+        let MsgExclusao = "Confirma a exclusão da reserva da " + NomeMesa(IdMesaConsulta);
+        MsgExclusao = MsgExclusao + " na data " + DataReserva + "?";
+        if (confirm(MsgExclusao)) {
             
-        };
+            let requisicao = new XMLHttpRequest();
+            let recurso = "reserva/exclui/" + DataResEnvio + "/" + IdMesaConsulta;
+            requisicao.open("DELETE", recurso, true);
+            requisicao.timeout = 2000;
+            EscreveMsgEnvSrv();
+            requisicao.send(null);
+    
+            requisicao.onload = function() {
+                let XMLRec = requisicao.responseXML;
+                grupo = XMLRec.getElementsByTagName("ESTADO");
+                let confirmaExclusao = grupo[0].getElementsByTagName("EXCLUI")[0].childNodes[0].nodeValue;
+                let dataReservaExcluida = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
+                let adminExclusao = grupo[0].getElementsByTagName("ADMINRESP")[0].childNodes[0].nodeValue;
+                let idMesaExcluida = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
+                let horaExclusao = grupo[0].getElementsByTagName("HORAREG")[0].childNodes[0].nodeValue;
+                let dataExclusao = grupo[0].getElementsByTagName("DATAREG")[0].childNodes[0].nodeValue;
+            
+                if (confirmaExclusao) {
+                    LimpaCamposInfo();
+                    EscreveTexto("Servidor: confirmada a exclusão da reserva", "info1");
+                    EscreveTexto("A reserva da " + NomeMesa(idMesaExcluida) + " foi excluída", "info2");
+                    EscreveTexto("Data da reserva excluída: " + dataReservaExcluida, "info3");
+                    EscreveTexto("Responsável: " + adminExclusao, "info4");
+                    EscreveTexto("Hora da exclusão: " + horaExclusao, "info5");
+                    EscreveTexto("Data da exclusão: " + dataExclusao, "info6");
+                    CarregaMesas(XMLRec);
+                    dataOK = true;
+                    EscreveTexto(DataReserva, "dataMapa");
+                }
+                
+                
+                
+                
+                
+                
+            };
          
-        requisicao.ontimeout = function(e) {
-            EscreveTexto("O servidor não respondeu à requisição", "info1");
-            console.log("Erro: " + e);
-        };
-        consultaMesa = false;
+            requisicao.ontimeout = function(e) {
+                EscreveTexto("O servidor não respondeu à requisição", "info1");
+                console.log("Erro: " + e);
+            };
+            consultaMesa = false;
+        }
     }
     else {
      EscreveTexto("Antes de excluir, é preciso consultar a mesa", "info1");
@@ -592,6 +618,7 @@ function ExcluiReserva() {
 function ConsultaReservaMesa() {
  
     CarregaVariaveisFormulario();
+    LimpaCamposInfo();
     
     if (DataReserva != "") {
        VerificaData();

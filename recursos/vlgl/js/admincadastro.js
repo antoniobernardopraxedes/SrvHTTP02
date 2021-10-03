@@ -121,11 +121,12 @@ function VerificaCliente() {
     
     CarregaVariaveisFormulario();
     clienteOK = false;
+    LimpaCamposInfo();
     
     if (NomeUsuarioCliente != "") {
         
         let requisicao = new XMLHttpRequest();
-        recurso = "cliente/" + NomeUsuarioCliente;
+        recurso = "cadastro/cliente/" + NomeUsuarioCliente;
         requisicao.open("GET", recurso, true);
         requisicao.timeout = 2000;
         EscreveMsgEnvSrv();
@@ -145,17 +146,16 @@ function VerificaCliente() {
             else {
                 EscreveTexto("Servidor: cliente não cadastrado", "infocom");
                 LimpaCamposInfo();
-                EscreveTexto("Cliente não cadastrado", "info1");
                 EscreveTexto("Cadastra", "botaocadastra");
             }
          };
          
          requisicao.ontimeout = function(e) {
-                EscreveTexto("O servidor não respondeu à requisição", "info1");
+                EscreveTexto("O servidor não respondeu à requisição", "infocom");
          };
     }
     else {
-        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
+        EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
     }
 
 }
@@ -185,7 +185,7 @@ function Cadastra() {
                 if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
         
                     let requisicao = new XMLHttpRequest();
-                    recurso = "cadastra";
+                    recurso = "cadastro/cliente";
                     requisicao.open("POST", recurso, true);
                     requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
                     requisicao.timeout = 2000;
@@ -208,15 +208,70 @@ function Cadastra() {
                 }
             }
             else {
-                EscreveTexto("Entre com o número do celular do cliente", "info1");
+                EscreveTexto("Entre com o número do celular do cliente", "infocom");
             }
         }
         else {
-            EscreveTexto("Entre com o nome completo do cliente", "info1");
+            EscreveTexto("Entre com o nome completo do cliente", "infocom");
         }
     }
     else {
-        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
+        EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
+    }
+}
+
+//*********************************************************************************************************************
+// Nome da função: ExcluiCadastroCliente                                                                              *
+//                                                                                                                    *
+// Data: 23/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Exclui. A função envia para o servidor uma        *
+//         solicitação de exclusão de um cadastro de cliente. O servidor deve responder com os dados do cliente       *
+//         mostrando que não está mais cadastrado.                                                                    *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function ExcluiCadastroCliente() {
+    
+    CarregaVariaveisFormulario();
+    LimpaCamposInfo();
+    
+    if (NomeUsuarioCliente != "") {
+        if (clienteOK) {
+            if (confirm("Confirma a exclusão do cadastro do cliente " + NomeUsuarioCliente + "?")) {
+                
+                let requisicao = new XMLHttpRequest();
+                recurso = "cadastro/cliente/" + NomeUsuarioCliente;
+                requisicao.open("DELETE", recurso, true);
+                requisicao.timeout = 2000;
+                EscreveMsgEnvSrv();
+                requisicao.send(null);
+        
+                requisicao.onload = function() {
+                    let XMLRec = requisicao.responseXML;
+                    CarregaCliente(XMLRec);
+                    if (!clienteOK) {
+                        EscreveTexto("Servidor: confirmada a exclusão do cadastro", "infocom");
+                        EscreveInfoCliente();
+                    }
+                    else {
+                        LimpaCamposInfo();
+                        EscreveTexto("Servidor: Falha ao excluir o cliente", "infocom");
+                    }
+                };
+            }
+        }
+        else {
+            EscreveTexto("Antes de excluir, verifique o cliente", "infocom");
+        }
+        
+        
+    }
+    else {
+        EscreveTexto("Entre com o nome de usuário do cliente e verifique", "infocom");
     }
 }
 
