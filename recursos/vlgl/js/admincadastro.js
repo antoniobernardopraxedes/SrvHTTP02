@@ -46,6 +46,7 @@ var GeneroCliente = "null";
 var AdminResp = "null";
 
 var ClienteOK = false;
+var Atualiza = false;
 
 
 VerificaAdmin()
@@ -92,15 +93,13 @@ function VerificaAdmin() {
         let XMLRec = requisicao.responseXML;
         grupo = XMLRec.getElementsByTagName("ADMIN");
         NomeUsuarioAdmin = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-        NomeAdmin = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        EscreveTexto("Admin: " + NomeAdmin, "nomeadmin");
+        EscreveTexto("Administrador: " + NomeUsuarioAdmin, "nomeadmin");
         EscreveTexto("Servidor: recebidas informações do administrador", "infocom");
     };
     
     requisicao.ontimeout = function(e) {
         EscreveTexto("O servidor não respondeu à requisição", "infocom");
     };
-    
 }
 
 //*********************************************************************************************************************
@@ -140,13 +139,14 @@ function VerificaCliente() {
                 EscreveTexto("Servidor: recebidas informações do cliente", "infocom");
                 LimpaCamposInfo();
                 EscreveInfoCliente();
-                
+                Atualiza = true;
                 EscreveTexto("Atualiza", "botaocadastra");
             }
             else {
                 EscreveTexto("Servidor: cliente não cadastrado", "infocom");
                 LimpaCamposInfo();
                 EscreveTexto("Cadastra", "botaocadastra");
+                Atualiza = false;
             }
          };
          
@@ -155,7 +155,10 @@ function VerificaCliente() {
          };
     }
     else {
+        LimpaCamposInfo();
+        EscreveTexto("Cadastra", "botaocadastra");
         EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
+        Atualiza = false;
     }
 
 }
@@ -180,39 +183,71 @@ function Cadastra() {
     LimpaCamposInfo();
     
     if (NomeUsuarioCliente != "") {
-        if (NomeCliente != "") {
-            if (CelularCliente != "") {
-                if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
+        if (Atualiza) {
+            if (NomeCliente == "") NomeCliente = "null";
+            if (CelularCliente == "") CelularCliente = "null";
+            if (Obs1Cliente == "") Obs1Cliente = "null";
+            if (Obs2Cliente == "") Obs2Cliente = "null";
+            if (confirm("Confirma a atualização do cadastro do cliente " + NomeUsuarioCliente + "?")) {
         
-                    let requisicao = new XMLHttpRequest();
-                    recurso = "cadastro/cliente";
-                    requisicao.open("POST", recurso, true);
-                    requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-                    requisicao.timeout = 2000;
-                    EscreveMsgEnvSrv();
-                    requisicao.send(MontaMsgJson());
+                let requisicao = new XMLHttpRequest();
+                recurso = "cadastro/cliente";
+                requisicao.open("PUT", recurso, true);
+                requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+                requisicao.timeout = 2000;
+                EscreveMsgEnvSrv();
+                requisicao.send(MontaMsgJson());
         
-                    requisicao.onload = function() {
-                        let XMLRec = requisicao.responseXML;
-                        CarregaCliente(XMLRec);
+                requisicao.onload = function() {
+                    let XMLRec = requisicao.responseXML;
+                    CarregaCliente(XMLRec);
                 
-                        if (clienteOK) {
-                            EscreveTexto("O cliente foi cadastrado", "infocom");
-                            EscreveInfoCliente();
-                        }
-                        else {
-                            LimpaCamposInfo();
-                            EscreveTexto("Servidor: Falha ao cadastrar o cliente", "infocom");
-                        }
-                    };
-                }
-            }
-            else {
-                EscreveTexto("Entre com o número do celular do cliente", "infocom");
+                    if (clienteOK) {
+                        EscreveTexto("O cadastro do cliente foi atualizado", "infocom");
+                        EscreveInfoCliente();
+                    }
+                    else {
+                        LimpaCamposInfo();
+                        EscreveTexto("Servidor: Falha ao atualizar o cadastro do cliente", "infocom");
+                    }
+                };
             }
         }
         else {
-            EscreveTexto("Entre com o nome completo do cliente", "infocom");
+            if (NomeCliente != "") {
+                if (CelularCliente != "") {
+                    if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
+        
+                        let requisicao = new XMLHttpRequest();
+                        recurso = "cadastro/cliente";
+                        requisicao.open("POST", recurso, true);
+                        requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+                        requisicao.timeout = 2000;
+                        EscreveMsgEnvSrv();
+                        requisicao.send(MontaMsgJson());
+        
+                        requisicao.onload = function() {
+                            let XMLRec = requisicao.responseXML;
+                            CarregaCliente(XMLRec);
+                
+                            if (clienteOK) {
+                                EscreveTexto("O cliente foi cadastrado", "infocom");
+                                EscreveInfoCliente();
+                            }
+                            else {
+                                LimpaCamposInfo();
+                                EscreveTexto("Servidor: Falha ao cadastrar o cliente", "infocom");
+                            }
+                        };
+                    }
+                }
+                else {
+                    EscreveTexto("Entre com o número do celular do cliente", "infocom");
+                }
+            }
+            else {
+                EscreveTexto("Entre com o nome completo do cliente", "infocom");
+            }
         }
     }
     else {

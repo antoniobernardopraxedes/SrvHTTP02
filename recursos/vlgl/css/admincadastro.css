@@ -38,7 +38,7 @@ body{
 }
 
 .titulo {
-  font-size: 25px;
+  font-size: 23px;
 }
 
 .camponomeadmin {
@@ -70,7 +70,7 @@ body{
   margin-left: 10px;
   margin-right: 0px;
   padding-left: 15px;
-  padding-top: 10px;
+  padding-top: 11px;
   padding-bottom: 10px;
 }
 
@@ -164,6 +164,7 @@ body{
 .campoinfocom {
   width: 550px;
   height: 20px;
+  margin-top: 15px;
   padding-left: 10px;
   padding-top: 5px;
   padding-bottom: 5px;

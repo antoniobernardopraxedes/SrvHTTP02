@@ -19,20 +19,17 @@ public class VlglService {
     //	                                                                                                               *
     // Data: 28/09/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: recebe os dados de uma mensagem POST solicitando o cadastro de um cliente, atualiza as variáveis        *
+    // Funcao: recebe os dados de uma mensagem POST solicitando o cadastro de um cliente. Carrega as variáveis         *
     //         e grava o registro.                                                                                     *
     //                                                                                                                 *
-    // Entrada: string com os dados da mensagem recebida no método POST                                                *
+    // Entrada: objeto da classe cliente com os dados do cliente a ser cadastrado                                      *
     //                                                                                                                 *
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
     public boolean GeraCadastroCliente(Cliente cliente) {
 
-        boolean confirma = false;
         cliente.MostraCamposTerminal();
-        String caminho = Arquivo.getDiretorioBd() + "clientes/";
-        String nomeArquivo = cliente.getNomeUsuario() + ".clt";
 
         String dadosArqNovo = "{\n";
         dadosArqNovo = dadosArqNovo + "  NomeUsuario: " + cliente.getNomeUsuario() + "\n";
@@ -47,23 +44,77 @@ public class VlglService {
         dadosArqNovo = dadosArqNovo + "  AdminResp: " + cliente.getAdminResp() + "\n";
         dadosArqNovo = dadosArqNovo + "}\n";
 
-        // Se o arquivo existe, renomeia para a.nomearquivo.clt e grava o novo arquivo de cadastro de cliente
-        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
-            Arquivo.Apaga(caminho, "a." + nomeArquivo);
-            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
-                Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " renomeado", false);
-                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                    Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
-                    confirma = true;
-                }
-            }
-        }
-        else { // Se o arquivo não existe, grava o novo arquivo de cadastro de cliente
-            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
-                confirma = true;
-            }
-        }
+        String caminho = Arquivo.getDiretorioBd() + "clientes/";
+        String nomeArquivo = cliente.getNomeUsuario() + ".clt";
+        boolean confirma = EscreveArquivoCadastroCliente(caminho, nomeArquivo, dadosArqNovo);
+
+        return confirma;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: AtualizaCadastroCliente                                                                         *
+    //	                                                                                                               *
+    // Data: 04/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: recebe os dados de uma mensagem PUT solicitando a atualização do cadastro de um cliente.                *
+    //         Se a variável recebida é igual a "null", o campo não é atualizado.                                      *
+    //                                                                                                                 *
+    // Entrada: objeto da classe cliente com os dados do cliente a ser cadastrado.                                     *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    public boolean AtualizaCadastroCliente(Cliente cliente) {
+
+        cliente.MostraCamposTerminal();
+
+        Cliente clienteArquivo = LeArquivoCadastroCliente(cliente.getNomeUsuario());
+
+        String dadosArqNovo = "{\n";
+        dadosArqNovo = dadosArqNovo + "  NomeUsuario: " + cliente.getNomeUsuario() + "\n";
+
+        String nome = cliente.getNome();
+        if (nome.equals("null")) { nome = clienteArquivo.getNome(); }
+        dadosArqNovo = dadosArqNovo + "  Nome: " + nome + "\n";
+
+        String celular = cliente.getCelular();
+        if (celular.equals("null")) { celular = clienteArquivo.getCelular(); }
+        dadosArqNovo = dadosArqNovo + "  Celular: " + celular + "\n";
+
+        String obs1 = cliente.getObs1();
+        if (obs1.equals("null")) { obs1 = clienteArquivo.getObs1(); }
+        dadosArqNovo = dadosArqNovo + "  Obs1: " + obs1 + "\n";
+
+        String obs2 = cliente.getObs2();
+        if (obs2.equals("null")) { obs2 = clienteArquivo.getObs2(); }
+        dadosArqNovo = dadosArqNovo + "  Obs2: " + obs2 + "\n";
+
+        String idoso = cliente.getIdoso();
+        if (idoso.equals("null")) { idoso = clienteArquivo.getIdoso(); }
+        dadosArqNovo = dadosArqNovo + "  Idoso: " + idoso + "\n";
+
+        String locomocao = cliente.getLocomocao();
+        if (locomocao.equals("null")) { locomocao = clienteArquivo.getLocomocao(); }
+        dadosArqNovo = dadosArqNovo + "  Locomocao: " + locomocao + "\n";
+
+        String exigente = cliente.getExigente();
+        if (exigente.equals("null")) { exigente = clienteArquivo.getExigente(); }
+        dadosArqNovo = dadosArqNovo + "  Exigente: " + exigente + "\n";
+
+        String genero = cliente.getGenero();
+        if (genero.equals("null")) { genero = clienteArquivo.getGenero(); }
+        dadosArqNovo = dadosArqNovo + "  Genero: " + genero + "\n";
+
+        String adminResp = cliente.getAdminResp();
+        if (adminResp.equals("null")) { adminResp = clienteArquivo.getAdminResp(); }
+        dadosArqNovo = dadosArqNovo + "  AdminResp: " + adminResp + "\n";
+
+        dadosArqNovo = dadosArqNovo + "}\n";
+
+        String caminho = Arquivo.getDiretorioBd() + "clientes/";
+        String nomeArquivo = cliente.getNomeUsuario() + ".clt";
+        boolean confirma = EscreveArquivoCadastroCliente(caminho, nomeArquivo, dadosArqNovo);
+
         return confirma;
     }
 
@@ -84,7 +135,7 @@ public class VlglService {
 
         boolean confirma = false;
         String caminho = Arquivo.getDiretorioBd() + "clientes/";
-        String nomeArquivo = nomeUsuario + ".clt";
+        String nomeArquivo = nomeUsuario.toLowerCase() + ".clt";
 
         if (Arquivo.Existe(caminho, nomeArquivo)) {
             if (Arquivo.Apaga(caminho, nomeArquivo)) {
@@ -364,6 +415,28 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: Terminal                                                                                        *
+    //                                                                                                                 *
+    // Funcao: imprime uma mensagem no Terminal precedida pela data e pela hora                                        *
+    //                                                                                                                 *
+    // Entrada: string com a mensagem, e a flag opcao                                                                  *
+    //          Se Opcao = true imprime a hora e a data / Se Opcao = false imprime só a hora                           *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    public void Terminal(String msg, boolean opcao) {
+        if (Arquivo.isVerbose()) {
+            if (opcao) {
+                System.out.println(ImpData() + " -" + ImpHora() + " - " + msg);
+            }
+            else {
+                System.out.println(ImpHora() + " - " + msg);
+            }
+        }
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: LeArquivoReservaMesa                                                                            *
     //	                                                                                                               *
     // Data: 02/10/2021                                                                                                *
@@ -405,7 +478,7 @@ public class VlglService {
             }
         }
         else {
-            Auxiliar.Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
+            Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
         }
         return dadosMesa;
     }
@@ -459,9 +532,9 @@ public class VlglService {
             Arquivo.Apaga(caminho, "a." + nomeArquivo);
         }
         if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
-            Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
+            Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
             if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                Auxiliar.Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
+                Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
                 confirma = true;
             }
         }
@@ -480,9 +553,8 @@ public class VlglService {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    private static void EscreveArquivoReservaNovo(String dataRes) {
+    private void EscreveArquivoReservaNovo(String dataRes) {
 
-        //String caminho = "recursos/vlgl/reservas/";
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = dataRes + ".res";
 
@@ -505,11 +577,49 @@ public class VlglService {
 
         if (!Arquivo.Existe(caminho, "a." + nomeArquivo)) {
             if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                Auxiliar.Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
+                Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
             } else {
-                Auxiliar.Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
+                Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
             }
         }
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EscreveArquivoCadastroCliente                                                                   *
+    //	                                                                                                               *
+    // Data: 04/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: escreve um arquivo de cadastro de cliente em formato texto. O nome do arquivo é igual ao nome de        *
+    //         usuário do cliente com todas as letras minúsculas e extensão .clt                                       *
+    //                                                                                                                 *
+    // Entrada: string com o caminho, string com o nome do arquivo e string com os dados a serem escritos              *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    private boolean EscreveArquivoCadastroCliente(String caminho, String nomeArquivo, String dadosArquivo) {
+
+        boolean confirma = false;
+        nomeArquivo = nomeArquivo.toLowerCase();
+
+        // Se o arquivo existe, renomeia para a.nomearquivo.clt e grava o novo arquivo de cadastro de cliente
+        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            Arquivo.Apaga(caminho, "a." + nomeArquivo);
+            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
+                Terminal("Arquivo de cliente " + nomeArquivo + " renomeado", false);
+                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArquivo)) {
+                    Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                    confirma = true;
+                }
+            }
+        }
+        else { // Se o arquivo não existe, grava o novo arquivo de cadastro de cliente
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArquivo)) {
+                Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                confirma = true;
+            }
+        }
+        return confirma;
     }
 
     //******************************************************************************************************************
@@ -528,7 +638,7 @@ public class VlglService {
     private Cliente LeArquivoCadastroCliente(String nomeUsuario) {
 
         String caminho = Arquivo.getDiretorioBd() + "clientes/";
-        String nomeArquivo = nomeUsuario + ".clt";
+        String nomeArquivo = nomeUsuario.toLowerCase() + ".clt";
         String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
 
         Cliente cliente = new Cliente();
@@ -704,59 +814,6 @@ public class VlglService {
 
         return (MsgXML);
     }
-
-    //******************************************************************************************************************
-    // Nome do Método: LeParametroArquivo                                                                              *
-    //                                                                                                                 *
-    // Funcao: procura um token em um arquivo texto e retorna o parâmetro que está após o token                        *
-    //                                                                                                                 *
-    // Entrada: string com o arquivo texto e string com o token                                                        *
-    //                                                                                                                 *
-    // Saida: string com o parâmetro lido após o token                                                                 *
-    //******************************************************************************************************************
-    //
-    //private String LeParametroArquivo(String arquivo, String token){
-    //    int Indice = arquivo.lastIndexOf(token);
-    //    int indiceF = arquivo.length() - 1;
-    //    String parametro = null;
-    //    if (Indice >= 0) {
-    //        Indice = Indice + token.length() + 1;
-    //        String Substring = arquivo.substring(Indice, indiceF);
-    //        StringTokenizer parseToken = new StringTokenizer(Substring);
-    //        parametro = parseToken.nextToken();
-    //    }
-    //    return parametro;
-    //}
-
-    //******************************************************************************************************************
-    // Nome do Método: LeCampoArquivo                                                                                  *
-    //                                                                                                                 *
-    // Funcao: procura um token em um arquivo texto e retorna o campo que está após o token até o próximo CR/LF        *
-    //                                                                                                                 *
-    // Entrada: string com o arquivo texto e string com o token                                                        *
-    //                                                                                                                 *
-    // Saida: string com o parâmetro lido após o token                                                                 *
-    //******************************************************************************************************************
-    //
-    //private String LeCampoArquivo(String arquivo, String token) {
-    //    String campo;
-    //    try {
-    //        int indiceToken = arquivo.indexOf(token);
-    //        if (indiceToken > 0) {
-    //            int indiceAposToken = indiceToken + token.length();
-
-    //            String arquivoAposToken = arquivo.substring(indiceAposToken, arquivo.length());
-    //            int indiceCRLF = arquivoAposToken.indexOf("\n");
-
-    //            return arquivoAposToken.substring(1, indiceCRLF);
-    //        }
-    //        else {
-    //            return "null";
-    //        }
-    //    } catch (Exception e) {
-    //        return "null";
-    //    }
-    //}
 
     //******************************************************************************************************************
     // Nome do Método: ImpHora                                                                                         *

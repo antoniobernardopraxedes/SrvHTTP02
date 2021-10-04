@@ -122,7 +122,6 @@ public class Auxiliar {
     //          Se Opcao = true imprime a hora e a data / Se Opcao = false imprime só a hora                           *
     //                                                                                                                 *
     // Saida: não tem                                                                                                  *
-    //                                                                                                                 *
     //******************************************************************************************************************
     //
     public static void Terminal(String Msg, boolean Opcao) {

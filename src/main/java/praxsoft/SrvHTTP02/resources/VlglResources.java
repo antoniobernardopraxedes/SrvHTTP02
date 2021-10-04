@@ -8,9 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Cliente;
-import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
-import praxsoft.SrvHTTP02.services.Auxiliar;
 import praxsoft.SrvHTTP02.services.VlglService;
 
 @RestController
@@ -21,7 +19,7 @@ public class VlglResources {
 
     @GetMapping(value = "/vlgl/admin")
     public ResponseEntity<?> EnviaDadosAdmin() {
-        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/admin", false);
+        vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/admin", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String MsgXML = vlglService.MontaXMLadmin(auth.getName());
@@ -34,7 +32,7 @@ public class VlglResources {
 
     @GetMapping(value = "/vlgl/reservas")
     public ResponseEntity<?> ReservasVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
-        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/reservas", false);
+        vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/reservas", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String nomeArquivo = "adminreservas.html";
@@ -44,7 +42,7 @@ public class VlglResources {
 
     @GetMapping(value = "/vlgl/reservas/data/{dataReserva}")
     public ResponseEntity<?> VerificaData(@PathVariable String dataReserva) {
-        Auxiliar.Terminal("Solicitação de reservas na data: " + dataReserva, false);
+        vlglService.Terminal("Solicitação de reservas na data: " + dataReserva, false);
 
         String MsgXML = vlglService.MontaXMLData(dataReserva);
 
@@ -56,9 +54,9 @@ public class VlglResources {
                 .body(MsgXML);
     }
 
-    @PostMapping(value = "/vlgl/reservas")
+    @PostMapping(value = "/vlgl/reserva")
     public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
-        Auxiliar.Terminal("Solicitação de reserva de mesa", false);
+        vlglService.Terminal("Solicitação de reserva de mesa", false);
 
         reservaMesa.MostraCamposTerminal();
 
@@ -74,7 +72,7 @@ public class VlglResources {
 
     @DeleteMapping(value = "/vlgl/reserva/exclui/{dataReserva}/{idMesa}")
     public ResponseEntity<?> ExcluiReserva(@PathVariable String dataReserva, @PathVariable String idMesa) {
-        Auxiliar.Terminal("Requisição de exclusão: " + dataReserva + " - Mesa: " + idMesa, false);
+        vlglService.Terminal("Requisição de exclusão: " + dataReserva + " - Mesa: " + idMesa, false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -91,7 +89,6 @@ public class VlglResources {
 
     @GetMapping(value = "/vlgl/cadastro")
     public ResponseEntity<?> CadastroVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
-        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/cadastro", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -102,7 +99,7 @@ public class VlglResources {
 
     @GetMapping(value = "/vlgl/cadastro/cliente/{nomeUsuario}")
     public ResponseEntity<?> VerificaCliente(@PathVariable String nomeUsuario) {
-        Auxiliar.Terminal("Solicitação de verificação de cliente: " + nomeUsuario, false);
+        vlglService.Terminal("Verificação de cliente: " + nomeUsuario, false);
 
         String MsgXML = vlglService.MontaXMLCliente(nomeUsuario);
         return ResponseEntity
@@ -113,7 +110,7 @@ public class VlglResources {
 
     @PostMapping(value = "/vlgl/cadastro/cliente")
     public ResponseEntity<?> CadastraCliente(@RequestBody Cliente cliente) {
-        Auxiliar.Terminal("Solicitação de inclusão de cliente: " + cliente.getNomeUsuario(), false);
+        vlglService.Terminal("Cadastro de cliente: " + cliente.getNomeUsuario(), false);
 
         vlglService.GeraCadastroCliente(cliente);
         String MsgXML = vlglService.MontaXMLCliente(cliente.getNomeUsuario());
@@ -124,9 +121,22 @@ public class VlglResources {
                 .body(MsgXML);
     }
 
+    @PutMapping(value = "/vlgl/cadastro/cliente")
+    public ResponseEntity<?> AtualizaCadastroCliente(@RequestBody Cliente cliente) {
+        vlglService.Terminal("Atualização de cadastro de cliente: " + cliente.getNomeUsuario(), false);
+
+        vlglService.AtualizaCadastroCliente(cliente);
+        String MsgXML = vlglService.MontaXMLCliente(cliente.getNomeUsuario());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/xml"))
+                .body(MsgXML);
+    }
+
     @DeleteMapping(value = "/vlgl/cadastro/cliente/{nomeUsuario}")
     public ResponseEntity<?> ExcluiCadastroCliente(@PathVariable String nomeUsuario) {
-        Auxiliar.Terminal("Solicitação de inclusão de cliente: " + nomeUsuario, false);
+        vlglService.Terminal("Exclusão de cadastro de cliente: " + nomeUsuario, false);
 
         vlglService.ExcluiCadastroCliente(nomeUsuario);
         String MsgXML = vlglService.MontaXMLCliente(nomeUsuario);
@@ -141,7 +151,7 @@ public class VlglResources {
     public ResponseEntity<?> EnviaArquivoVlgl(@PathVariable("recurso") String nomeArquivo,
                                               @RequestHeader(value = "User-Agent") String userAgent) {
 
-        Auxiliar.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
+        vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
 
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }

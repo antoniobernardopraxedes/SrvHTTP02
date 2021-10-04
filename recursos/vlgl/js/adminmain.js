@@ -282,6 +282,8 @@ function VerificaCliente() {
                 EscreveTexto("Exigente: " + ExigenteCliente, "info7");
                 EscreveTexto("Obs 1: " + Obs1Cliente, "info8");
                 EscreveTexto("Obs 2: " + Obs2Cliente, "info9");
+                document.getElementById("botaoresconf").style.backgroundColor = "#0705a4";
+                document.getElementById("botaoresconf").style.color = "white";
             }
             else {
                 LimpaCamposInfo();
@@ -330,7 +332,7 @@ function ReservaConfirma() {
 //                                                                                                                    *
 // Data: 23/09/2021                                                                                                   *
 //                                                                                                                    *
-// Função: é chamada cada vez que o usuário Admin pressiona o botão Entra ao lado do campo Número de pessoas do       *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Reserva ao lado do campo Número de pessoas do       *
 //         formulário. A função envia para o servidor a data, o nome de usuário do cliente e o número de pessoas.     *
 //         O servidor deve responder com os dados do cliente e o mapa de mesas.                                       *
 //                                                                                                                    *
@@ -419,6 +421,7 @@ function SelecionaMesa(mesa) {
             if (numPessoasOK) {
                 if (clienteOK) {
                     LimpaCamposInfo();
+                    
                     EscreveTexto("Confirma a reserva da " + NomeMesa(mesa) + "?", "info1");
                     EscreveTexto("Cliente: " + NomeCliente, "info2");
                     EscreveTexto("Data: " + DataReserva, "info3");
@@ -426,6 +429,8 @@ function SelecionaMesa(mesa) {
                     EscreveTexto("Horário de chegada: " + HoraChegada, "info5");
                     BotaoReservaConfirma = true;
                     EscreveTexto("Confirma", "botaoresconf");
+                    document.getElementById("botaoresconf").style.backgroundColor = "#e72118";
+                    document.getElementById("botaoresconf").style.color = "white";
                 }
             }
             else {
@@ -480,7 +485,7 @@ function ConfirmaReserva() {
     VerificaFormatoData(dataReserva);
     
     let requisicao = new XMLHttpRequest();
-    let recurso = "reservas";
+    let recurso = "reserva";
     requisicao.open("POST", recurso, true);
     requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
     requisicao.timeout = 2000;
@@ -528,6 +533,8 @@ function ConfirmaReserva() {
     };
     BotaoReservaConfirma = false;
     EscreveTexto("Reserva", "botaoresconf");
+    document.getElementById("botaoresconf").style.backgroundColor = "#e7e5e5";
+    document.getElementById("botaoresconf").style.color = "black";
 }
 
 //*********************************************************************************************************************
@@ -581,14 +588,7 @@ function ExcluiReserva() {
                     dataOK = true;
                     EscreveTexto(DataReserva, "dataMapa");
                 }
-                
-                
-                
-                
-                
-                
             };
-         
             requisicao.ontimeout = function(e) {
                 EscreveTexto("O servidor não respondeu à requisição", "info1");
                 console.log("Erro: " + e);

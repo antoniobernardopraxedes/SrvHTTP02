@@ -45,8 +45,8 @@ public class Arquivo {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    public static void LeConfiguracao() {
-
+    public static boolean LeConfiguracao() {
+        boolean resultado = false;
         String caminho = "recursos/";
         String nomeArquivo = "srvhttp02.cnf";
 
@@ -62,10 +62,9 @@ public class Arquivo {
 
             endIpConc = LeParametro(arquivoConf, "EndIpConcArduino:");
             diretorioBd = LeParametro(arquivoConf, "DiretorioBD:");
+            resultado = true;
         }
-        else {
-            Auxiliar.Terminal("Arquivo de Configuração nao encontrado.", false);
-        }
+        return resultado;
     }
 
     //******************************************************************************************************************
@@ -78,8 +77,8 @@ public class Arquivo {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    public static void LeUsuarios() {
-
+    public static boolean LeUsuarios() {
+        boolean resultado = false;
         String caminho = "recursos/";
         String nomeArquivo = "srvhttp02.usr";
 
@@ -91,39 +90,10 @@ public class Arquivo {
                 for (int i = 1; i <= numUsuarios; i++) {
                     nomeUsuario[i] = LeParametro(arquivoConf, "NomeUsuario" + i + ":");
                 }
-            }
-            else {
-                Auxiliar.Terminal("Número de usuários inválido", false);
+                resultado = true;
             }
         }
-        else {
-            Auxiliar.Terminal("Arquivo de usuários não encontrado.", false);
-        }
-    }
-
-    public static void MostraDadosConfiguracao() {
-        if (verbose) {
-            System.out.println("\nInformações do arquivo de configuração");
-            if (opLocal) {
-                System.out.println("Modo de Operação Local");
-            } else {
-                System.out.println("Modo de Operação Remoto (Nuvem)");
-            }
-            System.out.println("Endereço IP do Concentrador: " + endIpConc);
-            System.out.println("Diretorio do banco de dados: " + diretorioBd);
-            System.out.println("");
-        }
-    }
-
-    public static void MostraUsuarios() {
-        if (verbose) {
-            System.out.print("\nInformações dos usuários: ");
-            System.out.println(numUsuarios + " usuários");
-            for (int i = 1; i <= numUsuarios; i++) {
-                System.out.println("Usuário " + i + ": " + nomeUsuario[i] + " - Senha: " + senhaUsuario[i]);
-            }
-            System.out.println("");
-        }
+        return resultado;
     }
 
     //******************************************************************************************************************
@@ -147,14 +117,11 @@ public class Arquivo {
             while ((linha = br.readLine()) != null) {
                 arquivoLido = arquivoLido + linha + "\n";
             }
-            Auxiliar.Terminal("Lido Arquivo " + nomeArquivo, false);
             return arquivoLido;
 
         } catch (IOException e) {
-            Auxiliar.Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
             return null;
         }
-
     }
 
     //******************************************************************************************************************
@@ -178,17 +145,13 @@ public class Arquivo {
 
             arquivoByte = new FileInputStream(arquivo);
             arquivoByte.read(arrayByteArquivo);
-
-            Auxiliar.Terminal("Lido Arquivo " + nomeArquivo, false);
             arquivoByte.close();
             return arrayByteArquivo;
 
         } catch (IOException e) {
-            Auxiliar.Terminal("Arquivo " + nomeArquivo + " nao encontrado.", false);
             byte[] arrayErro = new byte[0];
             return arrayErro;
         }
-
     }
 
     //******************************************************************************************************************
@@ -210,20 +173,9 @@ public class Arquivo {
             out.close();
             resultado = true;
         } catch (IOException e) {
-
             resultado = false;
         }
         return resultado;
-    }
-
-    public static boolean Existe(String Caminho, String NomeArquivo) {
-        File Arquivo = new File(Caminho + NomeArquivo);
-        return (Arquivo.exists());
-    }
-
-    public static boolean Apaga(String Caminho, String NomeArquivo) {
-        File arquivo = new File(Caminho + NomeArquivo);
-        return (arquivo.delete());
     }
 
     //******************************************************************************************************************
@@ -251,6 +203,36 @@ public class Arquivo {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: Existe                                                                                          *
+    //	                                                                                                               *
+    // Funcao: verifica se o arquivo existe                                                                            *
+    //                                                                                                                 *
+    // Entrada: string com o caminho e string com o nome do arquivo                                                    *
+    //                                                                                                                 *
+    // Saida: = boolean - true se o arquivo existe                                                                     *
+    //******************************************************************************************************************
+    //
+    public static boolean Existe(String Caminho, String NomeArquivo) {
+        File Arquivo = new File(Caminho + NomeArquivo);
+        return (Arquivo.exists());
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: Apaga                                                                                           *
+    //	                                                                                                               *
+    // Funcao: apaga um arquivo                                                                                        *
+    //                                                                                                                 *
+    // Entrada: string com o caminho e string com o nome do arquivo                                                    *
+    //                                                                                                                 *
+    // Saida: = boolean - true se a operação foi realizada                                                             *
+    //******************************************************************************************************************
+    //
+    public static boolean Apaga(String Caminho, String NomeArquivo) {
+        File arquivo = new File(Caminho + NomeArquivo);
+        return (arquivo.delete());
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: Tipo()                                                                                          *
     //	                                                                                                               *
     // Funcao: verifica o tipo do arquivo pela extensão                                                                *
@@ -258,7 +240,6 @@ public class Arquivo {
     // Entrada: string com o nome do arquivo                                                                           *
     //                                                                                                                 *
     // Saida: = string com o tipo do arquivo                                                             *
-    //	                                                                                                               *
     //******************************************************************************************************************
     //
     String Tipo(String NomeArquivo) {
@@ -326,6 +307,31 @@ public class Arquivo {
             }
         } catch (Exception e) {
             return "null";
+        }
+    }
+
+    public static void MostraDadosConfiguracao() {
+        if (verbose) {
+            System.out.println("\nInformações do arquivo de configuração");
+            if (opLocal) {
+                System.out.println("Modo de Operação Local");
+            } else {
+                System.out.println("Modo de Operação Remoto (Nuvem)");
+            }
+            System.out.println("Endereço IP do Concentrador: " + endIpConc);
+            System.out.println("Diretorio do banco de dados: " + diretorioBd);
+            System.out.println("");
+        }
+    }
+
+    public static void MostraUsuarios() {
+        if (verbose) {
+            System.out.print("\nInformações dos usuários: ");
+            System.out.println(numUsuarios + " usuários");
+            for (int i = 1; i <= numUsuarios; i++) {
+                System.out.println("Usuário " + i + ": " + nomeUsuario[i] + " - Senha: " + senhaUsuario[i]);
+            }
+            System.out.println("");
         }
     }
 
