@@ -310,6 +310,40 @@ public class Arquivo {
         }
     }
 
+    //******************************************************************************************************************
+    // Nome do Método: LeCampoHTML                                                                                     *
+    //                                                                                                                 *
+    // Funcao: procura um token em um arquivo texto e retorna o campo que está após o token entre os caracteres < e >  *
+    //                                                                                                                 *
+    // Entrada: string com o arquivo texto e string com o token                                                        *
+    //                                                                                                                 *
+    // Saida: string com o campo lido após o token                                                                     *
+    //******************************************************************************************************************
+    //
+    public static String LeCampoHTML(String arquivo, String token) {
+        String campo = null;
+        int fimArquivo = arquivo.length();
+        int indiceToken = arquivo.indexOf(token);
+        if (indiceToken > 0) {
+            int indiceAposToken = indiceToken + token.length();
+            for (int i = indiceAposToken; i < fimArquivo; i++) {
+                if (arquivo.charAt(i) == '<') {
+                    //System.out.println("i = " + i);
+                    for (int k = i + 1; k < fimArquivo; k++) {
+                        if (arquivo.charAt(k) == '>') {
+                            //System.out.println("k = " + k);
+                            campo = arquivo.substring(i, k + 1);
+                            //System.out.println("Campo: " + campo);
+                            k = fimArquivo;
+                            i = fimArquivo;
+                        }
+                    }
+                }
+            }
+        }
+        return campo;
+    }
+
     public static void MostraDadosConfiguracao() {
         if (verbose) {
             System.out.println("\nInformações do arquivo de configuração");

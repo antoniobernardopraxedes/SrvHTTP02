@@ -12,10 +12,6 @@ import praxsoft.SrvHTTP02.services.Arquivo;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    //private static String[] nomeUsuario = new String[3];
-    //private static String[] senha = new String[3];
-    //private static String[] nome = new String[3];
-
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 

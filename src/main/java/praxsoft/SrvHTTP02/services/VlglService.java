@@ -14,6 +14,12 @@ public class VlglService {
 
     private String[][][][] MsgXMLArray = new String[1][4][120][2];
 
+    private String nomeArquivoImpressao;
+
+    public String getNomeArquivoImpressao() {
+        return nomeArquivoImpressao;
+    }
+
     //******************************************************************************************************************
     // Nome do Método: GeraCadastroCliente                                                                             *
     //	                                                                                                               *
@@ -221,16 +227,12 @@ public class VlglService {
     //
     public String MontaXMLadmin(String idAdmin) {
 
-        String nomeAdmin = idAdmin;
-
         int i = 0;
         int IdNv0 = 0;
         int IdNv1 = 1;
         IniciaMsgXML("LOCAL001", 1);
-
         MsgXMLArray[IdNv0][IdNv1][i++][0] = "ADMIN";
         MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", idAdmin);
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", nomeAdmin);
         MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
 
         return(StringXML());
@@ -334,6 +336,87 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: GeraArquivoImpressaoReserva                                                                     *
+    //	                                                                                                               *
+    // Data: 05/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: gera um arquivo para impressão em formato html. Este arquivo é baixado no navegador quando o            *
+    //         administrador clica sobre o link na tela.                                                               *
+    //                                                                                                                 *
+    // Entrada: objeto da classe ReservaMesa com todas as informações da reserva efetuada                              *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    public void GeraArquivoImpressaoReserva(ReservaMesa reservaMesa) {
+
+        String nomeMesa = reservaMesa.getMesaSelecionada();
+        if (nomeMesa.equals("A00")) { nomeMesa = "Gazebo"; }
+        String data = reservaMesa.getDataReserva();
+        String dia = data.substring(0, 2);
+        String mes = data.substring(3, 5);
+        String ano = data.substring(6, 10);
+        String dataReserva = dia + "/" + mes + "/" + ano;
+        String nomeCliente = reservaMesa.getNomeCliente();
+        String numPessoas = reservaMesa.getNumPessoas();
+        String horaChegada = reservaMesa.getHoraChegada();
+
+        String camposImp = Arquivo.LeTexto("recursos/vlgl/imp/", "camposimp.txt");
+        String head = Arquivo.LeTexto("recursos/vlgl/imp/", "head.txt");
+
+        String inicioHTML = Arquivo.LeCampoHTML(camposImp, "InicioHTML:") + "<html>";
+        //System.out.println("inicioHTML: " + inicioHTML);
+
+        String inicioBody = Arquivo.LeCampoHTML(camposImp, "InicioBody:");
+        //System.out.println("inicioBody: " + inicioBody);
+
+        String pClass1 = Arquivo.LeCampoHTML(camposImp, "PClass1:");
+        //System.out.println("pClass1: " + pClass1);
+
+        String pFont1 = Arquivo.LeCampoHTML(camposImp, "PFont1:");
+        //System.out.println("pFont1: " + pFont1);
+
+        String pClass2 = Arquivo.LeCampoHTML(camposImp, "PClass2:");
+        //System.out.println("pClass2: " + pClass2);
+
+        String pFont2 = Arquivo.LeCampoHTML(camposImp, "PFont2:");
+        //System.out.println("pFont2: " + pFont2);
+
+        String pClass3 = Arquivo.LeCampoHTML(camposImp, "PClass3:");
+        //System.out.println("pClass3: " + pClass3);
+
+        String pFont3 = Arquivo.LeCampoHTML(camposImp, "PFont3:");
+        //System.out.println("pFont3: " + pFont3);
+
+        String arqImp = inicioHTML + "\n" + head;
+        arqImp = arqImp + "  " + inicioBody + "\n";
+        arqImp = arqImp + "    " + pClass1 + pFont1 + "\n";
+        arqImp = arqImp + "      " + "Reserva da mesa " + nomeMesa + " para " + dataReserva + "\n";
+        arqImp = arqImp + "    " + "</font></p>\n";
+
+        arqImp = arqImp + "    " + pClass2 + pFont2 + "\n";
+        arqImp = arqImp + "      " + nomeCliente + "\n";
+        arqImp = arqImp + "    " + "</font></p>\n";
+
+        arqImp = arqImp + "    " + pClass3 + pFont3 + "\n";
+        arqImp = arqImp + "      " + numPessoas + " pessoas. Hora de chegada: " + horaChegada + "\n";
+        arqImp = arqImp + "    " + "</font></p>\n";
+
+        arqImp = arqImp + "  </body>\n</html>";
+
+        System.out.println(arqImp);
+
+        String caminho = "recursos/vlgl/imp/";
+        String nomeArquivo = "reserva-" + reservaMesa.getNomeUsuario() + "-" + data + ".html";
+        nomeArquivoImpressao = nomeArquivo;
+        if (Arquivo.Existe(caminho, nomeArquivo)) {
+            Arquivo.Apaga(caminho, nomeArquivo);
+        }
+        Arquivo.EscreveTexto(caminho, nomeArquivo, arqImp);
+
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: LeArquivoMontaResposta                                                                          *
     //	                                                                                                               *
     // Data: 29/09/2021                                                                                                *
@@ -380,6 +463,10 @@ public class VlglService {
             tipo = "image/png";
             caminho = caminho + "img/";
         }
+        if (nomeArquivo.endsWith(".txt")) {
+            tipo = "text/plain";
+            caminho = caminho + "txt/";
+        }
 
         if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
             byte[] arquivoByte = Arquivo.LeByte(caminho, nomeArquivo);
@@ -398,7 +485,6 @@ public class VlglService {
         }
         else {
             String arquivoTxt = Arquivo.LeTexto(caminho, nomeArquivo);
-
             if (arquivoTxt == null) {
                 return ResponseEntity
                         .status(HttpStatus.NOT_FOUND )
@@ -406,6 +492,8 @@ public class VlglService {
                         .body(msgArqNaoEncontrado(nomeArquivo));
             }
             else {
+                Terminal("Arquivo enviado: " + caminho + nomeArquivo, false);
+
                 return ResponseEntity
                         .status(HttpStatus.OK)
                         .contentType(MediaType.valueOf(tipo))
@@ -442,7 +530,6 @@ public class VlglService {
     // Data: 02/10/2021                                                                                                *
     //                                                                                                                 *
     // Funcao: lê um arquivo de registro de reserva das mesas. Se o arquivo não for encontrado, cria um novo arquivo   *
-    //
     //                                                                                                                 *
     // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
     //                                                                                                                 *

@@ -1,0 +1,10 @@
+{
+  InicioHTML: <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+  InicioBody: <body lang="pt-BR" text="#000000" link="#000080" vlink="#800000" dir="ltr">
+  PClass1: <p class="western" align="center" style="margin-bottom: 0cm; line-height: 100%">
+  PFont1: <font size="4" style="font-size: 14pt">
+  PClass2: <p class="western" align="center" style="margin-top: 0.3cm; margin-bottom: 0cm; line-height: 100%">
+  PFont2: <font size="5" style="font-size: 18pt">
+  PClass3: <p class="western" align="center" style="margin-top: 0.3cm; margin-bottom: 0cm; line-height: 100%">
+  PFont3: <font size="4" style="font-size: 14pt">
+}

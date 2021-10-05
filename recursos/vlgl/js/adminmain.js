@@ -116,13 +116,13 @@ function VerificaAdmin() {
         let XMLRec = requisicao.responseXML;
         grupo = XMLRec.getElementsByTagName("ADMIN");
         NomeUsuarioAdmin = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-        NomeAdmin = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        EscreveTexto("Admin: " + NomeAdmin, "nomeadmin");
+        EscreveTexto("Administrador: " + NomeUsuarioAdmin, "nomeadmin");
         EscreveTexto("Servidor: informações do administrador", "info1");
     };
     
     requisicao.ontimeout = function(e) {
-        EscreveTexto("O servidor não respondeu à requisição", "info1");
+        EscreveMsgErrSrv();
+        console.log("Erro: " + e);
     };
  }
 
@@ -163,13 +163,14 @@ function VerificaData() {
                     EscreveTexto("Selecione a mesa para consulta", "info1");
                 }
                 else {
-                    EscreveTexto("Recebido mapa de reservas do dia " + DataReserva, "info1");
+                    EscreveTexto("Servidor: mapa de reservas do dia " + DataReserva, "info1");
                 }
                 EscreveTexto(DataReserva, "dataMapa");
             };
             
             requisicao.ontimeout = function(e) {
-                EscreveTexto("O servidor não respondeu à requisição", "info1");
+                EscreveMsgErrSrv();
+                console.log("Erro: " + e);
             };
         }
         else {
@@ -287,12 +288,12 @@ function VerificaCliente() {
             }
             else {
                 LimpaCamposInfo();
-                EscreveTexto("Cliente não cadastrado", "info1");
+                EscreveTexto("Servidor: cliente não cadastrado", "info1");
             }
          };
          
          requisicao.ontimeout = function(e) {
-             EscreveTexto("O servidor não respondeu à requisição", "info1");
+             EscreveMsgErrSrv();
              console.log("Erro: " + e);
          };
     }
@@ -387,11 +388,27 @@ function Reserva() {
         EscreveTexto("Entre com o horário de chegada", "info1");
         condicao = false;
     }
+    else {
+        if (!VerificaHoraChegada()) {
+            EscreveTexto("Hora de chegada inválida (use hh:mm)", "info1");
+            condicao = false;
+        }
      
+    }
     if (condicao) {
         EscreveTexto("Selecione a mesa para reserva", "info1");
         HabilitaSelMesa = true;
     }
+}
+
+function VerificaHoraChegada() {
+    let horach = false;
+    if ((HoraChegada.length == 5) && (HoraChegada[2] == ":")) {
+        let hora = parseInt(HoraChegada[0] + HoraChegada[1]);
+        let minuto = parseInt(HoraChegada[3] + HoraChegada[4]);
+        if ((hora >= 0) && (hora <= 23) && (minuto >= 0) && (minuto <= 59)) horach = true;
+    }
+    return horach;
 }
 
 //*********************************************************************************************************************
@@ -520,15 +537,10 @@ function ConfirmaReserva() {
         else {
             EscreveTexto("Houve falha na confirmação da reserva ", "info1");
         }
-        
-        //dataOK = false;
-        //clienteOK = false;
-        //numPessoasOK = false;
-        //horaChegadaOK = false;
     };
     
     requisicao.ontimeout = function(e) {
-        EscreveTexto("O servidor não respondeu à requisição", "info1");
+        EscreveMsgErrSrv();
         console.log("Erro: " + e);
     };
     BotaoReservaConfirma = false;
@@ -590,7 +602,7 @@ function ExcluiReserva() {
                 }
             };
             requisicao.ontimeout = function(e) {
-                EscreveTexto("O servidor não respondeu à requisição", "info1");
+                EscreveMsgErrSrv();
                 console.log("Erro: " + e);
             };
             consultaMesa = false;
@@ -599,7 +611,6 @@ function ExcluiReserva() {
     else {
      EscreveTexto("Antes de excluir, é preciso consultar a mesa", "info1");
     }
-    
 }
 
 //*********************************************************************************************************************
@@ -629,6 +640,18 @@ function ConsultaReservaMesa() {
         EscreveTexto("Entre com a data da reserva e verifique", "info1");
     }
     console.log("consultaMesa = " + consultaMesa);
+}
+
+function Cancela() {
+    
+    EscreveTexto("Reserva", "botaoresconf");
+    document.getElementById("botaoresconf").style.backgroundColor = "#e7e5e5";
+    document.getElementById("botaoresconf").style.color = "black";
+    LimpaCamposInfo();
+    LimpaCampoInfo1();
+    consultaMesa = false;
+    HabilitaSelMesa = false;
+    
 }
 
 //*********************************************************************************************************************
@@ -846,7 +869,7 @@ function EscreveMsgEnvSrv() {
 }
 
 function EscreveMsgErrSrv() {
-    document.getElementById("info1").innerHTML = "O Servidor não respondeu";
+    document.getElementById("info1").innerHTML = "O servidor não respondeu à requisição";
 }
 
 function LimpaCampoInfo1() {
@@ -862,6 +885,6 @@ function LimpaCamposInfo() {
     document.getElementById("info7").innerHTML = "                      ";
     document.getElementById("info8").innerHTML = "                      ";
     document.getElementById("info9").innerHTML = "                      ";
-    document.getElementById("info10").innerHTML = "                      ";
-    document.getElementById("info11").innerHTML = "                      ";
+    document.getElementById("info10").innerHTML = "                     ";
+    //document.getElementById("info11").innerHTML = "                     ";
 }

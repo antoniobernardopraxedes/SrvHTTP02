@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Cliente;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
+import praxsoft.SrvHTTP02.services.Arquivo;
 import praxsoft.SrvHTTP02.services.VlglService;
 
 @RestController
@@ -46,8 +47,6 @@ public class VlglResources {
 
         String MsgXML = vlglService.MontaXMLData(dataReserva);
 
-        System.out.println(MsgXML);
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
@@ -62,6 +61,7 @@ public class VlglResources {
 
         boolean confirma = vlglService.ReservaMesa(reservaMesa);
         String MsgXML = vlglService.MontaXMLReserva(reservaMesa, confirma);
+        vlglService.GeraArquivoImpressaoReserva(reservaMesa);
 
         System.out.println(MsgXML);
         return ResponseEntity
@@ -78,8 +78,6 @@ public class VlglResources {
 
         boolean confirma = vlglService.ExcluiReservaMesa(dataReserva, idMesa);
         String MsgXML = vlglService.MontaXMLExclui(dataReserva, idMesa, auth.getName(), confirma);
-
-        System.out.println(MsgXML);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -154,6 +152,28 @@ public class VlglResources {
         vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
 
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+    }
+
+    @GetMapping(value = "/vlgl/imp/reserva")
+    public ResponseEntity<?> EnviaArquivoImpressao() {
+        vlglService.Terminal("Solicitação do arquivo de impressão", false);
+        String caminho = "recursos/vlgl/imp/";
+        String nomeArquivo = vlglService.getNomeArquivoImpressao();
+        String arquivoImpressao = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        if (arquivoImpressao != null) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/html"))
+                    .header("Content-Disposition", "attachment; filename=" + nomeArquivo)
+                    .body(arquivoImpressao);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body("Arquivo não encontrado: " + nomeArquivo);
+        }
     }
 
     @GetMapping(value = "/favicon.ico")
