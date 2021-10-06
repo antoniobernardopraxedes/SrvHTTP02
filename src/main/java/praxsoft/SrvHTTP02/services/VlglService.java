@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import praxsoft.SrvHTTP02.domain.Cliente;
 import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
+
 import java.time.LocalDateTime;
 
 @Service
@@ -15,9 +16,14 @@ public class VlglService {
     private String[][][][] MsgXMLArray = new String[1][4][120][2];
 
     private String nomeArquivoImpressao;
+    private String nomeArquivoRegistro;
 
     public String getNomeArquivoImpressao() {
         return nomeArquivoImpressao;
+    }
+
+    public String getNomeArquivoRegistro() {
+        return nomeArquivoRegistro;
     }
 
     //******************************************************************************************************************
@@ -182,6 +188,39 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
+    // Nome do Método: ConsultaReservaMesa                                                                             *
+    //	                                                                                                               *
+    // Data: 05/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de data com as informações de reserva das mesas, lê as informações de reserva             *
+    //         de uma mesa e carrega em um objeto do tipo ReservaMesae                                                 *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva e string com o identificador da mesa                                      *
+    //                                                                                                                 *
+    // Saida: objeto do tipo ReservaMesa com as informações da reserva                                                 *
+    //******************************************************************************************************************
+    //
+    public ReservaMesa ConsultaReservaMesa(String dataReserva, String idMesa) {
+
+        DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+        ReservaMesa reservaMesa = new ReservaMesa();
+
+        int indiceMesa = Integer.parseInt(idMesa.substring(1,3));
+
+        reservaMesa.setMesaSelecionada(idMesa);
+        reservaMesa.setDataReserva(dataReserva);
+        reservaMesa.setNomeUsuario(dadosMesa.getNomeUsuario(indiceMesa));
+        reservaMesa.setNomeCliente(dadosMesa.getNomeCompleto(indiceMesa));
+        reservaMesa.setNumPessoas(dadosMesa.getNumeroPessoas(indiceMesa));
+        reservaMesa.setHoraChegada(dadosMesa.getHoraChegada(indiceMesa));
+        reservaMesa.setAdminResp(dadosMesa.getAdminResponsavel(indiceMesa));
+        reservaMesa.setHoraRegistro(dadosMesa.getHoraRegistro(indiceMesa));
+        reservaMesa.setDataRegistro(dadosMesa.getDataRegistro(indiceMesa));
+
+        return reservaMesa;
+    }
+
+    //******************************************************************************************************************
     // Nome do Método: ExcluiReservaMesa                                                                               *
     //	                                                                                                               *
     // Data: 03/10/2021                                                                                                *
@@ -283,20 +322,48 @@ public class VlglService {
     //******************************************************************************************************************
     // Nome do Método: MontaXMLReserva                                                                                 *
     //	                                                                                                               *
-    // Data: 29/09/2021                                                                                                *
+    // Data: 06/10/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado e as informações de disponibilidade das mesas na      *
-    //         data especificada                                                                                       *
+    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de reserva de mesa e insere      *
+    //         também as informações de disponibilidade das mesas na data especificada                                 *
     //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa e boolean confirma                                                        *
+    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a reserva                                  *
     //                                                                                                                 *
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
     public String MontaXMLReserva(ReservaMesa reservaMesa, boolean confirma) {
 
+        String resposta = "nao";
+        if (confirma) { resposta = "reserva"; }
+
         IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, confirma, false, 1);
+        CarregaEstadoArray(reservaMesa, resposta, 1);
+        CarregaDataArray(reservaMesa.getDataReserva(), 2);
+
+        return(StringXML());
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLConsulta                                                                                *
+    //	                                                                                                               *
+    // Data: 06/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de consulta de reserva de mesa   *
+    //         e insere também as informações de disponibilidade das mesas na data especificada                        *
+    //                                                                                                                 *
+    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a consulta                                 *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public String MontaXMLConsulta(ReservaMesa reservaMesa, boolean confirma) {
+
+        String resposta = "nao";
+        if (confirma) { resposta = "consulta"; }
+
+        IniciaMsgXML("LOCAL001", 2);
+        CarregaEstadoArray(reservaMesa, resposta, 1);
         CarregaDataArray(reservaMesa.getDataReserva(), 2);
 
         return(StringXML());
@@ -316,20 +383,24 @@ public class VlglService {
     // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public String MontaXMLExclui(String dataReserva, String idMesa, String idAdmin, boolean confirma) {
+    public String MontaXMLExclui(String dataReserva, String idMesa, String idAdmin) {
 
         ReservaMesa reservaMesa = new ReservaMesa();
+
+        reservaMesa.setMesaSelecionada(idMesa);
+        reservaMesa.setDataReserva(dataReserva);
+
         reservaMesa.setNomeUsuario("null");
         reservaMesa.setNomeCliente("null");
-        reservaMesa.setDataReserva(dataReserva);
         reservaMesa.setNumPessoas("null");
         reservaMesa.setHoraChegada("null");
-        reservaMesa.setMesaSelecionada(idMesa);
+
         reservaMesa.setAdminResp(idAdmin);
-        reservaMesa.setNomeCliente("null");
+        reservaMesa.setHoraRegistro(ImpHora());
+        reservaMesa.setDataRegistro(ImpData());
 
         IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, false, confirma, 1);
+        CarregaEstadoArray(reservaMesa, "excluida", 1);
         CarregaDataArray(dataReserva, 2);
 
         return(StringXML());
@@ -340,15 +411,16 @@ public class VlglService {
     //	                                                                                                               *
     // Data: 05/10/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: gera um arquivo para impressão em formato html. Este arquivo é baixado no navegador quando o            *
-    //         administrador clica sobre o link na tela.                                                               *
+    // Funcao: gera um arquivo para impressão em formato html. Este arquivo é armazenado no diretório bd/relatórios/   *
+    //         e pode ser baixado no navegador quando o administrador clica sobre o link correspondente na tela.       *
     //                                                                                                                 *
     // Entrada: objeto da classe ReservaMesa com todas as informações da reserva efetuada                              *
     //                                                                                                                 *
     // Saida: boolean - true se a operação foi realizada corretamente                                                  *
     //******************************************************************************************************************
     //
-    public void GeraArquivoImpressaoReserva(ReservaMesa reservaMesa) {
+    public boolean GeraArquivoImpressaoReserva(ReservaMesa reservaMesa) {
+        boolean resultado = false;
 
         String nomeMesa = reservaMesa.getMesaSelecionada();
         if (nomeMesa.equals("A00")) { nomeMesa = "Gazebo"; }
@@ -357,63 +429,131 @@ public class VlglService {
         String mes = data.substring(3, 5);
         String ano = data.substring(6, 10);
         String dataReserva = dia + "/" + mes + "/" + ano;
+        String nomeUsuario = reservaMesa.getNomeUsuario();
         String nomeCliente = reservaMesa.getNomeCliente();
         String numPessoas = reservaMesa.getNumPessoas();
         String horaChegada = reservaMesa.getHoraChegada();
 
-        String camposImp = Arquivo.LeTexto("recursos/vlgl/imp/", "camposimp.txt");
-        String head = Arquivo.LeTexto("recursos/vlgl/imp/", "head.txt");
-
-        String inicioHTML = Arquivo.LeCampoHTML(camposImp, "InicioHTML:") + "<html>";
-        //System.out.println("inicioHTML: " + inicioHTML);
-
-        String inicioBody = Arquivo.LeCampoHTML(camposImp, "InicioBody:");
-        //System.out.println("inicioBody: " + inicioBody);
-
-        String pClass1 = Arquivo.LeCampoHTML(camposImp, "PClass1:");
-        //System.out.println("pClass1: " + pClass1);
-
-        String pFont1 = Arquivo.LeCampoHTML(camposImp, "PFont1:");
-        //System.out.println("pFont1: " + pFont1);
-
-        String pClass2 = Arquivo.LeCampoHTML(camposImp, "PClass2:");
-        //System.out.println("pClass2: " + pClass2);
-
-        String pFont2 = Arquivo.LeCampoHTML(camposImp, "PFont2:");
-        //System.out.println("pFont2: " + pFont2);
-
-        String pClass3 = Arquivo.LeCampoHTML(camposImp, "PClass3:");
-        //System.out.println("pClass3: " + pClass3);
-
-        String pFont3 = Arquivo.LeCampoHTML(camposImp, "PFont3:");
-        //System.out.println("pFont3: " + pFont3);
-
-        String arqImp = inicioHTML + "\n" + head;
-        arqImp = arqImp + "  " + inicioBody + "\n";
-        arqImp = arqImp + "    " + pClass1 + pFont1 + "\n";
-        arqImp = arqImp + "      " + "Reserva da mesa " + nomeMesa + " para " + dataReserva + "\n";
-        arqImp = arqImp + "    " + "</font></p>\n";
-
-        arqImp = arqImp + "    " + pClass2 + pFont2 + "\n";
-        arqImp = arqImp + "      " + nomeCliente + "\n";
-        arqImp = arqImp + "    " + "</font></p>\n";
-
-        arqImp = arqImp + "    " + pClass3 + pFont3 + "\n";
-        arqImp = arqImp + "      " + numPessoas + " pessoas. Hora de chegada: " + horaChegada + "\n";
-        arqImp = arqImp + "    " + "</font></p>\n";
-
-        arqImp = arqImp + "  </body>\n</html>";
-
-        System.out.println(arqImp);
-
         String caminho = "recursos/vlgl/imp/";
-        String nomeArquivo = "reserva-" + reservaMesa.getNomeUsuario() + "-" + data + ".html";
-        nomeArquivoImpressao = nomeArquivo;
+        String camposImp = Arquivo.LeTexto(caminho, "camposimp.txt");
+        String head = Arquivo.LeTexto(caminho, "head.txt");
+
+        if ((camposImp != null) && (head != null)) {
+            String inicioHTML = Arquivo.LeCampoHTML(camposImp, "InicioHTML:") + "<html>";
+            String inicioBody = Arquivo.LeCampoHTML(camposImp, "InicioBody:");
+            String pClass1 = Arquivo.LeCampoHTML(camposImp, "PClass1:");
+            String pFont1 = Arquivo.LeCampoHTML(camposImp, "PFont1:");
+            String pClass2 = Arquivo.LeCampoHTML(camposImp, "PClass2:");
+            String pFont2 = Arquivo.LeCampoHTML(camposImp, "PFont2:");
+            String pClass3 = Arquivo.LeCampoHTML(camposImp, "PClass3:");
+            String pFont3 = Arquivo.LeCampoHTML(camposImp, "PFont3:");
+
+            String arqImp = inicioHTML + "\n" + head;
+            arqImp = arqImp + "  " + inicioBody + "\n";
+            arqImp = arqImp + "    " + pClass1 + pFont1 + "\n";
+            arqImp = arqImp + "      " + "Reserva da mesa " + nomeMesa + " para " + dataReserva + "\n";
+            arqImp = arqImp + "    " + "</font></p>\n";
+
+            arqImp = arqImp + "    " + pClass2 + pFont2 + "\n";
+            arqImp = arqImp + "      " + nomeCliente + "\n";
+            arqImp = arqImp + "    " + "</font></p>\n";
+
+            arqImp = arqImp + "    " + pClass3 + pFont3 + "\n";
+            arqImp = arqImp + "      " + numPessoas + " pessoas. Hora de chegada: " + horaChegada + "\n";
+            arqImp = arqImp + "    " + "</font></p>\n";
+
+            arqImp = arqImp + "  </body>\n</html>";
+
+            caminho = Arquivo.getDiretorioBd() + "relatorios/";
+            String nomeArquivo = "etiquetareserva-" + nomeUsuario + "-" + nomeMesa + "-" + data + ".html";
+            nomeArquivoImpressao = nomeArquivo;
+            if (Arquivo.Existe(caminho, nomeArquivo)) {
+                Arquivo.Apaga(caminho, nomeArquivo);
+            }
+            resultado = Arquivo.EscreveTexto(caminho, nomeArquivo, arqImp);
+        }
+        else {
+            Terminal("Os arquivos de formatação de mensagem não foram encontrados", false);
+        }
+        return resultado;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: GeraArquivoRegistroReserva                                                                      *
+    //	                                                                                                               *
+    // Data: 05/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: gera um arquivo de registro com os dados completos da reserva em formato txt. Este arquivo é armazenado *
+    //         no diretório bd/relatórios e pode ser baixado no navegador quando o administrador clica sobre o link    *
+    //         correspondente na tela.                                                                                 *
+    //                                                                                                                 *
+    // Entrada: objeto da classe ReservaMesa com todas as informações da reserva efetuada                              *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    public boolean GeraArquivoRegistroReserva(ReservaMesa reservaMesa) {
+
+        String nomeMesa = reservaMesa.getMesaSelecionada();
+        if (nomeMesa.equals("A00")) { nomeMesa = "Gazebo"; }
+        String data = reservaMesa.getDataReserva();
+        String dia = data.substring(0, 2);
+        String mes = data.substring(3, 5);
+        String ano = data.substring(6, 10);
+        String dataReserva = dia + "/" + mes + "/" + ano;
+
+        String arqReg = "Registro de reserva da mesa " + nomeMesa + " em " + dataReserva + "\n\n";
+        arqReg = arqReg + "Nome de usuário: " + reservaMesa.getNomeUsuario() + "\n";
+        arqReg = arqReg + "Nome do cliente: " + reservaMesa.getNomeCliente() + "\n";
+        arqReg = arqReg + "Número de pessoas: " + reservaMesa.getNumPessoas() + "\n";
+        arqReg = arqReg + "Hora de chegada: " + reservaMesa.getHoraChegada() + "\n";
+        arqReg = arqReg + "Responsável pela reserva: " + reservaMesa.getAdminResp() + "\n";
+        arqReg = arqReg + "Hora do registro da reserva: " + ImpHora() + "\n";
+        arqReg = arqReg + "Data do registro da reserva: " + ImpData() + "\n";
+
+        String caminho = Arquivo.getDiretorioBd() + "relatorios/";
+        String nomeArquivo = "registroreserva-" + reservaMesa.getNomeUsuario() + "-" + nomeMesa + "-" + data + ".txt";
+        nomeArquivoRegistro = nomeArquivo;
         if (Arquivo.Existe(caminho, nomeArquivo)) {
             Arquivo.Apaga(caminho, nomeArquivo);
         }
-        Arquivo.EscreveTexto(caminho, nomeArquivo, arqImp);
+        return  Arquivo.EscreveTexto(caminho, nomeArquivo, arqReg);
+    }
 
+    //******************************************************************************************************************
+    // Nome do Método: GeraArquivoExclusaoReserva                                                                      *
+    //	                                                                                                               *
+    // Data: 05/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: gera um arquivo de registro de exclusão de reserva de mesa em formato txt. Este arquivo é armazenado    *
+    //         no diretório bd/relatórios.                                                                             *
+    //                                                                                                                 *
+    // Entrada: objeto da classe ReservaMesa com todas as informações da reserva efetuada                              *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    public boolean GeraArquivoExclusaoReserva(String dataReserva, String idMesa, String idAdmin) {
+
+        String nomeMesa = idMesa;
+        if (nomeMesa.equals("A00")) { nomeMesa = "Gazebo"; }
+        String data = dataReserva;
+        String dia = data.substring(0, 2);
+        String mes = data.substring(3, 5);
+        String ano = data.substring(6, 10);
+        String dataFormatada = dia + "/" + mes + "/" + ano;
+
+        String arqReg = "Registro de exclusão de reserva da mesa " + nomeMesa + " em " + dataReserva + "\n\n";
+        arqReg = arqReg + "Responsável pela exclusão da reserva: " + idAdmin + "\n";
+        arqReg = arqReg + "Hora da exclusão da reserva: " + ImpHora() + "\n";
+        arqReg = arqReg + "Data da exclusão da reserva: " + ImpData() + "\n";
+
+        String caminho = Arquivo.getDiretorioBd() + "relatorios/";
+        String nomeArquivo = "registroexclusaoreserva-" + dataReserva + "-" + nomeMesa + "-" + data + ".txt";
+        if (Arquivo.Existe(caminho, nomeArquivo)) {
+            Arquivo.Apaga(caminho, nomeArquivo);
+        }
+        return  Arquivo.EscreveTexto(caminho, nomeArquivo, arqReg);
     }
 
     //******************************************************************************************************************
@@ -769,16 +909,12 @@ public class VlglService {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    private void CarregaEstadoArray(ReservaMesa reservaMesa, boolean confirma, boolean exclui, int IdNv1) {
-
-        String confirmaStr = "não"; if (confirma) { confirmaStr = "sim"; }
-        String excluiStr = "não"; if (exclui) { excluiStr = "sim"; }
+    private void CarregaEstadoArray(ReservaMesa reservaMesa, String resposta, int IdNv1) {
 
         int i = 0;
         int IdNv0 = 0;
         MsgXMLArray[IdNv0][IdNv1][i++][0] = "ESTADO";
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("RESERVA", confirmaStr);
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("EXCLUI", excluiStr);
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("RESPOSTA", resposta);
         MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("MESA", reservaMesa.getMesaSelecionada());
         MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DATA", reservaMesa.getDataReserva());
         MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", reservaMesa.getNomeUsuario());
@@ -1062,7 +1198,7 @@ public class VlglService {
         }
         MsgJson = MsgJson + " }";
 
-        System.out.println(MsgJson);
+        //System.out.println(MsgJson);
 
         return MsgJson;
     }

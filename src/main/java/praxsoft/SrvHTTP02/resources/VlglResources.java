@@ -57,13 +57,11 @@ public class VlglResources {
     public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
         vlglService.Terminal("Solicitação de reserva de mesa", false);
 
-        reservaMesa.MostraCamposTerminal();
-
         boolean confirma = vlglService.ReservaMesa(reservaMesa);
         String MsgXML = vlglService.MontaXMLReserva(reservaMesa, confirma);
         vlglService.GeraArquivoImpressaoReserva(reservaMesa);
+        vlglService.GeraArquivoRegistroReserva(reservaMesa);
 
-        System.out.println(MsgXML);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
@@ -72,17 +70,56 @@ public class VlglResources {
 
     @DeleteMapping(value = "/vlgl/reserva/exclui/{dataReserva}/{idMesa}")
     public ResponseEntity<?> ExcluiReserva(@PathVariable String dataReserva, @PathVariable String idMesa) {
-        vlglService.Terminal("Requisição de exclusão: " + dataReserva + " - Mesa: " + idMesa, false);
+        vlglService.Terminal("Solicitação de exclusão: " + dataReserva + " - Mesa: " + idMesa, false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        boolean confirma = vlglService.ExcluiReservaMesa(dataReserva, idMesa);
-        String MsgXML = vlglService.MontaXMLExclui(dataReserva, idMesa, auth.getName(), confirma);
+        vlglService.ExcluiReservaMesa(dataReserva, idMesa);
+        String MsgXML = vlglService.MontaXMLExclui(dataReserva, idMesa, auth.getName());
+        vlglService.GeraArquivoExclusaoReserva(dataReserva, idMesa, auth.getName());
 
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/xml"))
                 .body(MsgXML);
+    }
+
+    @GetMapping(value = "/vlgl/reserva/consulta/{dataReservaidMesa}")
+    public ResponseEntity<?> ConsultaReserva(@PathVariable String dataReservaidMesa) {
+        String dataReserva = dataReservaidMesa.substring(0, 10);
+        String idMesa = dataReservaidMesa.substring(10, 13);
+        vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
+
+        ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
+        boolean resultado = vlglService.GeraArquivoImpressaoReserva(reservaMesa);
+        String MsgXML = vlglService.MontaXMLConsulta(reservaMesa, resultado);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/xml"))
+                .body(MsgXML);
+    }
+
+    @GetMapping(value = "/vlgl/reserva/impressao")
+    public ResponseEntity<?> EnviaArquivoImpressao() {
+        vlglService.Terminal("Solicitação do arquivo de impressão", false);
+        String caminho = Arquivo.getDiretorioBd() + "relatorios/";
+        String nomeArquivo = vlglService.getNomeArquivoImpressao();
+        String arquivoImpressao = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        if (arquivoImpressao != null) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("text/html"))
+                    .header("Content-Disposition", "attachment; filename=" + nomeArquivo)
+                    .body(arquivoImpressao);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND )
+                    .contentType(MediaType.valueOf("text/html"))
+                    .body("Arquivo não encontrado: " + nomeArquivo);
+        }
     }
 
     @GetMapping(value = "/vlgl/cadastro")
@@ -152,28 +189,6 @@ public class VlglResources {
         vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
 
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
-    }
-
-    @GetMapping(value = "/vlgl/imp/reserva")
-    public ResponseEntity<?> EnviaArquivoImpressao() {
-        vlglService.Terminal("Solicitação do arquivo de impressão", false);
-        String caminho = "recursos/vlgl/imp/";
-        String nomeArquivo = vlglService.getNomeArquivoImpressao();
-        String arquivoImpressao = Arquivo.LeTexto(caminho, nomeArquivo);
-
-        if (arquivoImpressao != null) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .contentType(MediaType.valueOf("text/html"))
-                    .header("Content-Disposition", "attachment; filename=" + nomeArquivo)
-                    .body(arquivoImpressao);
-        }
-        else {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND )
-                    .contentType(MediaType.valueOf("text/html"))
-                    .body("Arquivo não encontrado: " + nomeArquivo);
-        }
     }
 
     @GetMapping(value = "/favicon.ico")

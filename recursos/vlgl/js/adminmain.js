@@ -426,7 +426,7 @@ function VerificaHoraChegada() {
 //*********************************************************************************************************************
 //
 function SelecionaMesa(mesa) {
-    console.log("HabilitaSelMesa = " + HabilitaSelMesa + " - consultaMesa = " + consultaMesa);
+    
     if (HabilitaSelMesa) {
         if (!consultaMesa) {
     
@@ -456,25 +456,58 @@ function SelecionaMesa(mesa) {
             }
         }
         else { // Se o flag de habilitação de consulta de mesa é true, mostra os dados da mesa
-            EscreveTexto("Detalhes da reserva:", "info1");
-            IdMesaConsulta = mesa;
-            LimpaCamposInfo();
-            let numMesa = parseInt(mesa[1] + mesa[2]);
-            if (MesaNomeUsuario[MesaSelecionada] != "livre") {
-                EscreveTexto("Reserva da " + NomeMesa(mesa) + " para " + DataReserva, "info2");
-                EscreveTexto("Nome de usuário: " + MesaNomeUsuario[numMesa], "info3");
-                EscreveTexto("Nome completo: " + MesaNomeCliente[numMesa], "info4");
-                EscreveTexto("Número de pessoas: " + MesaNumPes[numMesa], "info5");
-                EscreveTexto("Horário de chegada: " + MesaHoraCheg[numMesa], "info6");
-                EscreveTexto("Responsável pela reserva: " + MesaAdminResp[numMesa], "info7");
-                EscreveTexto("Data do registro da reserva: " + MesaDataReg[numMesa], "info8");
-                EscreveTexto("Hora do registro da reserva: " + MesaHoraReg[numMesa], "info9");
-                consultaMesa = false;
-                HabilitaExclusao = true;  // Após a consulta da mesa, habilita a função de exclusão de reserva
-            }
-            else {
-                EscreveTexto(NomeMesa(mesa) + " livre", "info2");
-            }
+         
+            console.log("mesa = " + mesa);
+         
+            let requisicao = new XMLHttpRequest();
+            let recurso = "reserva/consulta/" + DataResEnvio + mesa;
+            requisicao.open("GET", recurso, true);
+            requisicao.timeout = 2000;
+            EscreveMsgEnvSrv();
+            requisicao.send(null);
+    
+            requisicao.onload = function() {
+                let XMLRec = requisicao.responseXML;
+                grupo = XMLRec.getElementsByTagName("ESTADO");
+                let resposta = grupo[0].getElementsByTagName("RESPOSTA")[0].childNodes[0].nodeValue;
+                IdMesaConsulta = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
+                let dataReservaConsulta = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
+                let nomeUsuarioConsulta = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+                let nomeClienteConsulta = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+                let numPesConsulta = grupo[0].getElementsByTagName("NUMPES")[0].childNodes[0].nodeValue;
+                let horaResConsulta = grupo[0].getElementsByTagName("HORARES")[0].childNodes[0].nodeValue;
+                let adminRespConsulta = grupo[0].getElementsByTagName("ADMINRESP")[0].childNodes[0].nodeValue;
+                let horaRegistroConsulta = grupo[0].getElementsByTagName("HORAREG")[0].childNodes[0].nodeValue;
+                let dataRegistroConsulta = grupo[0].getElementsByTagName("DATAREG")[0].childNodes[0].nodeValue;
+            
+                if (resposta == "consulta") {
+                    LimpaCamposInfo();
+                    if (nomeUsuarioConsulta != "livre") {
+                        EscreveTexto("Servidor: informações da reserva", "info1");
+                        EscreveTexto("Reserva da " + NomeMesa(IdMesaConsulta) + " em " + dataReservaConsulta, "info2");
+                        EscreveTexto("Nome de usuário: " + nomeUsuarioConsulta, "info3");
+                        EscreveTexto("Nome completo: " + nomeClienteConsulta, "info4");
+                        EscreveTexto("Número de pessoas: " + numPesConsulta, "info5");
+                        EscreveTexto("Hora de chegada: " + horaResConsulta, "info6");
+                        EscreveTexto("Responsável pela reserva: " + adminRespConsulta, "info7");
+                        EscreveTexto("Hora do registro da reserva: " + horaRegistroConsulta, "info8");
+                        EscreveTexto("Data do registro da reserva: " + dataRegistroConsulta, "info9");
+                        CarregaMesas(XMLRec);
+                        dataOK = true;
+                        EscreveTexto(DataReserva, "dataMapa");
+                        EscreveTexto("Baixar os dados da reserva para imprimir etiqueta", "campodownload");
+                    }
+                    else {
+                        EscreveTexto(NomeMesa(mesa) + " livre", "info2");
+                    }
+                }
+            };
+            requisicao.ontimeout = function(e) {
+                EscreveMsgErrSrv();
+                console.log("Erro: " + e);
+            };
+            consultaMesa = false;
+            HabilitaExclusao = true;  // Após a consulta da mesa, habilita a função de exclusão de reserva
         }
         HabilitaSelMesa = false;
     }
@@ -516,23 +549,29 @@ function ConfirmaReserva() {
         AtualizaMesa(MesaSelecionada, UserName, NumPessoas, HoraChegada);
         
         grupo = XMLRec.getElementsByTagName("ESTADO");
-        let confirmaEstado = grupo[0].getElementsByTagName("RESERVA")[0].childNodes[0].nodeValue;
-        let mesaEstado = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
-        let dataEstado = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
-        let nomeUsuarioEstado = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-        let nomeEstado = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-        let numpesEstado = grupo[0].getElementsByTagName("NUMPES")[0].childNodes[0].nodeValue;
-        let horarioEstado = grupo[0].getElementsByTagName("HORARES")[0].childNodes[0].nodeValue;
+        let resposta = grupo[0].getElementsByTagName("RESPOSTA")[0].childNodes[0].nodeValue;
+        let mesaConfirma = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
+        let dataConfirma = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
+        let nomeUsuarioConfirma = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+        let nomeClienteConfirma = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+        let numpesConfirma = grupo[0].getElementsByTagName("NUMPES")[0].childNodes[0].nodeValue;
+        let horaresConfirma = grupo[0].getElementsByTagName("HORARES")[0].childNodes[0].nodeValue;
+        let adminRespConfirma = grupo[0].getElementsByTagName("ADMINRESP")[0].childNodes[0].nodeValue;
+        let horaRegistroConfirma = grupo[0].getElementsByTagName("HORAREG")[0].childNodes[0].nodeValue;
+        let dataRegistroConfirma = grupo[0].getElementsByTagName("DATAREG")[0].childNodes[0].nodeValue;
         
-        if (confirmaEstado == "sim") {
+        if (resposta == "reserva") {
             LimpaCamposInfo();
             EscreveTexto("Servidor: confirmação da reserva ", "info1");
-            EscreveTexto("Confirmada a reserva da " + NomeMesa(mesaEstado), "info2");
-            EscreveTexto("Data: " + dataEstado, "info3");
-            EscreveTexto("Nome de usuário: " + nomeUsuarioEstado, "info4");
-            EscreveTexto("Nome completo: " + nomeEstado, "info5");
-            EscreveTexto("Número de pessoas: " + numpesEstado, "info6");
-            EscreveTexto("Horário de chegada: " + horarioEstado, "info7");
+            EscreveTexto("Reserva da " + NomeMesa(mesaConfirma) + " em " + dataConfirma, "info2");
+            EscreveTexto("Nome de usuário: " + nomeUsuarioConfirma, "info3");
+            EscreveTexto("Nome completo: " + nomeClienteConfirma, "info4");
+            EscreveTexto("Número de pessoas: " + numpesConfirma, "info5");
+            EscreveTexto("Horário de chegada: " + horaresConfirma, "info6");
+            EscreveTexto("Responsável pela reserva: " + adminRespConfirma, "info7");
+            EscreveTexto("Hora do registro da reserva: " + horaRegistroConfirma, "info8");
+            EscreveTexto("Data do registro da reserva: " + dataRegistroConfirma, "info9");
+            EscreveTexto("Baixar os dados da reserva para imprimir etiqueta", "campodownload");
         }
         else {
             EscreveTexto("Houve falha na confirmação da reserva ", "info1");
@@ -581,14 +620,14 @@ function ExcluiReserva() {
             requisicao.onload = function() {
                 let XMLRec = requisicao.responseXML;
                 grupo = XMLRec.getElementsByTagName("ESTADO");
-                let confirmaExclusao = grupo[0].getElementsByTagName("EXCLUI")[0].childNodes[0].nodeValue;
+                let resposta = grupo[0].getElementsByTagName("RESPOSTA")[0].childNodes[0].nodeValue;
                 let dataReservaExcluida = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
                 let adminExclusao = grupo[0].getElementsByTagName("ADMINRESP")[0].childNodes[0].nodeValue;
                 let idMesaExcluida = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
                 let horaExclusao = grupo[0].getElementsByTagName("HORAREG")[0].childNodes[0].nodeValue;
                 let dataExclusao = grupo[0].getElementsByTagName("DATAREG")[0].childNodes[0].nodeValue;
             
-                if (confirmaExclusao) {
+                if (resposta == "excluida") {
                     LimpaCamposInfo();
                     EscreveTexto("Servidor: confirmada a exclusão da reserva", "info1");
                     EscreveTexto("A reserva da " + NomeMesa(idMesaExcluida) + " foi excluída", "info2");
@@ -599,6 +638,7 @@ function ExcluiReserva() {
                     CarregaMesas(XMLRec);
                     dataOK = true;
                     EscreveTexto(DataReserva, "dataMapa");
+                    EscreveTexto("                                                  ", "campodownload");
                 }
             };
             requisicao.ontimeout = function(e) {

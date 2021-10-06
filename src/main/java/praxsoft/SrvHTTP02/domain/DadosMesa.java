@@ -11,9 +11,7 @@ public class DadosMesa {
     private String[] horaRegistro = new String[numMesas];
     private String[] dataRegistro = new String[numMesas];
 
-    public String[] getNomeUsuario() {
-        return nomeUsuario;
-    }
+    public String[] getNomeUsuario() { return nomeUsuario; }
     public String getNomeUsuario(int i) {
         return nomeUsuario[i];
     }
@@ -25,9 +23,8 @@ public class DadosMesa {
         this.nomeUsuario[i] = nomeUsuario;
     }
 
-    public String[] getNomeCompleto() {
-        return nomeCompleto;
-    }
+    public String[] getNomeCompleto() { return nomeCompleto; }
+    public String getNomeCompleto(int i) { return nomeCompleto[i]; }
 
     public void setNomeCompleto(String[] nomeCompleto) {
         this.nomeCompleto = nomeCompleto;
@@ -36,40 +33,24 @@ public class DadosMesa {
         this.nomeCompleto[i] = nomeCompleto;
     }
 
-    public String[] getNumeroPessoas() {
-        return numeroPessoas;
-    }
-    public String getNumeroPessoas(int i) {
-        return numeroPessoas[i];
-    }
+    public String[] getNumeroPessoas() { return numeroPessoas; }
+    public String getNumeroPessoas(int i) { return numeroPessoas[i]; }
 
-    public void setNumeroPessoas(String[] numeroPessoas) {
-        this.numeroPessoas = numeroPessoas;
-    }
-    public void setNumeroPessoas(String numeroPessoas, int i) {
-        this.numeroPessoas[i] = numeroPessoas;
-    }
+    public void setNumeroPessoas(String[] numeroPessoas) { this.numeroPessoas = numeroPessoas; }
+    public void setNumeroPessoas(String numeroPessoas, int i) { this.numeroPessoas[i] = numeroPessoas; }
 
-    public String[] getHoraChegada() {
-        return horaChegada;
-    }
-    public String getHoraChegada(int i) {
-        return horaChegada[i];
-    }
+    public String[] getHoraChegada() { return horaChegada; }
+    public String getHoraChegada(int i) { return horaChegada[i]; }
 
     public void setHoraChegada(String[] horaChegada) {
         this.horaChegada = horaChegada;
     }
-    public void setHoraChegada(String horaChegada, int i) {
-        this.horaChegada[i] = horaChegada;
-    }
+    public void setHoraChegada(String horaChegada, int i) { this.horaChegada[i] = horaChegada; }
 
     public String[] getAdminResponsavel() {
         return adminResponsavel;
     }
-    public String getAdminResponsavel(int i) {
-        return adminResponsavel[i];
-    }
+    public String getAdminResponsavel(int i) { return adminResponsavel[i]; }
     public void setAdminResponsavel(String[] adminResponsavel) {
         this.adminResponsavel = adminResponsavel;
     }
@@ -80,9 +61,7 @@ public class DadosMesa {
     public String[] getHoraRegistro() {
         return horaRegistro;
     }
-    public String getHoraRegistro(int i) {
-        return horaRegistro[i];
-    }
+    public String getHoraRegistro(int i) { return horaRegistro[i]; }
     public void setHoraRegistro(String[] horaRegistro) {
         this.horaRegistro = horaRegistro;
     }
@@ -93,9 +72,8 @@ public class DadosMesa {
     public String[] getDataRegistro() {
         return dataRegistro;
     }
-    public String getDataRegistro(int i) {
-        return dataRegistro[i];
-    }
+    public String getDataRegistro(int i) { return dataRegistro[i]; }
+
     public void setDataRegistro(String[] dataRegistro) {
         this.dataRegistro = dataRegistro;
     }
