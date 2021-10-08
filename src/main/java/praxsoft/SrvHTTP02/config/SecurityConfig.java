@@ -6,7 +6,6 @@ import org.springframework.security.config.annotation.authentication.builders.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.*;
 import praxsoft.SrvHTTP02.services.Arquivo;
-//import praxsoft.SrvHTTP02.services.Inicia;
 
 @Configuration
 @EnableWebSecurity
@@ -20,7 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         Arquivo.LeUsuarios();
         Arquivo.MostraUsuarios();
 
-        for (int i = 0; i < Arquivo.getNumUsuarios(); i++) {
+        for (int i = 1; i <= Arquivo.getNumUsuarios(); i++) {
             auth.inMemoryAuthentication()
                 .withUser(Arquivo.getNomeUsuario(i)).password("{noop}" + Arquivo.getSenhaUsuario(i)).roles("USER");
         }
@@ -29,8 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                .antMatchers("/vlgl/cadastro/*").permitAll()
-                .antMatchers("/vlgl/reserva/*").permitAll()
+                .antMatchers("/isis").permitAll()
+                .antMatchers("/isis/*").permitAll()
                 .antMatchers("/atualiza").permitAll()
                 .antMatchers("/local001.xml").permitAll()
                 .anyRequest().authenticated()
@@ -39,7 +38,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 .and()
                 .csrf().disable();
-
     }
 
 }

@@ -676,7 +676,7 @@ public class VlglService {
     // Saida: objeto da classe DadosMesa com as informações das reservas das mesas na data especificada                *
     //******************************************************************************************************************
     //
-    private DadosMesa LeArquivoReservaMesa(String dataReserva) {
+    public DadosMesa LeArquivoReservaMesa(String dataReserva) {
 
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = dataReserva + ".res";
@@ -723,7 +723,7 @@ public class VlglService {
     // Saida: boolean - true se a operação foi executada corretamente                                                  *
     //******************************************************************************************************************
     //
-    private boolean EscreveArquivoReservaMesa(String DataReserva, DadosMesa dadosMesa) {
+    public boolean EscreveArquivoReservaMesa(String DataReserva, DadosMesa dadosMesa) {
 
         boolean confirma = false;
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
@@ -780,7 +780,7 @@ public class VlglService {
     // Saida: não tem                                                                                                  *
     //******************************************************************************************************************
     //
-    private void EscreveArquivoReservaNovo(String dataRes) {
+    public void EscreveArquivoReservaNovo(String dataRes) {
 
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = dataRes + ".res";
@@ -824,7 +824,7 @@ public class VlglService {
     // Saida: boolean - true se a operação foi realizada corretamente                                                  *
     //******************************************************************************************************************
     //
-    private boolean EscreveArquivoCadastroCliente(String caminho, String nomeArquivo, String dadosArquivo) {
+    public boolean EscreveArquivoCadastroCliente(String caminho, String nomeArquivo, String dadosArquivo) {
 
         boolean confirma = false;
         nomeArquivo = nomeArquivo.toLowerCase();
@@ -862,7 +862,7 @@ public class VlglService {
     //        retorna com todos os campos iguais a "null"                                                              *
     //******************************************************************************************************************
     //
-    private Cliente LeArquivoCadastroCliente(String nomeUsuario) {
+    public Cliente LeArquivoCadastroCliente(String nomeUsuario) {
 
         String caminho = Arquivo.getDiretorioBd() + "clientes/";
         String nomeArquivo = nomeUsuario.toLowerCase() + ".clt";

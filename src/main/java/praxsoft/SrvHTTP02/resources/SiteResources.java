@@ -15,14 +15,21 @@ public class SiteResources {
     public ResponseEntity<?> InicioSite(@RequestHeader(value = "User-Agent") String userAgent) {
         String nomeArquivo = "indice.html";
 
-        return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo, userAgent);
+        return siteService.LeArquivoMontaResposta("recursos/isis/", nomeArquivo, userAgent);
    }
 
-    @GetMapping(value = "/site.{nomeArquivo}")
+    @GetMapping(value = "/isis/{nomeArquivo}")
     public ResponseEntity<?> EnviaHtmlSite(@PathVariable("nomeArquivo") String nomeArquivo,
                                            @RequestHeader(value = "User-Agent") String userAgent) {
 
-        return siteService.LeArquivoMontaResposta("recursos/site/", nomeArquivo, userAgent);
+        return siteService.LeArquivoMontaResposta("recursos/isis/", nomeArquivo, userAgent);
+    }
+
+    @GetMapping(value = "/favicon.ico")
+    public ResponseEntity<?> EnviaIcone() {
+        System.out.println("Enviado arquivo favicon.ico");
+
+        return siteService.LeArquivoMontaResposta("recursos/isis/", "favicon.ico", "null");
     }
 
 }

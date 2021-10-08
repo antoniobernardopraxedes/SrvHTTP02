@@ -8,9 +8,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Cliente;
+import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
 import praxsoft.SrvHTTP02.services.Arquivo;
 import praxsoft.SrvHTTP02.services.VlglService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 public class VlglResources {
@@ -91,13 +97,15 @@ public class VlglResources {
         vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
 
         ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
+        List<ReservaMesa> MsgJson = new ArrayList<ReservaMesa>(Collections.singletonList(reservaMesa));
+
         boolean resultado = vlglService.GeraArquivoImpressaoReserva(reservaMesa);
         String MsgXML = vlglService.MontaXMLConsulta(reservaMesa, resultado);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+                .contentType(MediaType.valueOf("application/json"))
+                .body(MsgJson);
     }
 
     @GetMapping(value = "/vlgl/reserva/impressao")
@@ -191,10 +199,32 @@ public class VlglResources {
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
     }
 
-    @GetMapping(value = "/favicon.ico")
-    public ResponseEntity<?> EnviaIcone() {
+    @GetMapping(value = "/teste/data/{dataReserva}")
+    public ResponseEntity<?> EnviaDataJson(@PathVariable String dataReserva) {
+        vlglService.Terminal("Teste - Solicitação de reservas na data: " + dataReserva, false);
 
-        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", "favicon.ico", "null");
+        DadosMesa dadosMesa = vlglService.LeArquivoReservaMesa(dataReserva);
+        List<DadosMesa> MsgJson = new ArrayList<DadosMesa>(Collections.singletonList(dadosMesa));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/json"))
+                .body(MsgJson);
+    }
+
+    @GetMapping(value = "/teste/consulta/{dataReservaidMesa}")
+    public ResponseEntity<?> EnviaReservaJson(@PathVariable String dataReservaidMesa) {
+        String dataReserva = dataReservaidMesa.substring(0, 10);
+        String idMesa = dataReservaidMesa.substring(10, 13);
+        vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
+
+        ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
+        List<ReservaMesa> MsgJson = new ArrayList<ReservaMesa>(Collections.singletonList(reservaMesa));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("application/json"))
+                .body(MsgJson);
     }
 
 }

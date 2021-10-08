@@ -467,40 +467,47 @@ function SelecionaMesa(mesa) {
             requisicao.send(null);
     
             requisicao.onload = function() {
-                let XMLRec = requisicao.responseXML;
-                grupo = XMLRec.getElementsByTagName("ESTADO");
-                let resposta = grupo[0].getElementsByTagName("RESPOSTA")[0].childNodes[0].nodeValue;
-                IdMesaConsulta = grupo[0].getElementsByTagName("MESA")[0].childNodes[0].nodeValue;
-                let dataReservaConsulta = grupo[0].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
-                let nomeUsuarioConsulta = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-                let nomeClienteConsulta = grupo[0].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-                let numPesConsulta = grupo[0].getElementsByTagName("NUMPES")[0].childNodes[0].nodeValue;
-                let horaResConsulta = grupo[0].getElementsByTagName("HORARES")[0].childNodes[0].nodeValue;
-                let adminRespConsulta = grupo[0].getElementsByTagName("ADMINRESP")[0].childNodes[0].nodeValue;
-                let horaRegistroConsulta = grupo[0].getElementsByTagName("HORAREG")[0].childNodes[0].nodeValue;
-                let dataRegistroConsulta = grupo[0].getElementsByTagName("DATAREG")[0].childNodes[0].nodeValue;
+                let msgJson = JSON.parse(requisicao.responseText);
+                let mesaSelecionada = msgJson[0].mesaSelecionada;
+                let dataReserva = msgJson[0].dataReserva;
+                let nomeUsuario = msgJson[0].nomeUsuario;
+                let nomeCliente = msgJson[0].nomeCliente;
+                let numPessoas = msgJson[0].numPessoas;
+                let horaChegada = msgJson[0].horaChegada;
+                let adminResp = msgJson[0].adminResp;
+                let horaRegistro = msgJson[0].horaRegistro;
+                let dataRegistro = msgJson[0].dataRegistro;
+        
+                console.log("Mesa selecionada: " + mesaSelecionada);
+                console.log("Data da reserva: " + dataReserva);
+                console.log("Nome de usuário: " + nomeUsuario);
+                console.log("Nome do cliente: " + nomeCliente);
+                console.log("Número de pessoas: " + numPessoas);
+                console.log("Hora de chegada: " + horaChegada);
+                console.log("Administrador responsável: " + adminResp);
+                console.log("Hora do registro: " + horaRegistro);
+                console.log("Data do registro: " + dataRegistro);
             
-                if (resposta == "consulta") {
-                    LimpaCamposInfo();
-                    if (nomeUsuarioConsulta != "livre") {
-                        EscreveTexto("Servidor: informações da reserva", "info1");
-                        EscreveTexto("Reserva da " + NomeMesa(IdMesaConsulta) + " em " + dataReservaConsulta, "info2");
-                        EscreveTexto("Nome de usuário: " + nomeUsuarioConsulta, "info3");
-                        EscreveTexto("Nome completo: " + nomeClienteConsulta, "info4");
-                        EscreveTexto("Número de pessoas: " + numPesConsulta, "info5");
-                        EscreveTexto("Hora de chegada: " + horaResConsulta, "info6");
-                        EscreveTexto("Responsável pela reserva: " + adminRespConsulta, "info7");
-                        EscreveTexto("Hora do registro da reserva: " + horaRegistroConsulta, "info8");
-                        EscreveTexto("Data do registro da reserva: " + dataRegistroConsulta, "info9");
-                        CarregaMesas(XMLRec);
-                        dataOK = true;
-                        EscreveTexto(DataReserva, "dataMapa");
-                        EscreveTexto("Baixar os dados da reserva para imprimir etiqueta", "campodownload");
-                    }
-                    else {
-                        EscreveTexto(NomeMesa(mesa) + " livre", "info2");
-                    }
+                LimpaCamposInfo();
+                if (nomeUsuario != "livre") {
+                    EscreveTexto("Servidor: informações da reserva", "info1");
+                    EscreveTexto("Reserva da " + NomeMesa(mesaSelecionada) + " em " + dataReserva, "info2");
+                    EscreveTexto("Nome de usuário: " + nomeUsuario, "info3");
+                    EscreveTexto("Nome completo: " + nomeCliente, "info4");
+                    EscreveTexto("Número de pessoas: " + numPessoas, "info5");
+                    EscreveTexto("Hora de chegada: " + horaChegada, "info6");
+                    EscreveTexto("Responsável pela reserva: " + adminResp, "info7");
+                    EscreveTexto("Hora do registro da reserva: " + horaRegistro, "info8");
+                    EscreveTexto("Data do registro da reserva: " + dataRegistro, "info9");
+                    CarregaMesas(XMLRec);
+                    dataOK = true;
+                    EscreveTexto(DataReserva, "dataMapa");
+                    EscreveTexto("Baixar os dados da reserva para imprimir etiqueta", "campodownload");
                 }
+                else {
+                    EscreveTexto(NomeMesa(mesa) + " livre", "info2");
+                }
+                
             };
             requisicao.ontimeout = function(e) {
                 EscreveMsgErrSrv();
@@ -926,7 +933,6 @@ function LimpaCamposInfo() {
     document.getElementById("info8").innerHTML = "                      ";
     document.getElementById("info9").innerHTML = "                      ";
     document.getElementById("info10").innerHTML = "                     ";
-    //document.getElementById("info11").innerHTML = "                     ";
 }
 
 function Teste() {
