@@ -8,13 +8,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import praxsoft.SrvHTTP02.domain.Cliente;
-import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
 import praxsoft.SrvHTTP02.services.Arquivo;
 import praxsoft.SrvHTTP02.services.VlglService;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,15 +69,15 @@ public class VlglResources {
     public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
         vlglService.Terminal("Solicitação de reserva de mesa", false);
 
-        boolean confirma = vlglService.EscreveArquivoReservaMesa(reservaMesa);
-        String MsgXML = vlglService.MontaXMLReserva(reservaMesa, confirma);
+        ReservaMesa reservaMesa1 = vlglService.EscreveArquivoReservaMesa(reservaMesa);
+        //String MsgXML = vlglService.MontaXMLReserva(reservaMesa, confirma);
         vlglService.GeraArquivoImpressaoReserva(reservaMesa);
         vlglService.GeraArquivoRegistroReserva(reservaMesa);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+                .contentType(MediaType.valueOf("application/json"))
+                .body(reservaMesa1);
     }
 
     @DeleteMapping(value = "/vlgl/reserva/exclui/{dataReserva}/{idMesa}")
@@ -92,10 +90,18 @@ public class VlglResources {
         String MsgXML = vlglService.MontaXMLExclui(dataReserva, idMesa, auth.getName());
         vlglService.GeraArquivoExclusaoReserva(dataReserva, idMesa, auth.getName());
 
+        ReservaMesa[] reservaMesas = vlglService.LeArquivoReservaMesa(dataReserva);
+        List<ReservaMesa[]> MsgJson = new ArrayList<ReservaMesa[]>(Collections.singleton(reservaMesas));
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+                .contentType(MediaType.valueOf("application/json"))
+                .body(MsgJson);
+
+        //return ResponseEntity
+        //        .status(HttpStatus.OK)
+        //        .contentType(MediaType.valueOf("application/xml"))
+        //        .body(MsgXML);
     }
 
     @GetMapping(value = "/vlgl/reserva/consulta/{dataReservaidMesa}")
@@ -105,7 +111,6 @@ public class VlglResources {
         vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
 
         ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
-        //List<ReservaMesa> MsgJson = new ArrayList<ReservaMesa>(Collections.singletonList(reservaMesa));
 
         boolean resultado = vlglService.GeraArquivoImpressaoReserva(reservaMesa);
         String MsgXML = vlglService.MontaXMLConsulta(reservaMesa, resultado);

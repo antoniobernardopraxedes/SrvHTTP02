@@ -695,11 +695,8 @@ public class VlglService {
         }
         String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
 
-        //DadosMesa dadosMesa = new DadosMesa();
-
         int numMesas = 17;
         ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
-
 
         if (dadosArquivo != null) {
 
@@ -713,14 +710,6 @@ public class VlglService {
                 if (i > 8) { letra = "B"; }
                 sufixo = letra + IntToStr2(i);
 
-                //dadosMesa.setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"), i);
-                //dadosMesa.setNomeCompleto(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"), i);
-                //dadosMesa.setNumeroPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"), i);
-                //dadosMesa.setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"), i);
-                //dadosMesa.setAdminResponsavel(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"), i);
-                //dadosMesa.setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"), i);
-                //dadosMesa.setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"), i);
-
                 reservaMesas[i].setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"));
                 reservaMesas[i].setNomeCliente(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"));
                 reservaMesas[i].setNumPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"));
@@ -728,7 +717,6 @@ public class VlglService {
                 reservaMesas[i].setAdminResp(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"));
                 reservaMesas[i].setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"));
                 reservaMesas[i].setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"));
-
             }
         }
         else {
@@ -750,14 +738,20 @@ public class VlglService {
     // Saida: boolean - true se a operação foi executada corretamente                                                  *
     //******************************************************************************************************************
     //
-    public boolean EscreveArquivoReservaMesa(ReservaMesa reservaMesa) {
+    public ReservaMesa EscreveArquivoReservaMesa(ReservaMesa reservaMesa) {
 
         boolean confirma = false;
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = reservaMesa.getDataReserva() + ".res";
 
         int numMesas = 17;
-        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(reservaMesa.getDataReserva());
+        ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
+
+        for (int i = 0; i < numMesas; i++) {
+            reservaMesas[i] = new ReservaMesa();
+        }
+
+        reservaMesas = LeArquivoReservaMesa(reservaMesa.getDataReserva());
 
         int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
         reservaMesas[indiceMesa].setNomeUsuario(reservaMesa.getNomeUsuario());
@@ -765,15 +759,14 @@ public class VlglService {
         reservaMesas[indiceMesa].setNumPessoas(reservaMesa.getNumPessoas());
         reservaMesas[indiceMesa].setHoraChegada(reservaMesa.getHoraChegada());
         reservaMesas[indiceMesa].setAdminResp(reservaMesa.getAdminResp());
-        reservaMesas[indiceMesa].setHoraRegistro(reservaMesa.getHoraRegistro());
-        reservaMesas[indiceMesa].setDataRegistro(reservaMesa.getDataRegistro());
+        reservaMesas[indiceMesa].setHoraRegistro(ImpHora());
+        reservaMesas[indiceMesa].setDataRegistro(ImpData());
 
         String sufixo;
         String letra = "A";
         String dadosArqNovo = "{\n";
 
         for (int i = 0; i < numMesas; i++) {
-            if (i != indiceMesa) { reservaMesas[i] = new ReservaMesa(); }
             if (i > 8) { letra = "B"; }
             sufixo = letra + IntToStr2(i);
             dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + reservaMesas[i].getNomeUsuario() + "\n";
@@ -796,7 +789,7 @@ public class VlglService {
                 confirma = true;
             }
         }
-        return confirma;
+        return reservaMesas[indiceMesa];
     }
 
     //******************************************************************************************************************
