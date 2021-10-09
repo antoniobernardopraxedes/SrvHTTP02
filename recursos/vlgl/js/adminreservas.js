@@ -141,7 +141,6 @@ function VerificaAdmin() {
 //
 function VerificaData() {
     
-    consultaMesa = false;
     CarregaVariaveisFormulario();
     consultaMesa = false;
     
@@ -172,6 +171,46 @@ function VerificaData() {
                 EscreveMsgErrSrv();
                 console.log("Erro: " + e);
             };
+        }
+        else {
+            EscreveTexto("Data inválida ou formato inválido. Use DD/MM/AAAA", "info1");
+        }
+    }
+    else {
+        EscreveTexto("Entre com a data da reserva. Formato: DD/MM/AAAA", "info1");
+    }
+}
+
+//*********************************************************************************************************************
+// Nome da função: VerificaMesasData                                                                                  *
+//                                                                                                                    *
+// Data: 09/10/2021                                                                                                   *
+//                                                                                                                    *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Verifica ao lado do campo Data da reserva do      *
+//         formulário. A função envia para o servidor a data e o servidor deve responder com o mapa de mesas.         *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function VerificaMesasData() {
+    
+    consultaMesa = false;
+    CarregaVariaveisFormulario();
+    
+    if (DataReserva != "") {
+       if (VerificaFormatoData(DataReserva)) {
+           CarregaDadosMesas(DataResEnvio);
+           if (dataOK) {
+               if (consultaMesa) {
+                   EscreveTexto("Selecione a mesa para consulta", "info1");
+               }
+               else {
+                   EscreveTexto("Servidor: mapa de reservas do dia " + DataReserva, "info1");
+               }
+               EscreveTexto(DataReserva, "dataMapa");
+           }
         }
         else {
             EscreveTexto("Data inválida ou formato inválido. Use DD/MM/AAAA", "info1");
@@ -468,15 +507,15 @@ function SelecionaMesa(mesa) {
     
             requisicao.onload = function() {
                 let msgJson = JSON.parse(requisicao.responseText);
-                let mesaSelecionada = msgJson[0].mesaSelecionada;
-                let dataReserva = msgJson[0].dataReserva;
-                let nomeUsuario = msgJson[0].nomeUsuario;
-                let nomeCliente = msgJson[0].nomeCliente;
-                let numPessoas = msgJson[0].numPessoas;
-                let horaChegada = msgJson[0].horaChegada;
-                let adminResp = msgJson[0].adminResp;
-                let horaRegistro = msgJson[0].horaRegistro;
-                let dataRegistro = msgJson[0].dataRegistro;
+                let mesaSelecionada = msgJson.mesaSelecionada;
+                let dataReserva = msgJson.dataReserva;
+                let nomeUsuario = msgJson.nomeUsuario;
+                let nomeCliente = msgJson.nomeCliente;
+                let numPessoas = msgJson.numPessoas;
+                let horaChegada = msgJson.horaChegada;
+                let adminResp = msgJson.adminResp;
+                let horaRegistro = msgJson.horaRegistro;
+                let dataRegistro = msgJson.dataRegistro;
         
                 console.log("Mesa selecionada: " + mesaSelecionada);
                 console.log("Data da reserva: " + dataReserva);
@@ -518,7 +557,7 @@ function SelecionaMesa(mesa) {
         }
         HabilitaSelMesa = false;
     }
-    console.log("consultaMesa = " + consultaMesa);
+    //console.log("consultaMesa = " + consultaMesa);
 }
 
 //*********************************************************************************************************************
@@ -552,8 +591,8 @@ function ConfirmaReserva() {
     requisicao.onload = function() {
         let XMLRec = requisicao.responseXML;
         
-        CarregaMesas(XMLRec);
-        AtualizaMesa(MesaSelecionada, UserName, NumPessoas, HoraChegada);
+        //CarregaMesas(XMLRec);
+        //AtualizaMesa(MesaSelecionada, UserName, NumPessoas, HoraChegada);
         
         grupo = XMLRec.getElementsByTagName("ESTADO");
         let resposta = grupo[0].getElementsByTagName("RESPOSTA")[0].childNodes[0].nodeValue;
@@ -736,20 +775,122 @@ function CarregaMesas(msgXML) {
         
         AtualizaMesa(sufixo, MesaNomeUsuario[i], MesaNumPes[i], MesaHoraCheg[i]);
     }
+    
 }
 
-function IntToStr2(num) {
+//*********************************************************************************************************************
+// Nome da função: CarregaCliente                                                                                     *
+//                                                                                                                    *
+// Data: 24/09/2021                                                                                                   *
+//                                                                                                                    *
+// Função: faz o parsing do arquivo XML recebido do servidor, lê as informações do cliente, carrega as variáveis e    *
+//         apresenta na tela.                                                                                         *
+//                                                                                                                    *
+// Entrada: variável com a mensagem XML recebida                                                                      *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function CarregaCliente(xmlMsg) {
     
-    if (num > 9) {
-        return num;
+    let i = 0;
+    let grupo = xmlMsg.getElementsByTagName("CLIENTE");
+    
+    NomeUsuarioCliente = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+    NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
+    CelularCliente = grupo[i].getElementsByTagName("CELULAR")[0].childNodes[0].nodeValue;
+    Obs1Cliente = grupo[i].getElementsByTagName("OBS1")[0].childNodes[0].nodeValue;
+    Obs2Cliente = grupo[i].getElementsByTagName("OBS2")[0].childNodes[0].nodeValue;
+    
+    IdosoCliente = grupo[i].getElementsByTagName("IDOSO")[0].childNodes[0].nodeValue;
+    LocomocaoCliente = grupo[i].getElementsByTagName("LOCOMOCAO")[0].childNodes[0].nodeValue;
+    ExigenteCliente = grupo[i].getElementsByTagName("EXIGENTE")[0].childNodes[0].nodeValue;
+    GeneroCliente = grupo[i].getElementsByTagName("GENERO")[0].childNodes[0].nodeValue;
+    
+    AdminResp = grupo[i].getElementsByTagName("ADMINRSP")[0].childNodes[0].nodeValue;
+        
+    if (NomeUsuarioCliente == "null") {
+        clienteOK = false;
     }
     else {
-        return "0" + num;
+        clienteOK = true;
     }
+    
+}
+
+//*********************************************************************************************************************
+// Nome da função: CarregaDadosMesas                                                                                  *
+//                                                                                                                    *
+// Data: 09/10/2021                                                                                                   *
+//                                                                                                                    *
+// Função: faz a requisição ao servidor das informações de reserva de todas as mesas em uma data e carrega nas        *
+//         variáveis.                                                                                                 *
+//                                                                                                                    *
+// Entrada: data no formato DD-MM-AAAA                                                                                *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function CarregaDadosMesas(data) {
+    dataOK = false;
+    let requisicao = new XMLHttpRequest();
+    let recurso = "/vlgl/reservas/data/" + data;
+    requisicao.open("GET", recurso, true);
+    requisicao.timeout = 2000;
+    EscreveMsgEnvSrv();
+    requisicao.send(null);
+    
+    requisicao.onload = function() {
+        let msgJson = JSON.parse(requisicao.responseText);
+        let numMesas = 17;
+        let letra = "A";
+        let sufixo = "";
+        for (let j = 0; j < numMesas; j++) {
+            if (j > 8) letra = "B";
+            sufixo = letra + IntToStr2(j);
+        
+            let mesaSelecionada = msgJson[0][j].mesaSelecionada;
+            let dataReserva = msgJson[0][j].dataReserva;
+            let nomeUsuario = msgJson[0][j].nomeUsuario;
+            let nomeCliente = msgJson[0][j].nomeCliente;
+            let numPessoas = msgJson[0][j].numPessoas;
+            let horaChegada = msgJson[0][j].horaChegada;
+            let adminResp = msgJson[0][j].adminResp;
+            let horaRegistro = msgJson[0][j].horaRegistro;
+            let dataRegistro = msgJson[0][j].dataRegistro;
+        
+            console.log("Mesa selecionada: " + mesaSelecionada);
+            console.log("Data da reserva: " + dataReserva);
+            console.log("Nome de usuário: " + nomeUsuario);
+            console.log("Nome do cliente: " + nomeCliente);
+            console.log("Número de pessoas: " + numPessoas);
+            console.log("Hora de chegada: " + horaChegada);
+            console.log("Administrador responsável: " + adminResp);
+            console.log("Hora do registro: " + horaRegistro);
+            console.log("Data do registro: " + dataRegistro);
+            console.log("    ");
+            
+            MesaNomeUsuario[j] = nomeCliente;
+            MesaNumPes[j] = numPessoas;
+            MesaHoraCheg[j] = horaChegada;
+            MesaAdminResp[j] = adminResp;
+            MesaHoraReg[j] = horaRegistro;
+            MesaDataReg[j] = dataRegistro;
+            
+            AtualizaMesa(sufixo, nomeUsuario, numPessoas, horaChegada);
+            dataOK = true;
+        }
+    };
+         
+    requisicao.ontimeout = function(e) {
+        EscreveMsgErrSrv();
+        console.log("Erro: " + e);
+    };
+    
 }
 
 function AtualizaMesa(idmesa, ocupacao, numPes, horCheg) {
-    if (ocupacao == "livre") {
+    if (ocupacao == "null") {
         document.getElementById(idmesa).style.backgroundColor = "#33ff71";
         document.getElementById(idmesa).innerHTML = NomeMesa(idmesa) + " " + CapacidadeMesa;
     }
@@ -839,44 +980,14 @@ function NomeMesa(IdMesa) {
  
 }
 
-//*********************************************************************************************************************
-// Nome da função: CarregaCliente                                                                                     *
-//                                                                                                                    *
-// Data: 24/09/2021                                                                                                   *
-//                                                                                                                    *
-// Função: faz o parsing do arquivo XML recebido do servidor, lê as informações do cliente, carrega as variáveis e    *
-//         apresenta na tela.                                                                                         *
-//                                                                                                                    *
-// Entrada: variável com a mensagem XML recebida                                                                      *
-//                                                                                                                    *
-// Saída: não tem                                                                                                     *
-//*********************************************************************************************************************
-//
-function CarregaCliente(xmlMsg) {
+function IntToStr2(num) {
     
-    let i = 0;
-    let grupo = xmlMsg.getElementsByTagName("CLIENTE");
-    
-    NomeUsuarioCliente = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-    NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-    CelularCliente = grupo[i].getElementsByTagName("CELULAR")[0].childNodes[0].nodeValue;
-    Obs1Cliente = grupo[i].getElementsByTagName("OBS1")[0].childNodes[0].nodeValue;
-    Obs2Cliente = grupo[i].getElementsByTagName("OBS2")[0].childNodes[0].nodeValue;
-    
-    IdosoCliente = grupo[i].getElementsByTagName("IDOSO")[0].childNodes[0].nodeValue;
-    LocomocaoCliente = grupo[i].getElementsByTagName("LOCOMOCAO")[0].childNodes[0].nodeValue;
-    ExigenteCliente = grupo[i].getElementsByTagName("EXIGENTE")[0].childNodes[0].nodeValue;
-    GeneroCliente = grupo[i].getElementsByTagName("GENERO")[0].childNodes[0].nodeValue;
-    
-    AdminResp = grupo[i].getElementsByTagName("ADMINRSP")[0].childNodes[0].nodeValue;
-        
-    if (NomeUsuarioCliente == "null") {
-        clienteOK = false;
+    if (num > 9) {
+        return num;
     }
     else {
-        clienteOK = true;
+        return "0" + num;
     }
-    
 }
 
 //*********************************************************************************************************************
@@ -933,45 +1044,4 @@ function LimpaCamposInfo() {
     document.getElementById("info8").innerHTML = "                      ";
     document.getElementById("info9").innerHTML = "                      ";
     document.getElementById("info10").innerHTML = "                     ";
-}
-
-function Teste() {
-    
-    let requisicao = new XMLHttpRequest();
-    let recurso = "/teste/consulta/10-10-2021A01";
-    requisicao.open("GET", recurso, true);
-    requisicao.timeout = 2000;
-    EscreveMsgEnvSrv();
-    requisicao.send(null);
-    
-    requisicao.onload = function() {
-     
-        let msgJson = JSON.parse(requisicao.responseText);
-        let mesaSelecionada = msgJson[0].mesaSelecionada;
-        let dataReserva = msgJson[0].dataReserva;
-        let nomeUsuario = msgJson[0].nomeUsuario;
-        let nomeCliente = msgJson[0].nomeCliente;
-        let numPessoas = msgJson[0].numPessoas;
-        let horaChegada = msgJson[0].horaChegada;
-        let adminResp = msgJson[0].adminResp;
-        let horaRegistro = msgJson[0].horaRegistro;
-        let dataRegistro = msgJson[0].dataRegistro;
-        
-        console.log("Mesa selecionada: " + mesaSelecionada);
-        console.log("Data da reserva: " + dataReserva);
-        console.log("Nome de usuário: " + nomeUsuario);
-        console.log("Nome do cliente: " + nomeCliente);
-        console.log("Número de pessoas: " + numPessoas);
-        console.log("Hora de chegada: " + horaChegada);
-        console.log("Administrador responsável: " + adminResp);
-        console.log("Hora do registro: " + horaRegistro);
-        console.log("Data do registro: " + dataRegistro);
-         
-    };
-         
-    requisicao.ontimeout = function(e) {
-        EscreveMsgErrSrv();
-        console.log("Erro: " + e);
-    };
-    
 }

@@ -170,22 +170,26 @@ public class VlglService {
     // Saida: boolean true se a operação foi realizada corretamente                                                    *
     //******************************************************************************************************************
     //
-    public boolean ReservaMesa(ReservaMesa reservaMesa) {
+    //public boolean ReservaMesa(ReservaMesa reservaMesa) {
 
-        DadosMesa dadosMesa = LeArquivoReservaMesa(reservaMesa.getDataReserva());
+        //DadosMesa dadosMesa = LeArquivoReservaMesa(reservaMesa.getDataReserva());
 
-        int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
+    //    int numMesas = 17;
+    //    ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
 
-        dadosMesa.setNomeUsuario(reservaMesa.getNomeUsuario(), indiceMesa);
-        dadosMesa.setNomeCompleto(reservaMesa.getNomeCliente(), indiceMesa);
-        dadosMesa.setNumeroPessoas(reservaMesa.getNumPessoas(), indiceMesa);
-        dadosMesa.setHoraChegada(reservaMesa.getHoraChegada(), indiceMesa);
-        dadosMesa.setAdminResponsavel(reservaMesa.getAdminResp(), indiceMesa);
-        dadosMesa.setHoraRegistro(ImpHora(), indiceMesa);
-        dadosMesa.setDataRegistro(ImpData(), indiceMesa);
+    //    int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
+    //    reservaMesas[indiceMesa] = new ReservaMesa();
 
-        return EscreveArquivoReservaMesa(reservaMesa.getDataReserva(), dadosMesa);
-    }
+    //    reservaMesas[indiceMesa].setNomeUsuario(reservaMesa.getNomeUsuario());
+    //    reservaMesas[indiceMesa].setNomeCliente(reservaMesa.getNomeCliente());
+    //    reservaMesas[indiceMesa].setNumPessoas(reservaMesa.getNumPessoas());
+    //    reservaMesas[indiceMesa].setHoraChegada(reservaMesa.getHoraChegada());
+    //    reservaMesas[indiceMesa].setAdminResp(reservaMesa.getAdminResp());
+    //    reservaMesas[indiceMesa].setHoraRegistro(ImpHora());
+    //    reservaMesas[indiceMesa].setDataRegistro(ImpData());
+
+    //    return EscreveArquivoReservaMesa(reservaMesa.getDataReserva(), reservaMesas);
+    //}
 
     //******************************************************************************************************************
     // Nome do Método: ConsultaReservaMesa                                                                             *
@@ -202,20 +206,23 @@ public class VlglService {
     //
     public ReservaMesa ConsultaReservaMesa(String dataReserva, String idMesa) {
 
-        DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(dataReserva);
+
+        //DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+
         ReservaMesa reservaMesa = new ReservaMesa();
 
         int indiceMesa = Integer.parseInt(idMesa.substring(1,3));
 
         reservaMesa.setMesaSelecionada(idMesa);
         reservaMesa.setDataReserva(dataReserva);
-        reservaMesa.setNomeUsuario(dadosMesa.getNomeUsuario(indiceMesa));
-        reservaMesa.setNomeCliente(dadosMesa.getNomeCompleto(indiceMesa));
-        reservaMesa.setNumPessoas(dadosMesa.getNumeroPessoas(indiceMesa));
-        reservaMesa.setHoraChegada(dadosMesa.getHoraChegada(indiceMesa));
-        reservaMesa.setAdminResp(dadosMesa.getAdminResponsavel(indiceMesa));
-        reservaMesa.setHoraRegistro(dadosMesa.getHoraRegistro(indiceMesa));
-        reservaMesa.setDataRegistro(dadosMesa.getDataRegistro(indiceMesa));
+        reservaMesa.setNomeUsuario(reservaMesas[indiceMesa].getNomeUsuario());
+        reservaMesa.setNomeCliente(reservaMesas[indiceMesa].getNomeCliente());
+        reservaMesa.setNumPessoas(reservaMesas[indiceMesa].getNumPessoas());
+        reservaMesa.setHoraChegada(reservaMesas[indiceMesa].getHoraChegada());
+        reservaMesa.setAdminResp(reservaMesas[indiceMesa].getAdminResp());
+        reservaMesa.setHoraRegistro(reservaMesas[indiceMesa].getHoraRegistro());
+        reservaMesa.setDataRegistro(reservaMesas[indiceMesa].getDataRegistro());
 
         return reservaMesa;
     }
@@ -235,19 +242,22 @@ public class VlglService {
     //
     public boolean ExcluiReservaMesa(String dataReserva, String idMesa) {
 
-        DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+        //DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+
+        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(dataReserva);
 
         int indiceMesa = Integer.parseInt(idMesa.substring(1,3));
 
-        dadosMesa.setNomeUsuario("livre", indiceMesa);
-        dadosMesa.setNomeCompleto("null", indiceMesa);
-        dadosMesa.setNumeroPessoas("null", indiceMesa);
-        dadosMesa.setHoraChegada("null", indiceMesa);
-        dadosMesa.setAdminResponsavel("null", indiceMesa);
-        dadosMesa.setHoraRegistro("null", indiceMesa);
-        dadosMesa.setDataRegistro("null", indiceMesa);
+        reservaMesas[indiceMesa].setNomeUsuario("livre");
+        reservaMesas[indiceMesa].setNomeCliente("null");
+        reservaMesas[indiceMesa].setNumPessoas("null");
+        reservaMesas[indiceMesa].setHoraChegada("null");
+        reservaMesas[indiceMesa].setAdminResp("null");
+        reservaMesas[indiceMesa].setHoraRegistro("null");
+        reservaMesas[indiceMesa].setDataRegistro("null");
 
-        return EscreveArquivoReservaMesa(dataReserva, dadosMesa);
+        return true;
+        //return EscreveArquivoReservaMesa(dataReserva, reservaMesas);
     }
 
     //******************************************************************************************************************
@@ -676,7 +686,7 @@ public class VlglService {
     // Saida: objeto da classe DadosMesa com as informações das reservas das mesas na data especificada                *
     //******************************************************************************************************************
     //
-    public DadosMesa LeArquivoReservaMesa(String dataReserva) {
+    public ReservaMesa[] LeArquivoReservaMesa(String dataReserva) {
 
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
         String nomeArquivo = dataReserva + ".res";
@@ -684,30 +694,47 @@ public class VlglService {
             EscreveArquivoReservaNovo(dataReserva);
         }
         String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
-        DadosMesa dadosMesa = new DadosMesa();
+
+        //DadosMesa dadosMesa = new DadosMesa();
+
+        int numMesas = 17;
+        ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
+
 
         if (dadosArquivo != null) {
 
-            int numMesas = 17;
             String sufixo;
             String letra = "A";
 
             for (int i = 0; i < numMesas; i++) {
+
+                reservaMesas[i] = new ReservaMesa();
+
                 if (i > 8) { letra = "B"; }
                 sufixo = letra + IntToStr2(i);
-                dadosMesa.setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"), i);
-                dadosMesa.setNomeCompleto(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"), i);
-                dadosMesa.setNumeroPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"), i);
-                dadosMesa.setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"), i);
-                dadosMesa.setAdminResponsavel(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"), i);
-                dadosMesa.setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"), i);
-                dadosMesa.setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"), i);
+
+                //dadosMesa.setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"), i);
+                //dadosMesa.setNomeCompleto(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"), i);
+                //dadosMesa.setNumeroPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"), i);
+                //dadosMesa.setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"), i);
+                //dadosMesa.setAdminResponsavel(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"), i);
+                //dadosMesa.setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"), i);
+                //dadosMesa.setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"), i);
+
+                reservaMesas[i].setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"));
+                reservaMesas[i].setNomeCliente(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"));
+                reservaMesas[i].setNumPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"));
+                reservaMesas[i].setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"));
+                reservaMesas[i].setAdminResp(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"));
+                reservaMesas[i].setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"));
+                reservaMesas[i].setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"));
+
             }
         }
         else {
             Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
         }
-        return dadosMesa;
+        return reservaMesas;
     }
 
     //******************************************************************************************************************
@@ -723,35 +750,39 @@ public class VlglService {
     // Saida: boolean - true se a operação foi executada corretamente                                                  *
     //******************************************************************************************************************
     //
-    public boolean EscreveArquivoReservaMesa(String DataReserva, DadosMesa dadosMesa) {
+    public boolean EscreveArquivoReservaMesa(ReservaMesa reservaMesa) {
 
         boolean confirma = false;
         String caminho = Arquivo.getDiretorioBd() + "reservas/";
-        String nomeArquivo = DataReserva + ".res";
+        String nomeArquivo = reservaMesa.getDataReserva() + ".res";
 
         int numMesas = 17;
-        String[] nomeUsuario = dadosMesa.getNomeUsuario();
-        String[] nomeCompleto = dadosMesa.getNomeCompleto();
-        String[] numeroPessoas = dadosMesa.getNumeroPessoas();
-        String[] horaChegada = dadosMesa.getHoraChegada();
-        String[] adminResponsavel = dadosMesa.getAdminResponsavel();
-        String[] horaRegistro = dadosMesa.getHoraRegistro();
-        String[] dataRegistro = dadosMesa.getDataRegistro();
+        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(reservaMesa.getDataReserva());
+
+        int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
+        reservaMesas[indiceMesa].setNomeUsuario(reservaMesa.getNomeUsuario());
+        reservaMesas[indiceMesa].setNomeCliente(reservaMesa.getNomeCliente());
+        reservaMesas[indiceMesa].setNumPessoas(reservaMesa.getNumPessoas());
+        reservaMesas[indiceMesa].setHoraChegada(reservaMesa.getHoraChegada());
+        reservaMesas[indiceMesa].setAdminResp(reservaMesa.getAdminResp());
+        reservaMesas[indiceMesa].setHoraRegistro(reservaMesa.getHoraRegistro());
+        reservaMesas[indiceMesa].setDataRegistro(reservaMesa.getDataRegistro());
 
         String sufixo;
         String letra = "A";
         String dadosArqNovo = "{\n";
 
         for (int i = 0; i < numMesas; i++) {
+            if (i != indiceMesa) { reservaMesas[i] = new ReservaMesa(); }
             if (i > 8) { letra = "B"; }
             sufixo = letra + IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + nomeUsuario[i] + "\n";
-            dadosArqNovo = dadosArqNovo + "  NOC" + sufixo + ": " + nomeCompleto[i] + "\n";
-            dadosArqNovo = dadosArqNovo + "  NUP" + sufixo + ": " + numeroPessoas[i] + "\n";
-            dadosArqNovo = dadosArqNovo + "  HOC" + sufixo + ": " + horaChegada[i] + "\n";
-            dadosArqNovo = dadosArqNovo + "  ADR" + sufixo + ": " + adminResponsavel[i] + "\n";
-            dadosArqNovo = dadosArqNovo + "  HOR" + sufixo + ": " + horaRegistro[i] + "\n";
-            dadosArqNovo = dadosArqNovo + "  DTR" + sufixo + ": " + dataRegistro[i] + "\n";
+            dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + reservaMesas[i].getNomeUsuario() + "\n";
+            dadosArqNovo = dadosArqNovo + "  NOC" + sufixo + ": " + reservaMesas[i].getNomeCliente() + "\n";
+            dadosArqNovo = dadosArqNovo + "  NUP" + sufixo + ": " + reservaMesas[i].getNumPessoas() + "\n";
+            dadosArqNovo = dadosArqNovo + "  HOC" + sufixo + ": " + reservaMesas[i].getHoraChegada() + "\n";
+            dadosArqNovo = dadosArqNovo + "  ADR" + sufixo + ": " + reservaMesas[i].getAdminResp() + "\n";
+            dadosArqNovo = dadosArqNovo + "  HOR" + sufixo + ": " + reservaMesas[i].getHoraRegistro() + "\n";
+            dadosArqNovo = dadosArqNovo + "  DTR" + sufixo + ": " + reservaMesas[i].getDataRegistro() + "\n";
         }
         dadosArqNovo = dadosArqNovo + "}";
 
@@ -792,7 +823,7 @@ public class VlglService {
         for (int i = 0; i < numMesas; i++) {
             if (i > 8) { letra = "B"; }
             Indice = Auxiliar.IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": livre\n";
+            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": null\n";
             dadosArqNovo = dadosArqNovo + "  NOC" + letra + Indice + ": null\n";
             dadosArqNovo = dadosArqNovo + "  NUP" + letra + Indice + ": null\n";
             dadosArqNovo = dadosArqNovo + "  HOC" + letra + Indice + ": null\n";
@@ -974,32 +1005,36 @@ public class VlglService {
     //
     private void CarregaDataArray(String dataReserva, int IdNv1) {
 
-        DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
-
-        String[] nomeUsuario = dadosMesa.getNomeUsuario();
-        String[] nomeCompleto = dadosMesa.getNomeCompleto();
-        String[] numeroPessoas = dadosMesa.getNumeroPessoas();
-        String[] horaChegada = dadosMesa.getHoraChegada();
-        String[] adminResponsavel = dadosMesa.getAdminResponsavel();
-        String[] horaRegistro = dadosMesa.getHoraRegistro();
-        String[] dataRegistro = dadosMesa.getDataRegistro();
+        //DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
 
         int numMesas = 17;
+        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(dataReserva);
+
+        //String[] nomeUsuario = dadosMesa.getNomeUsuario();
+        //String[] nomeCompleto = dadosMesa.getNomeCompleto();
+        //String[] numeroPessoas = dadosMesa.getNumeroPessoas();
+        //String[] horaChegada = dadosMesa.getHoraChegada();
+        //String[] adminResponsavel = dadosMesa.getAdminResponsavel();
+        //String[] horaRegistro = dadosMesa.getHoraRegistro();
+        //String[] dataRegistro = dadosMesa.getDataRegistro();
+
         int i = 0;
         int IdNv0 = 0;
         MsgXMLArray[IdNv0][IdNv1][i++][0] = "MESAS";
 
         for (int k = 0; k < numMesas; k++) {
+            ReservaMesa reservaMesa = reservaMesas[k];
+
             String letra = "A";
             if (k > 8) { letra = "B"; }
             String sufixo = letra + IntToStr2(k);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOU" + sufixo, nomeUsuario[k]);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOC" + sufixo, nomeCompleto[k]);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUP" + sufixo, numeroPessoas[k]);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOC" + sufixo, horaChegada[k]);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADR" + sufixo, adminResponsavel[k]);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOR" + sufixo, horaRegistro[k]);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DTR" + sufixo, dataRegistro[k]);
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOU" + sufixo, reservaMesa.getNomeUsuario());
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOC" + sufixo, reservaMesa.getNomeCliente());
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUP" + sufixo, reservaMesa.getNumPessoas());
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOC" + sufixo, reservaMesa.getHoraChegada());
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADR" + sufixo, reservaMesa.getAdminResp());
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOR" + sufixo, reservaMesa.getHoraRegistro());
+            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DTR" + sufixo, reservaMesa.getDataRegistro());
         }
         String numElementosGrupo = IntToStr4(i - 1);
         MsgXMLArray[IdNv0][IdNv1][0][1] = numElementosGrupo;

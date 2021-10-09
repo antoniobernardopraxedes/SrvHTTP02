@@ -51,19 +51,27 @@ public class VlglResources {
     public ResponseEntity<?> VerificaData(@PathVariable String dataReserva) {
         vlglService.Terminal("Solicitação de reservas na data: " + dataReserva, false);
 
-        String MsgXML = vlglService.MontaXMLData(dataReserva);
+        //String MsgXML = vlglService.MontaXMLData(dataReserva);
+
+        //return ResponseEntity
+        //        .status(HttpStatus.OK)
+        //        .contentType(MediaType.valueOf("application/xml"))
+        //        .body(MsgXML);
+
+        ReservaMesa[] reservaMesas = vlglService.LeArquivoReservaMesa(dataReserva);
+        List<ReservaMesa[]> MsgJson = new ArrayList<ReservaMesa[]>(Collections.singleton(reservaMesas));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+                .contentType(MediaType.valueOf("application/json"))
+                .body(MsgJson);
     }
 
     @PostMapping(value = "/vlgl/reserva")
     public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
         vlglService.Terminal("Solicitação de reserva de mesa", false);
 
-        boolean confirma = vlglService.ReservaMesa(reservaMesa);
+        boolean confirma = vlglService.EscreveArquivoReservaMesa(reservaMesa);
         String MsgXML = vlglService.MontaXMLReserva(reservaMesa, confirma);
         vlglService.GeraArquivoImpressaoReserva(reservaMesa);
         vlglService.GeraArquivoRegistroReserva(reservaMesa);
@@ -97,7 +105,7 @@ public class VlglResources {
         vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
 
         ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
-        List<ReservaMesa> MsgJson = new ArrayList<ReservaMesa>(Collections.singletonList(reservaMesa));
+        //List<ReservaMesa> MsgJson = new ArrayList<ReservaMesa>(Collections.singletonList(reservaMesa));
 
         boolean resultado = vlglService.GeraArquivoImpressaoReserva(reservaMesa);
         String MsgXML = vlglService.MontaXMLConsulta(reservaMesa, resultado);
@@ -105,7 +113,7 @@ public class VlglResources {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.valueOf("application/json"))
-                .body(MsgJson);
+                .body(reservaMesa);
     }
 
     @GetMapping(value = "/vlgl/reserva/impressao")
@@ -203,8 +211,9 @@ public class VlglResources {
     public ResponseEntity<?> EnviaDataJson(@PathVariable String dataReserva) {
         vlglService.Terminal("Teste - Solicitação de reservas na data: " + dataReserva, false);
 
-        DadosMesa dadosMesa = vlglService.LeArquivoReservaMesa(dataReserva);
-        List<DadosMesa> MsgJson = new ArrayList<DadosMesa>(Collections.singletonList(dadosMesa));
+        ReservaMesa[] reservaMesas = vlglService.LeArquivoReservaMesa(dataReserva);
+
+        List<ReservaMesa[]> MsgJson = new ArrayList<ReservaMesa[]>(Collections.singleton(reservaMesas));
 
         return ResponseEntity
                 .status(HttpStatus.OK)
