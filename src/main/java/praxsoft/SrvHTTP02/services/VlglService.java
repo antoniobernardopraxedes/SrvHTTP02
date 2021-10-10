@@ -63,6 +63,23 @@ public class VlglService {
         return confirma;
     }
 
+    public Cliente GeraCadastroClienteVazio() {
+        Cliente cliente = new Cliente();
+
+        cliente.setNomeUsuario("null");
+        cliente.setNome("null");
+        cliente.setCelular("null");
+        cliente.setObs1("null");
+        cliente.setObs2("null");
+        cliente.setIdoso("null");
+        cliente.setLocomocao("null");
+        cliente.setExigente("null");
+        cliente.setGenero("null");
+        cliente.setAdminResp("null");
+
+        return cliente;
+    }
+
     //******************************************************************************************************************
     // Nome do Método: AtualizaCadastroCliente                                                                         *
     //	                                                                                                               *
@@ -158,40 +175,6 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: ReservaMesa                                                                                     *
-    //	                                                                                                               *
-    // Data: 24/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: lê um arquivo de data com as informações das mesas, atualiza a reserva confirmada e grava novamente     *
-    //         o arquivo.                                                                                              *
-    //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa com as informações sobre a reserva solicitada                             *
-    //                                                                                                                 *
-    // Saida: boolean true se a operação foi realizada corretamente                                                    *
-    //******************************************************************************************************************
-    //
-    //public boolean ReservaMesa(ReservaMesa reservaMesa) {
-
-        //DadosMesa dadosMesa = LeArquivoReservaMesa(reservaMesa.getDataReserva());
-
-    //    int numMesas = 17;
-    //    ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
-
-    //    int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
-    //    reservaMesas[indiceMesa] = new ReservaMesa();
-
-    //    reservaMesas[indiceMesa].setNomeUsuario(reservaMesa.getNomeUsuario());
-    //    reservaMesas[indiceMesa].setNomeCliente(reservaMesa.getNomeCliente());
-    //    reservaMesas[indiceMesa].setNumPessoas(reservaMesa.getNumPessoas());
-    //    reservaMesas[indiceMesa].setHoraChegada(reservaMesa.getHoraChegada());
-    //    reservaMesas[indiceMesa].setAdminResp(reservaMesa.getAdminResp());
-    //    reservaMesas[indiceMesa].setHoraRegistro(ImpHora());
-    //    reservaMesas[indiceMesa].setDataRegistro(ImpData());
-
-    //    return EscreveArquivoReservaMesa(reservaMesa.getDataReserva(), reservaMesas);
-    //}
-
-    //******************************************************************************************************************
     // Nome do Método: ConsultaReservaMesa                                                                             *
     //	                                                                                                               *
     // Data: 05/10/2021                                                                                                *
@@ -208,12 +191,9 @@ public class VlglService {
 
         ReservaMesa[] reservaMesas = LeArquivoReservaMesa(dataReserva);
 
-        //DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
-
         ReservaMesa reservaMesa = new ReservaMesa();
 
         int indiceMesa = Integer.parseInt(idMesa.substring(1,3));
-
         reservaMesa.setMesaSelecionada(idMesa);
         reservaMesa.setDataReserva(dataReserva);
         reservaMesa.setNomeUsuario(reservaMesas[indiceMesa].getNomeUsuario());
@@ -228,192 +208,281 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: ExcluiReservaMesa                                                                               *
+    // Nome do Método: LeArquivoReservaMesa                                                                            *
     //	                                                                                                               *
-    // Data: 03/10/2021                                                                                                *
+    // Data: 02/10/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: lê um arquivo de data com as informações de reserva das mesas, exclui a reserva da mesa selecionada     *
-    //         e grava novamente o arquivo.                                                                            *
+    // Funcao: lê um arquivo de registro de reserva das mesas. Se o arquivo não for encontrado, cria um novo arquivo   *
     //                                                                                                                 *
-    // Entrada: string com a data da reserva e identificador da mesa                                                   *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
     //                                                                                                                 *
-    // Saida: boolean true se a operação foi realizada corretamente                                                    *
+    // Saida: objeto da classe DadosMesa com as informações das reservas das mesas na data especificada                *
     //******************************************************************************************************************
     //
-    public boolean ExcluiReservaMesa(String dataReserva, String idMesa) {
+    public ReservaMesa[] LeArquivoReservaMesa(String dataReserva) {
 
-        //DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
+        String caminho = Arquivo.getDiretorioBd() + "reservas/";
+        String nomeArquivo = dataReserva + ".res";
+        if (!Arquivo.Existe(caminho, nomeArquivo)) {
+            EscreveArquivoReservaNovo(dataReserva);
+        }
+        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
 
-        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(dataReserva);
+        int numMesas = 17;
+        ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
 
-        int indiceMesa = Integer.parseInt(idMesa.substring(1,3));
+        if (dadosArquivo != null) {
 
-        reservaMesas[indiceMesa].setNomeUsuario("livre");
-        reservaMesas[indiceMesa].setNomeCliente("null");
-        reservaMesas[indiceMesa].setNumPessoas("null");
-        reservaMesas[indiceMesa].setHoraChegada("null");
-        reservaMesas[indiceMesa].setAdminResp("null");
-        reservaMesas[indiceMesa].setHoraRegistro("null");
-        reservaMesas[indiceMesa].setDataRegistro("null");
+            String sufixo;
+            String letra = "A";
 
-        return true;
-        //return EscreveArquivoReservaMesa(dataReserva, reservaMesas);
+            for (int i = 0; i < numMesas; i++) {
+
+                reservaMesas[i] = new ReservaMesa();
+
+                if (i > 8) { letra = "B"; }
+                sufixo = letra + IntToStr2(i);
+
+                reservaMesas[i].setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"));
+                reservaMesas[i].setNomeCliente(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"));
+                reservaMesas[i].setNumPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"));
+                reservaMesas[i].setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"));
+                reservaMesas[i].setAdminResp(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"));
+                reservaMesas[i].setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"));
+                reservaMesas[i].setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"));
+            }
+        }
+        else {
+            Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
+        }
+        return reservaMesas;
     }
 
     //******************************************************************************************************************
-    // Nome do Método: MontaXMLadmin()                                                                                 *
+    // Nome do Método: EscreveArquivoReservaMesa                                                                       *
     //	                                                                                                               *
-    // Data: 22/09/2021                                                                                                *
+    // Data: 02/10/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes ao administrador que está fazendo as reservas.       *
-    //         As informações do cliente são lidas de um arquivo texto que tem o nome igual ao id do administrador.    *
+    // Funcao: escreve um arquivo de registro de reservas na data especificada                                         *
     //                                                                                                                 *
-    // Entrada: string com o nome de usuário do administrador (idAdmin). O idAdmin não deve ter espaços nem caracteres *
-    //          especiais.                                                                                             *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA e objeto da classe DadosMesa com as informações     *
+    //          de reserva de todas as mesas para a data especificada                                                  *
     //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
+    // Saida: boolean - true se a operação foi executada corretamente                                                  *
     //******************************************************************************************************************
     //
-    public String MontaXMLadmin(String idAdmin) {
+    public boolean EscreveArquivoReservaMesa(ReservaMesa reservaMesa) {
+        boolean escritaArquivoOK = false;
+        String caminho = Arquivo.getDiretorioBd() + "reservas/";
+        String nomeArquivo = reservaMesa.getDataReserva() + ".res";
 
-        int i = 0;
-        int IdNv0 = 0;
-        int IdNv1 = 1;
-        IniciaMsgXML("LOCAL001", 1);
-        MsgXMLArray[IdNv0][IdNv1][i++][0] = "ADMIN";
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", idAdmin);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
+        int numMesas = 17;
+        ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
 
-        return(StringXML());
+        for (int i = 0; i < numMesas; i++) {
+            reservaMesas[i] = new ReservaMesa();
+        }
+
+        reservaMesas = LeArquivoReservaMesa(reservaMesa.getDataReserva());
+
+        int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
+        reservaMesas[indiceMesa].setMesaSelecionada(reservaMesa.getMesaSelecionada());
+        reservaMesas[indiceMesa].setDataReserva(reservaMesa.getDataReserva());
+        reservaMesas[indiceMesa].setNomeUsuario(reservaMesa.getNomeUsuario());
+        reservaMesas[indiceMesa].setNomeCliente(reservaMesa.getNomeCliente());
+        reservaMesas[indiceMesa].setNumPessoas(reservaMesa.getNumPessoas());
+        reservaMesas[indiceMesa].setHoraChegada(reservaMesa.getHoraChegada());
+        reservaMesas[indiceMesa].setAdminResp(reservaMesa.getAdminResp());
+        reservaMesas[indiceMesa].setHoraRegistro(ImpHora());
+        reservaMesas[indiceMesa].setDataRegistro(ImpData());
+
+        String sufixo;
+        String letra = "A";
+        String dadosArqNovo = "{\n";
+
+        for (int i = 0; i < numMesas; i++) {
+            if (i > 8) { letra = "B"; }
+            sufixo = letra + IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + reservaMesas[i].getNomeUsuario() + "\n";
+            dadosArqNovo = dadosArqNovo + "  NOC" + sufixo + ": " + reservaMesas[i].getNomeCliente() + "\n";
+            dadosArqNovo = dadosArqNovo + "  NUP" + sufixo + ": " + reservaMesas[i].getNumPessoas() + "\n";
+            dadosArqNovo = dadosArqNovo + "  HOC" + sufixo + ": " + reservaMesas[i].getHoraChegada() + "\n";
+            dadosArqNovo = dadosArqNovo + "  ADR" + sufixo + ": " + reservaMesas[i].getAdminResp() + "\n";
+            dadosArqNovo = dadosArqNovo + "  HOR" + sufixo + ": " + reservaMesas[i].getHoraRegistro() + "\n";
+            dadosArqNovo = dadosArqNovo + "  DTR" + sufixo + ": " + reservaMesas[i].getDataRegistro() + "\n";
+        }
+        dadosArqNovo = dadosArqNovo + "}";
+
+        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            Arquivo.Apaga(caminho, "a." + nomeArquivo);
+        }
+        if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
+            Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
+                escritaArquivoOK = true;
+            }
+        }
+        return escritaArquivoOK;
     }
 
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLCliente()                                                                               *
-    //	                                                                                                               *
-    // Data: 2%/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes do cliente. As informações do cliente são lidas      *
-    //         de um arquivo texto que tem o nome igual ao nome de usuário.                                            *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do cliente                                                                *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLCliente(String nomeUsuario) {
-
-        IniciaMsgXML("LOCAL001", 1);
-        CarregaClienteArray(nomeUsuario, 1);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLData()                                                                                  *
-    //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes à disponibilidade das mesas em uma data. As          *
-    //         informações são lidas de um arquivo do tipo texto que tem o nome no formato DD-MM-AAAA.res              *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD/MM/AAAA                                                     *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLData(String dataReserva) {
-
-        IniciaMsgXML("LOCAL001", 1);
-        CarregaDataArray(dataReserva, 1);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLReserva                                                                                 *
-    //	                                                                                                               *
-    // Data: 06/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de reserva de mesa e insere      *
-    //         também as informações de disponibilidade das mesas na data especificada                                 *
-    //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a reserva                                  *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLReserva(ReservaMesa reservaMesa, boolean confirma) {
-
-        String resposta = "nao";
-        if (confirma) { resposta = "reserva"; }
-
-        IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, resposta, 1);
-        CarregaDataArray(reservaMesa.getDataReserva(), 2);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLConsulta                                                                                *
-    //	                                                                                                               *
-    // Data: 06/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de consulta de reserva de mesa   *
-    //         e insere também as informações de disponibilidade das mesas na data especificada                        *
-    //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a consulta                                 *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLConsulta(ReservaMesa reservaMesa, boolean confirma) {
-
-        String resposta = "nao";
-        if (confirma) { resposta = "consulta"; }
-
-        IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, resposta, 1);
-        CarregaDataArray(reservaMesa.getDataReserva(), 2);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLExclui                                                                                  *
-    //	                                                                                                               *
-    // Data: 29/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado e as informações de disponibilidade das mesas na      *
-    //         data especificada                                                                                       *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva, string com o identificador da mesa e string com o nome de usuário do     *
-    //          administrador que está fazendo a exclusão da reserva                                                   *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLExclui(String dataReserva, String idMesa, String idAdmin) {
-
+    public ReservaMesa GeraReservaLivre(String dataReserva, String idMesa) {
         ReservaMesa reservaMesa = new ReservaMesa();
-
         reservaMesa.setMesaSelecionada(idMesa);
         reservaMesa.setDataReserva(dataReserva);
-
         reservaMesa.setNomeUsuario("null");
         reservaMesa.setNomeCliente("null");
         reservaMesa.setNumPessoas("null");
         reservaMesa.setHoraChegada("null");
+        reservaMesa.setAdminResp("null");
+        reservaMesa.setHoraRegistro("null");
+        reservaMesa.setDataRegistro("null");
 
-        reservaMesa.setAdminResp(idAdmin);
-        reservaMesa.setHoraRegistro(ImpHora());
-        reservaMesa.setDataRegistro(ImpData());
+        return reservaMesa;
+    }
 
-        IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, "excluida", 1);
-        CarregaDataArray(dataReserva, 2);
+    public ReservaMesa GeraReservaVazia() {
+        ReservaMesa reservaMesa = new ReservaMesa();
+        reservaMesa.setMesaSelecionada("null");
+        reservaMesa.setDataReserva("null");
+        reservaMesa.setNomeUsuario("null");
+        reservaMesa.setNomeCliente("null");
+        reservaMesa.setNumPessoas("null");
+        reservaMesa.setHoraChegada("null");
+        reservaMesa.setAdminResp("null");
+        reservaMesa.setHoraRegistro("null");
+        reservaMesa.setDataRegistro("null");
 
-        return(StringXML());
+        return reservaMesa;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EscreveArquivoReservaNovo                                                                       *
+    //	                                                                                                               *
+    // Data: 27/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: cria um arquivo de reservas novo para a data especificada                                               *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
+    //                                                                                                                 *
+    // Saida: não tem                                                                                                  *
+    //******************************************************************************************************************
+    //
+    public void EscreveArquivoReservaNovo(String dataRes) {
+
+        String caminho = Arquivo.getDiretorioBd() + "reservas/";
+        String nomeArquivo = dataRes + ".res";
+
+        int numMesas = 17;
+        String Indice;
+        String letra = "A";
+        String dadosArqNovo = "{\n";
+        for (int i = 0; i < numMesas; i++) {
+            if (i > 8) { letra = "B"; }
+            Indice = Auxiliar.IntToStr2(i);
+            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  NOC" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  NUP" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HOC" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  ADR" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  HOR" + letra + Indice + ": null\n";
+            dadosArqNovo = dadosArqNovo + "  DTR" + letra + Indice + ": null\n";
+        }
+        dadosArqNovo = dadosArqNovo + "}";
+
+        if (!Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
+                Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
+            } else {
+                Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
+            }
+        }
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: EscreveArquivoCadastroCliente                                                                   *
+    //	                                                                                                               *
+    // Data: 04/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: escreve um arquivo de cadastro de cliente em formato texto. O nome do arquivo é igual ao nome de        *
+    //         usuário do cliente com todas as letras minúsculas e extensão .clt                                       *
+    //                                                                                                                 *
+    // Entrada: string com o caminho, string com o nome do arquivo e string com os dados a serem escritos              *
+    //                                                                                                                 *
+    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
+    //******************************************************************************************************************
+    //
+    public boolean EscreveArquivoCadastroCliente(String caminho, String nomeArquivo, String dadosArquivo) {
+
+        boolean confirma = false;
+        nomeArquivo = nomeArquivo.toLowerCase();
+
+        // Se o arquivo existe, renomeia para a.nomearquivo.clt e grava o novo arquivo de cadastro de cliente
+        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
+            Arquivo.Apaga(caminho, "a." + nomeArquivo);
+            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
+                Terminal("Arquivo de cliente " + nomeArquivo + " renomeado", false);
+                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArquivo)) {
+                    Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                    confirma = true;
+                }
+            }
+        }
+        else { // Se o arquivo não existe, grava o novo arquivo de cadastro de cliente
+            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArquivo)) {
+                Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
+                confirma = true;
+            }
+        }
+        return confirma;
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: LeArquivoCadastroCliente                                                                        *
+    //	                                                                                                               *
+    // Data: 02/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: lê um arquivo de cadastro de cliente                                                                    *
+    //                                                                                                                 *
+    // Entrada: string com o nome de usuário do cliente                                                                *
+    //                                                                                                                 *
+    // Saida: objeto da classe Cliente com as informações do cliente. Se o registro do cliente não for encontrado,     *
+    //        retorna com todos os campos iguais a "null"                                                              *
+    //******************************************************************************************************************
+    //
+    public Cliente LeArquivoCadastroCliente(String nomeUsuario) {
+
+        String caminho = Arquivo.getDiretorioBd() + "clientes/";
+        String nomeArquivo = nomeUsuario.toLowerCase() + ".clt";
+        String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
+
+        Cliente cliente = new Cliente();
+
+        if (registroCliente != null) {
+            cliente.setNomeUsuario(Arquivo.LeCampo(registroCliente, "NomeUsuario:"));
+            cliente.setNome(Arquivo.LeCampo(registroCliente, "Nome:"));
+            cliente.setCelular(Arquivo.LeCampo(registroCliente, "Celular:"));
+            cliente.setObs1(Arquivo.LeCampo(registroCliente, "Obs1:"));
+            cliente.setObs2(Arquivo.LeCampo(registroCliente, "Obs2:"));
+            cliente.setIdoso(Arquivo.LeCampo(registroCliente, "Idoso:"));
+            cliente.setLocomocao(Arquivo.LeCampo(registroCliente, "Locomocao:"));
+            cliente.setExigente(Arquivo.LeCampo(registroCliente, "Exigente:"));
+            cliente.setGenero(Arquivo.LeCampo(registroCliente, "Genero:"));
+            cliente.setAdminResp(Arquivo.LeCampo(registroCliente, "AdminResp:"));
+        }
+        else {
+            cliente.setNomeUsuario("null");
+            cliente.setNome("null");
+            cliente.setCelular("null");
+            cliente.setObs1("null");
+            cliente.setObs2("null");
+            cliente.setIdoso("null");
+            cliente.setLocomocao("null");
+            cliente.setExigente("null");
+            cliente.setGenero("null");
+            cliente.setAdminResp("null");
+        }
+        return cliente;
     }
 
     //******************************************************************************************************************
@@ -675,250 +744,159 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: LeArquivoReservaMesa                                                                            *
+    // Nome do Método: MontaXMLadmin()                                                                                 *
     //	                                                                                                               *
-    // Data: 02/10/2021                                                                                                *
+    // Data: 22/09/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: lê um arquivo de registro de reserva das mesas. Se o arquivo não for encontrado, cria um novo arquivo   *
+    // Funcao: monta uma string XML com as informações referentes ao administrador que está fazendo as reservas.       *
+    //         As informações do cliente são lidas de um arquivo texto que tem o nome igual ao id do administrador.    *
     //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
+    // Entrada: string com o nome de usuário do administrador (idAdmin). O idAdmin não deve ter espaços nem caracteres *
+    //          especiais.                                                                                             *
     //                                                                                                                 *
-    // Saida: objeto da classe DadosMesa com as informações das reservas das mesas na data especificada                *
+    // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public ReservaMesa[] LeArquivoReservaMesa(String dataReserva) {
+    public String MontaXMLadmin(String idAdmin) {
 
-        String caminho = Arquivo.getDiretorioBd() + "reservas/";
-        String nomeArquivo = dataReserva + ".res";
-        if (!Arquivo.Existe(caminho, nomeArquivo)) {
-            EscreveArquivoReservaNovo(dataReserva);
-        }
-        String dadosArquivo = Arquivo.LeTexto(caminho, nomeArquivo);
+        int i = 0;
+        int IdNv0 = 0;
+        int IdNv1 = 1;
+        IniciaMsgXML("LOCAL001", 1);
+        MsgXMLArray[IdNv0][IdNv1][i++][0] = "ADMIN";
+        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", idAdmin);
+        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
 
-        int numMesas = 17;
-        ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
-
-        if (dadosArquivo != null) {
-
-            String sufixo;
-            String letra = "A";
-
-            for (int i = 0; i < numMesas; i++) {
-
-                reservaMesas[i] = new ReservaMesa();
-
-                if (i > 8) { letra = "B"; }
-                sufixo = letra + IntToStr2(i);
-
-                reservaMesas[i].setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"));
-                reservaMesas[i].setNomeCliente(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"));
-                reservaMesas[i].setNumPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"));
-                reservaMesas[i].setHoraChegada(Arquivo.LeParametro(dadosArquivo, "HOC" + sufixo + ":"));
-                reservaMesas[i].setAdminResp(Arquivo.LeParametro(dadosArquivo, "ADR" + sufixo + ":"));
-                reservaMesas[i].setHoraRegistro(Arquivo.LeParametro(dadosArquivo, "HOR" + sufixo + ":"));
-                reservaMesas[i].setDataRegistro(Arquivo.LeParametro(dadosArquivo, "DTR" + sufixo + ":"));
-            }
-        }
-        else {
-            Terminal("Arquivo de reservas do dia " + nomeArquivo + " não encontrado", false);
-        }
-        return reservaMesas;
+        return(StringXML());
     }
 
     //******************************************************************************************************************
-    // Nome do Método: EscreveArquivoReservaMesa                                                                       *
+    // Nome do Método: MontaXMLCliente()                                                                               *
     //	                                                                                                               *
-    // Data: 02/10/2021                                                                                                *
+    // Data: 2%/09/2021                                                                                                *
     //                                                                                                                 *
-    // Funcao: escreve um arquivo de registro de reservas na data especificada                                         *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD-MM-AAAA e objeto da classe DadosMesa com as informações     *
-    //          de reserva de todas as mesas para a data especificada                                                  *
-    //                                                                                                                 *
-    // Saida: boolean - true se a operação foi executada corretamente                                                  *
-    //******************************************************************************************************************
-    //
-    public ReservaMesa EscreveArquivoReservaMesa(ReservaMesa reservaMesa) {
-
-        boolean confirma = false;
-        String caminho = Arquivo.getDiretorioBd() + "reservas/";
-        String nomeArquivo = reservaMesa.getDataReserva() + ".res";
-
-        int numMesas = 17;
-        ReservaMesa[] reservaMesas = new ReservaMesa[numMesas];
-
-        for (int i = 0; i < numMesas; i++) {
-            reservaMesas[i] = new ReservaMesa();
-        }
-
-        reservaMesas = LeArquivoReservaMesa(reservaMesa.getDataReserva());
-
-        int indiceMesa = Integer.parseInt(reservaMesa.getMesaSelecionada().substring(1,3));
-        reservaMesas[indiceMesa].setNomeUsuario(reservaMesa.getNomeUsuario());
-        reservaMesas[indiceMesa].setNomeCliente(reservaMesa.getNomeCliente());
-        reservaMesas[indiceMesa].setNumPessoas(reservaMesa.getNumPessoas());
-        reservaMesas[indiceMesa].setHoraChegada(reservaMesa.getHoraChegada());
-        reservaMesas[indiceMesa].setAdminResp(reservaMesa.getAdminResp());
-        reservaMesas[indiceMesa].setHoraRegistro(ImpHora());
-        reservaMesas[indiceMesa].setDataRegistro(ImpData());
-
-        String sufixo;
-        String letra = "A";
-        String dadosArqNovo = "{\n";
-
-        for (int i = 0; i < numMesas; i++) {
-            if (i > 8) { letra = "B"; }
-            sufixo = letra + IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  NOU" + sufixo + ": " + reservaMesas[i].getNomeUsuario() + "\n";
-            dadosArqNovo = dadosArqNovo + "  NOC" + sufixo + ": " + reservaMesas[i].getNomeCliente() + "\n";
-            dadosArqNovo = dadosArqNovo + "  NUP" + sufixo + ": " + reservaMesas[i].getNumPessoas() + "\n";
-            dadosArqNovo = dadosArqNovo + "  HOC" + sufixo + ": " + reservaMesas[i].getHoraChegada() + "\n";
-            dadosArqNovo = dadosArqNovo + "  ADR" + sufixo + ": " + reservaMesas[i].getAdminResp() + "\n";
-            dadosArqNovo = dadosArqNovo + "  HOR" + sufixo + ": " + reservaMesas[i].getHoraRegistro() + "\n";
-            dadosArqNovo = dadosArqNovo + "  DTR" + sufixo + ": " + reservaMesas[i].getDataRegistro() + "\n";
-        }
-        dadosArqNovo = dadosArqNovo + "}";
-
-        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
-            Arquivo.Apaga(caminho, "a." + nomeArquivo);
-        }
-        if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
-            Terminal("Arquivo de reservas " + nomeArquivo + " renomeado", false);
-            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                Terminal("Arquivo de reservas " + nomeArquivo + " modificado e salvo", false);
-                confirma = true;
-            }
-        }
-        return reservaMesas[indiceMesa];
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: EscreveArquivoReservaNovo                                                                       *
-    //	                                                                                                               *
-    // Data: 27/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: cria um arquivo de reservas novo para a data especificada                                               *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD-MM-AAAA                                                     *
-    //                                                                                                                 *
-    // Saida: não tem                                                                                                  *
-    //******************************************************************************************************************
-    //
-    public void EscreveArquivoReservaNovo(String dataRes) {
-
-        String caminho = Arquivo.getDiretorioBd() + "reservas/";
-        String nomeArquivo = dataRes + ".res";
-
-        int numMesas = 17;
-        String Indice;
-        String letra = "A";
-        String dadosArqNovo = "{\n";
-        for (int i = 0; i < numMesas; i++) {
-            if (i > 8) { letra = "B"; }
-            Indice = Auxiliar.IntToStr2(i);
-            dadosArqNovo = dadosArqNovo + "  NOU" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  NOC" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  NUP" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  HOC" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  ADR" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  HOR" + letra + Indice + ": null\n";
-            dadosArqNovo = dadosArqNovo + "  DTR" + letra + Indice + ": null\n";
-        }
-        dadosArqNovo = dadosArqNovo + "}";
-
-        if (!Arquivo.Existe(caminho, "a." + nomeArquivo)) {
-            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArqNovo)) {
-                Terminal("Criado arquivo de reservas novo: " + nomeArquivo, false);
-            } else {
-                Terminal("Falha ao criar o arquivo de reservas novo: " + nomeArquivo, false);
-            }
-        }
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: EscreveArquivoCadastroCliente                                                                   *
-    //	                                                                                                               *
-    // Data: 04/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: escreve um arquivo de cadastro de cliente em formato texto. O nome do arquivo é igual ao nome de        *
-    //         usuário do cliente com todas as letras minúsculas e extensão .clt                                       *
-    //                                                                                                                 *
-    // Entrada: string com o caminho, string com o nome do arquivo e string com os dados a serem escritos              *
-    //                                                                                                                 *
-    // Saida: boolean - true se a operação foi realizada corretamente                                                  *
-    //******************************************************************************************************************
-    //
-    public boolean EscreveArquivoCadastroCliente(String caminho, String nomeArquivo, String dadosArquivo) {
-
-        boolean confirma = false;
-        nomeArquivo = nomeArquivo.toLowerCase();
-
-        // Se o arquivo existe, renomeia para a.nomearquivo.clt e grava o novo arquivo de cadastro de cliente
-        if (Arquivo.Existe(caminho, "a." + nomeArquivo)) {
-            Arquivo.Apaga(caminho, "a." + nomeArquivo);
-            if (Arquivo.Renomeia(caminho, nomeArquivo, "a." + nomeArquivo)) {
-                Terminal("Arquivo de cliente " + nomeArquivo + " renomeado", false);
-                if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArquivo)) {
-                    Auxiliar.Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
-                    confirma = true;
-                }
-            }
-        }
-        else { // Se o arquivo não existe, grava o novo arquivo de cadastro de cliente
-            if (Arquivo.EscreveTexto(caminho, nomeArquivo, dadosArquivo)) {
-                Terminal("Arquivo de cliente " + nomeArquivo + " modificado e salvo", false);
-                confirma = true;
-            }
-        }
-        return confirma;
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: LeArquivoCadastroCliente                                                                        *
-    //	                                                                                                               *
-    // Data: 02/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: lê um arquivo de cadastro de cliente                                                                    *
+    // Funcao: monta uma string XML com as informações referentes do cliente. As informações do cliente são lidas      *
+    //         de um arquivo texto que tem o nome igual ao nome de usuário.                                            *
     //                                                                                                                 *
     // Entrada: string com o nome de usuário do cliente                                                                *
     //                                                                                                                 *
-    // Saida: objeto da classe Cliente com as informações do cliente. Se o registro do cliente não for encontrado,     *
-    //        retorna com todos os campos iguais a "null"                                                              *
+    // Saida: string com a mensagem XML                                                                                *
     //******************************************************************************************************************
     //
-    public Cliente LeArquivoCadastroCliente(String nomeUsuario) {
+    public String MontaXMLCliente(String nomeUsuario) {
 
-        String caminho = Arquivo.getDiretorioBd() + "clientes/";
-        String nomeArquivo = nomeUsuario.toLowerCase() + ".clt";
-        String registroCliente = Arquivo.LeTexto(caminho, nomeArquivo);
+        IniciaMsgXML("LOCAL001", 1);
+        CarregaClienteArray(nomeUsuario, 1);
 
-        Cliente cliente = new Cliente();
+        return(StringXML());
+    }
 
-        if (registroCliente != null) {
-            cliente.setNomeUsuario(Arquivo.LeCampo(registroCliente, "NomeUsuario:"));
-            cliente.setNome(Arquivo.LeCampo(registroCliente, "Nome:"));
-            cliente.setCelular(Arquivo.LeCampo(registroCliente, "Celular:"));
-            cliente.setObs1(Arquivo.LeCampo(registroCliente, "Obs1:"));
-            cliente.setObs2(Arquivo.LeCampo(registroCliente, "Obs2:"));
-            cliente.setIdoso(Arquivo.LeCampo(registroCliente, "Idoso:"));
-            cliente.setLocomocao(Arquivo.LeCampo(registroCliente, "Locomocao:"));
-            cliente.setExigente(Arquivo.LeCampo(registroCliente, "Exigente:"));
-            cliente.setGenero(Arquivo.LeCampo(registroCliente, "Genero:"));
-            cliente.setAdminResp(Arquivo.LeCampo(registroCliente, "AdminResp:"));
-        }
-        else {
-            cliente.setNomeUsuario("null");
-            cliente.setNome("null");
-            cliente.setCelular("null");
-            cliente.setObs1("null");
-            cliente.setObs2("null");
-            cliente.setIdoso("null");
-            cliente.setLocomocao("null");
-            cliente.setExigente("null");
-            cliente.setGenero("null");
-            cliente.setAdminResp("null");
-        }
-        return cliente;
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLData()                                                                                  *
+    //	                                                                                                               *
+    // Data: 25/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações referentes à disponibilidade das mesas em uma data. As          *
+    //         informações são lidas de um arquivo do tipo texto que tem o nome no formato DD-MM-AAAA.res              *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva no formato DD/MM/AAAA                                                     *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public String MontaXMLData(String dataReserva) {
+
+        IniciaMsgXML("LOCAL001", 1);
+        CarregaDataArray(dataReserva, 1);
+
+        return(StringXML());
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLReserva                                                                                 *
+    //	                                                                                                               *
+    // Data: 06/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de reserva de mesa e insere      *
+    //         também as informações de disponibilidade das mesas na data especificada                                 *
+    //                                                                                                                 *
+    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a reserva                                  *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public String MontaXMLReserva(ReservaMesa reservaMesa, boolean confirma) {
+
+        String resposta = "nao";
+        if (confirma) { resposta = "reserva"; }
+
+        IniciaMsgXML("LOCAL001", 2);
+        CarregaEstadoArray(reservaMesa, resposta, 1);
+        CarregaDataArray(reservaMesa.getDataReserva(), 2);
+
+        return(StringXML());
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLConsulta                                                                                *
+    //	                                                                                                               *
+    // Data: 06/10/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de consulta de reserva de mesa   *
+    //         e insere também as informações de disponibilidade das mesas na data especificada                        *
+    //                                                                                                                 *
+    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a consulta                                 *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public String MontaXMLConsulta(ReservaMesa reservaMesa, boolean confirma) {
+
+        String resposta = "nao";
+        if (confirma) { resposta = "consulta"; }
+
+        IniciaMsgXML("LOCAL001", 2);
+        CarregaEstadoArray(reservaMesa, resposta, 1);
+        CarregaDataArray(reservaMesa.getDataReserva(), 2);
+
+        return(StringXML());
+    }
+
+    //******************************************************************************************************************
+    // Nome do Método: MontaXMLExclui                                                                                  *
+    //	                                                                                                               *
+    // Data: 29/09/2021                                                                                                *
+    //                                                                                                                 *
+    // Funcao: monta uma string XML com as informações de estado e as informações de disponibilidade das mesas na      *
+    //         data especificada                                                                                       *
+    //                                                                                                                 *
+    // Entrada: string com a data da reserva, string com o identificador da mesa e string com o nome de usuário do     *
+    //          administrador que está fazendo a exclusão da reserva                                                   *
+    //                                                                                                                 *
+    // Saida: string com a mensagem XML                                                                                *
+    //******************************************************************************************************************
+    //
+    public String MontaXMLExclui(String dataReserva, String idMesa, String idAdmin) {
+
+        ReservaMesa reservaMesa = new ReservaMesa();
+
+        reservaMesa.setMesaSelecionada(idMesa);
+        reservaMesa.setDataReserva(dataReserva);
+
+        reservaMesa.setNomeUsuario("null");
+        reservaMesa.setNomeCliente("null");
+        reservaMesa.setNumPessoas("null");
+        reservaMesa.setHoraChegada("null");
+
+        reservaMesa.setAdminResp(idAdmin);
+        reservaMesa.setHoraRegistro(ImpHora());
+        reservaMesa.setDataRegistro(ImpData());
+
+        IniciaMsgXML("LOCAL001", 2);
+        CarregaEstadoArray(reservaMesa, "excluida", 1);
+        CarregaDataArray(dataReserva, 2);
+
+        return(StringXML());
     }
 
     //******************************************************************************************************************
@@ -1077,7 +1055,7 @@ public class VlglService {
     //                                                                                                                 *
     //******************************************************************************************************************
     //
-    private String ImpHora() {
+    public String ImpHora() {
         LocalDateTime datahora = LocalDateTime.now();
         int Hora = datahora.getHour();
         int Minuto = datahora.getMinute();
@@ -1105,7 +1083,7 @@ public class VlglService {
     //                                                                                                                 *
     //******************************************************************************************************************
     //
-    private String ImpData() {
+    public String ImpData() {
         LocalDateTime datahora = LocalDateTime.now();
         int Dia = datahora.getDayOfMonth();
         int Mes = datahora.getMonthValue();

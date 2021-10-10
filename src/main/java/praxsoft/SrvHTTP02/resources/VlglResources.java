@@ -27,12 +27,12 @@ public class VlglResources {
         vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/admin", false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String MsgXML = vlglService.MontaXMLadmin(auth.getName());
+        String MsgJson = "{ \"nomeUsuarioAdmin\" : \"" + auth.getName() + "\" }";
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+                .contentType(MediaType.valueOf("application/json"))
+                .body(MsgJson);
     }
 
     @GetMapping(value = "/vlgl/reservas")
@@ -49,13 +49,6 @@ public class VlglResources {
     public ResponseEntity<?> VerificaData(@PathVariable String dataReserva) {
         vlglService.Terminal("Solicitação de reservas na data: " + dataReserva, false);
 
-        //String MsgXML = vlglService.MontaXMLData(dataReserva);
-
-        //return ResponseEntity
-        //        .status(HttpStatus.OK)
-        //        .contentType(MediaType.valueOf("application/xml"))
-        //        .body(MsgXML);
-
         ReservaMesa[] reservaMesas = vlglService.LeArquivoReservaMesa(dataReserva);
         List<ReservaMesa[]> MsgJson = new ArrayList<ReservaMesa[]>(Collections.singleton(reservaMesas));
 
@@ -69,39 +62,45 @@ public class VlglResources {
     public ResponseEntity<?> ConfirmaReserva(@RequestBody ReservaMesa reservaMesa) {
         vlglService.Terminal("Solicitação de reserva de mesa", false);
 
-        ReservaMesa reservaMesa1 = vlglService.EscreveArquivoReservaMesa(reservaMesa);
-        //String MsgXML = vlglService.MontaXMLReserva(reservaMesa, confirma);
-        vlglService.GeraArquivoImpressaoReserva(reservaMesa);
-        vlglService.GeraArquivoRegistroReserva(reservaMesa);
+        if (vlglService.EscreveArquivoReservaMesa(reservaMesa)) {
+            reservaMesa.setHoraRegistro(vlglService.ImpHora());
+            reservaMesa.setDataRegistro(vlglService.ImpData());
+            vlglService.GeraArquivoImpressaoReserva(reservaMesa);
+            vlglService.GeraArquivoRegistroReserva(reservaMesa);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
-                .body(reservaMesa1);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(reservaMesa);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED )
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(vlglService.GeraReservaVazia());
+        }
     }
 
     @DeleteMapping(value = "/vlgl/reserva/exclui/{dataReserva}/{idMesa}")
     public ResponseEntity<?> ExcluiReserva(@PathVariable String dataReserva, @PathVariable String idMesa) {
         vlglService.Terminal("Solicitação de exclusão: " + dataReserva + " - Mesa: " + idMesa, false);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        ReservaMesa reservaMesa = vlglService.GeraReservaLivre(dataReserva, idMesa);
+        if (vlglService.EscreveArquivoReservaMesa(reservaMesa)) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            vlglService.GeraArquivoExclusaoReserva(dataReserva, idMesa, auth.getName());
 
-        vlglService.ExcluiReservaMesa(dataReserva, idMesa);
-        String MsgXML = vlglService.MontaXMLExclui(dataReserva, idMesa, auth.getName());
-        vlglService.GeraArquivoExclusaoReserva(dataReserva, idMesa, auth.getName());
-
-        ReservaMesa[] reservaMesas = vlglService.LeArquivoReservaMesa(dataReserva);
-        List<ReservaMesa[]> MsgJson = new ArrayList<ReservaMesa[]>(Collections.singleton(reservaMesas));
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
-                .body(MsgJson);
-
-        //return ResponseEntity
-        //        .status(HttpStatus.OK)
-        //        .contentType(MediaType.valueOf("application/xml"))
-        //        .body(MsgXML);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(reservaMesa);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED )
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(vlglService.GeraReservaVazia());
+        }
     }
 
     @GetMapping(value = "/vlgl/reserva/consulta/{dataReservaidMesa}")
@@ -111,9 +110,7 @@ public class VlglResources {
         vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
 
         ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
-
-        boolean resultado = vlglService.GeraArquivoImpressaoReserva(reservaMesa);
-        String MsgXML = vlglService.MontaXMLConsulta(reservaMesa, resultado);
+        vlglService.GeraArquivoImpressaoReserva(reservaMesa);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -146,8 +143,6 @@ public class VlglResources {
     @GetMapping(value = "/vlgl/cadastro")
     public ResponseEntity<?> CadastroVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         String nomeArquivo = "admincadastro.html";
 
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
@@ -157,50 +152,73 @@ public class VlglResources {
     public ResponseEntity<?> VerificaCliente(@PathVariable String nomeUsuario) {
         vlglService.Terminal("Verificação de cliente: " + nomeUsuario, false);
 
-        String MsgXML = vlglService.MontaXMLCliente(nomeUsuario);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+        Cliente cliente = vlglService.LeArquivoCadastroCliente(nomeUsuario);
+        if (!cliente.getNomeUsuario().equals("null")) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(cliente);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(cliente);
+        }
     }
 
     @PostMapping(value = "/vlgl/cadastro/cliente")
     public ResponseEntity<?> CadastraCliente(@RequestBody Cliente cliente) {
         vlglService.Terminal("Cadastro de cliente: " + cliente.getNomeUsuario(), false);
 
-        vlglService.GeraCadastroCliente(cliente);
-        String MsgXML = vlglService.MontaXMLCliente(cliente.getNomeUsuario());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+        if (vlglService.GeraCadastroCliente(cliente)) {
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(cliente);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED )
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(vlglService.GeraCadastroClienteVazio());
+        }
     }
 
     @PutMapping(value = "/vlgl/cadastro/cliente")
     public ResponseEntity<?> AtualizaCadastroCliente(@RequestBody Cliente cliente) {
         vlglService.Terminal("Atualização de cadastro de cliente: " + cliente.getNomeUsuario(), false);
 
-        vlglService.AtualizaCadastroCliente(cliente);
-        String MsgXML = vlglService.MontaXMLCliente(cliente.getNomeUsuario());
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+        if (vlglService.AtualizaCadastroCliente(cliente)) {
+            return ResponseEntity
+                    .status(HttpStatus.ACCEPTED)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(cliente);
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED )
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(vlglService.GeraCadastroClienteVazio());
+        }
     }
 
     @DeleteMapping(value = "/vlgl/cadastro/cliente/{nomeUsuario}")
     public ResponseEntity<?> ExcluiCadastroCliente(@PathVariable String nomeUsuario) {
         vlglService.Terminal("Exclusão de cadastro de cliente: " + nomeUsuario, false);
 
-        vlglService.ExcluiCadastroCliente(nomeUsuario);
-        String MsgXML = vlglService.MontaXMLCliente(nomeUsuario);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/xml"))
-                .body(MsgXML);
+        if (vlglService.ExcluiCadastroCliente(nomeUsuario)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(vlglService.GeraCadastroClienteVazio());
+        }
+        else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED)
+                    .contentType(MediaType.valueOf("application/json"))
+                    .body(vlglService.GeraCadastroClienteVazio());
+        }
     }
 
     @GetMapping(value = "/vlgl/aux/{recurso}")
@@ -210,35 +228,6 @@ public class VlglResources {
         vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
 
         return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
-    }
-
-    @GetMapping(value = "/teste/data/{dataReserva}")
-    public ResponseEntity<?> EnviaDataJson(@PathVariable String dataReserva) {
-        vlglService.Terminal("Teste - Solicitação de reservas na data: " + dataReserva, false);
-
-        ReservaMesa[] reservaMesas = vlglService.LeArquivoReservaMesa(dataReserva);
-
-        List<ReservaMesa[]> MsgJson = new ArrayList<ReservaMesa[]>(Collections.singleton(reservaMesas));
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
-                .body(MsgJson);
-    }
-
-    @GetMapping(value = "/teste/consulta/{dataReservaidMesa}")
-    public ResponseEntity<?> EnviaReservaJson(@PathVariable String dataReservaidMesa) {
-        String dataReserva = dataReservaidMesa.substring(0, 10);
-        String idMesa = dataReservaidMesa.substring(10, 13);
-        vlglService.Terminal("Solicitação de consulta - Data: " + dataReserva + " - Mesa: " + idMesa, false);
-
-        ReservaMesa reservaMesa = vlglService.ConsultaReservaMesa(dataReserva, idMesa);
-        List<ReservaMesa> MsgJson = new ArrayList<ReservaMesa>(Collections.singletonList(reservaMesa));
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
-                .body(MsgJson);
     }
 
 }

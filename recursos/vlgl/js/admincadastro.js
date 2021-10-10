@@ -2,7 +2,7 @@
 //                                                                                                                    *
 //                       Programa Javascript para rodar no navegador de um administrador                              *
 //                                                                                                                    *
-// Data: 23/09/2021                                                                                                   *
+// Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: permite ao administrador gerenciar o cadastramento dos clientes                                            *
 //                                                                                                                    *
@@ -70,7 +70,7 @@ function CarregaVariaveisFormulario() {
 //*********************************************************************************************************************
 // Nome da função: VerificaAdmin                                                                                      *
 //                                                                                                                    *
-// Data: 23/09/2021                                                                                                   *
+// Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: é chamada cada vez que o programa inicia ou que o botão limpa é pressionado. A funão envia uma mensagem    *
 //         para o servidor solicitando as informações do Administrador que fez login.                                 *
@@ -90,9 +90,8 @@ function VerificaAdmin() {
     requisicao.send(null);
     
     requisicao.onload = function() {
-        let XMLRec = requisicao.responseXML;
-        grupo = XMLRec.getElementsByTagName("ADMIN");
-        NomeUsuarioAdmin = grupo[0].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+        let dadosJson = JSON.parse(requisicao.responseText);
+        NomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
         EscreveTexto("Administrador: " + NomeUsuarioAdmin, "nomeadmin");
         EscreveTexto("Servidor: recebidas informações do administrador", "infocom");
     };
@@ -105,7 +104,7 @@ function VerificaAdmin() {
 //*********************************************************************************************************************
 // Nome da função: VerificaCliente                                                                                    *
 //                                                                                                                    *
-// Data: 23/09/2021                                                                                                   *
+// Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: é chamada cada vez que o usuário Admin pressiona o botão Verifica ao lado do campo Nome de usuário do      *
 //         cliente no formulário. A função envia para o servidor o nome de usuário do cliente e o servidor deve       *
@@ -132,8 +131,7 @@ function VerificaCliente() {
         requisicao.send(null);
     
         requisicao.onload = function() {
-            let XMLRec = requisicao.responseXML;
-            CarregaCliente(XMLRec);
+            CarregaDadosCliente(requisicao);
             
             if (clienteOK) {
                 EscreveTexto("Servidor: recebidas informações do cliente", "infocom");
@@ -166,7 +164,7 @@ function VerificaCliente() {
 //*********************************************************************************************************************
 // Nome da função: Cadastra                                                                                           *
 //                                                                                                                    *
-// Data: 23/09/2021                                                                                                   *
+// Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: é chamada cada vez que o usuário Admin pressiona o botão Cadastra. A função envia para o servidor as       *
 //         informações para cadastramento do cliente. O servidor deve responder com os dados do cliente.              *
@@ -199,8 +197,7 @@ function Cadastra() {
                 requisicao.send(MontaMsgJson());
         
                 requisicao.onload = function() {
-                    let XMLRec = requisicao.responseXML;
-                    CarregaCliente(XMLRec);
+                    CarregaDadosCliente(requisicao);
                 
                     if (clienteOK) {
                         EscreveTexto("O cadastro do cliente foi atualizado", "infocom");
@@ -227,9 +224,7 @@ function Cadastra() {
                         requisicao.send(MontaMsgJson());
         
                         requisicao.onload = function() {
-                            let XMLRec = requisicao.responseXML;
-                            CarregaCliente(XMLRec);
-                
+                            CarregaDadosCliente(requisicao);
                             if (clienteOK) {
                                 EscreveTexto("O cliente foi cadastrado", "infocom");
                                 EscreveInfoCliente();
@@ -258,7 +253,7 @@ function Cadastra() {
 //*********************************************************************************************************************
 // Nome da função: ExcluiCadastroCliente                                                                              *
 //                                                                                                                    *
-// Data: 23/09/2021                                                                                                   *
+// Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: é chamada cada vez que o usuário Admin pressiona o botão Exclui. A função envia para o servidor uma        *
 //         solicitação de exclusão de um cadastro de cliente. O servidor deve responder com os dados do cliente       *
@@ -286,8 +281,7 @@ function ExcluiCadastroCliente() {
                 requisicao.send(null);
         
                 requisicao.onload = function() {
-                    let XMLRec = requisicao.responseXML;
-                    CarregaCliente(XMLRec);
+                    CarregaDadosCliente(requisicao);
                     if (!clienteOK) {
                         EscreveTexto("Servidor: confirmada a exclusão do cadastro", "infocom");
                         EscreveInfoCliente();
@@ -302,8 +296,6 @@ function ExcluiCadastroCliente() {
         else {
             EscreveTexto("Antes de excluir, verifique o cliente", "infocom");
         }
-        
-        
     }
     else {
         EscreveTexto("Entre com o nome de usuário do cliente e verifique", "infocom");
@@ -311,55 +303,30 @@ function ExcluiCadastroCliente() {
 }
 
 //*********************************************************************************************************************
-// Nome da função: CarregaEstado                                                                                      *
+// Nome da função: CarregaDadosCliente                                                                                *
 //                                                                                                                    *
-// Data: 24/09/2021                                                                                                   *
-//                                                                                                                    *
-// Função: faz o parsing do arquivo XML recebido do servidor, lê as informações de estado e carrega nas variáveis     *
-//                                                                                                                    *
-// Entrada: variável com a mensagem XML recebida                                                                      *
-//                                                                                                                    *
-// Saída: não tem                                                                                                     *
-//*********************************************************************************************************************
-//
-function CarregaEstado(xmlMsg) {
-    
-    grupo = xmlMsg.getElementsByTagName("ESTADO");
-    EstadoConfirma = grupo[i].getElementsByTagName("CONFIRMA")[0].childNodes[0].nodeValue;
-    EstadoData = grupo[i].getElementsByTagName("DATA")[0].childNodes[0].nodeValue;
-    EstadoCadastro = grupo[i].getElementsByTagName("CADASTRO")[0].childNodes[0].nodeValue;
-    EstadoNumPes = grupo[i].getElementsByTagName("NUMPES")[0].childNodes[0].nodeValue;
-    EstadoHorario = grupo[i].getElementsByTagName("HORARIO")[0].childNodes[0].nodeValue;
-    
-}
-
-//*********************************************************************************************************************
-// Nome da função: CarregaCliente                                                                                     *
-//                                                                                                                    *
-// Data: 24/09/2021                                                                                                   *
+// Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: faz o parsing do arquivo XML recebido do servidor, lê as informações do cliente e carrega nas variáveis    *
 //                                                                                                                    *
-// Entrada: variável com a mensagem XML recebida                                                                      *
+// Entrada: mensagem Json recebida do servidor                                                                        *
 //                                                                                                                    *
 // Saída: não tem                                                                                                     *
 //*********************************************************************************************************************
 //
-function CarregaCliente(xmlMsg) {
+function CarregaDadosCliente(respostaJson) {
     
-    grupo = xmlMsg.getElementsByTagName("CLIENTE");
-    NomeUsuarioClienteRec = grupo[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-    NomeCliente = grupo[i].getElementsByTagName("NOME")[0].childNodes[0].nodeValue;
-    CelularCliente = grupo[i].getElementsByTagName("CELULAR")[0].childNodes[0].nodeValue;
-    Obs1Cliente = grupo[i].getElementsByTagName("OBS1")[0].childNodes[0].nodeValue;
-    Obs2Cliente = grupo[i].getElementsByTagName("OBS2")[0].childNodes[0].nodeValue;
-    
-    IdosoCliente = grupo[i].getElementsByTagName("IDOSO")[0].childNodes[0].nodeValue;
-    LocomocaoCliente = grupo[i].getElementsByTagName("LOCOMOCAO")[0].childNodes[0].nodeValue;
-    ExigenteCliente = grupo[i].getElementsByTagName("EXIGENTE")[0].childNodes[0].nodeValue;
-    GeneroCliente = grupo[i].getElementsByTagName("GENERO")[0].childNodes[0].nodeValue;
-    
-    AdminResp = grupo[i].getElementsByTagName("ADMINRSP")[0].childNodes[0].nodeValue;
+   let dadosJson = JSON.parse(respostaJson.responseText);
+    NomeUsuarioClienteRec = dadosJson.nomeUsuario;
+    NomeCliente = dadosJson.nome;
+    CelularCliente = dadosJson.celular;
+    Obs1Cliente = dadosJson.obs1;
+    Obs2Cliente = dadosJson.obs2;
+    IdosoCliente = dadosJson.idoso;
+    LocomocaoCliente = dadosJson.locomocao;
+    ExigenteCliente = dadosJson.exigente;
+    GeneroCliente = dadosJson.genero;
+    AdminResp = dadosJson.adminResp;
         
     if (NomeUsuarioClienteRec == NomeUsuarioCliente) {
         clienteOK = true;
@@ -367,6 +334,7 @@ function CarregaCliente(xmlMsg) {
     else {
         clienteOK = false;
     }
+    
 }
 
 //*********************************************************************************************************************
