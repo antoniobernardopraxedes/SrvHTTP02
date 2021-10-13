@@ -187,13 +187,14 @@ public class VlglResources {
 
     @PutMapping(value = "/vlgl/cadastro/cliente")
     public ResponseEntity<?> AtualizaCadastroCliente(@RequestBody Cliente cliente) {
-        vlglService.Terminal("Atualização de cadastro de cliente: " + cliente.getNomeUsuario(), false);
+        String nomeUsuario = cliente.getNomeUsuario();
+        vlglService.Terminal("Atualização de cadastro de cliente: " + nomeUsuario, false);
 
         if (vlglService.AtualizaCadastroCliente(cliente)) {
             return ResponseEntity
                     .status(HttpStatus.ACCEPTED)
                     .contentType(MediaType.valueOf("application/json"))
-                    .body(cliente);
+                    .body(vlglService.LeArquivoCadastroCliente(nomeUsuario));
         }
         else {
             return ResponseEntity

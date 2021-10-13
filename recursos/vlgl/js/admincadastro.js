@@ -24,26 +24,42 @@ const locomocaoCliente = form.elements['locomocao'];
 const exigenteCliente = form.elements['exigente'];
 const generoCliente = form.elements['genero'];
 
-//var NomeUsuarioAdmin;
-//var NomeAdmin;
+var NomeUsuarioAdmin = "null";
+//var NomeUsuarioCliente = "null";
+//var NomeUsuarioClienteRec = "null";
+//var NomeCliente = "null";
+//var CelularCliente = "null";
+//var Obs1Cliente = "null";
+//var Obs2Cliente = "null";
+//var IdosoCliente = "null";
+//var LocomocaoCliente = "null";
+//var ExigenteCliente = "null";
+//var GeneroCliente = "null";
+//var AdminResp = "null";
 
-var EstadoConfirma = "null";
-var EstadoData = "null";
-var EstadoCadastro = "null";
-var EstadoNumPes = "null";
-var EstadoHorario = "null";
+// Objeto que recebe as informações do cliente locais (lidas do formulário e do ambiente local)
+const Cliente = { nomeUsuario: "null",
+                  nome: "null",
+                  celular: "null",
+                  obs1: "null",
+                  obs2: "null",
+                  idoso: "null",
+                  locomocao: "null",
+                  exigente: "null",
+                  genero: "null",
+                  adminResp: "null" };
 
-var NomeUsuarioCliente = "null";
-var NomeUsuarioClienteRec = "null";
-var NomeCliente = "null";
-var CelularCliente = "null";
-var Obs1Cliente = "null";
-var Obs2Cliente = "null";
-var IdosoCliente = "null";
-var LocomocaoCliente = "null";
-var ExigenteCliente = "null";
-var GeneroCliente = "null";
-var AdminResp = "null";
+// Objeto que recebe as informações do cliente enviadas pelo servidor
+const ClienteRec = { nomeUsuario: "null",
+                     nome: "null",
+                     celular: "null",
+                     obs1: "null",
+                     obs2: "null",
+                     idoso: "null",
+                     locomocao: "null",
+                     exigente: "null",
+                     genero: "null",
+                     adminResp: "null" };
 
 var ClienteOK = false;
 var Atualiza = false;
@@ -53,19 +69,6 @@ VerificaAdmin()
 
 // Fim do Programa
 
-function CarregaVariaveisFormulario() {
-
-    NomeUsuarioCliente = nomeUsuarioCliente.value;
-    NomeCliente = nomeCliente.value;
-    CelularCliente = celularCliente.value;
-    Obs1Cliente = obs1Cliente.value;
-    Obs2Cliente = obs2Cliente.value;
-    IdosoCliente = idosoCliente.value;
-    LocomocaoCliente = locomocaoCliente.value;
-    ExigenteCliente = exigenteCliente.value;
-    GeneroCliente = generoCliente.value;
-    //AdminResp = NomeUsuarioAdmin;
-}
 
 //*********************************************************************************************************************
 // Nome da função: VerificaAdmin                                                                                      *
@@ -91,9 +94,8 @@ function VerificaAdmin() {
 
     requisicao.onload = function() {
         let dadosJson = JSON.parse(requisicao.responseText);
-        //NomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
-        let nomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
-        EscreveTexto("Administrador: " + nomeUsuarioAdmin, "nomeadmin");
+        NomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
+        EscreveTexto("Administrador: " + NomeUsuarioAdmin, "nomeadmin");
         EscreveTexto("Servidor: recebidas informações do administrador", "infocom");
     };
 
@@ -118,14 +120,17 @@ function VerificaAdmin() {
 //
 function VerificaCliente() {
 
-    CarregaVariaveisFormulario();
     clienteOK = false;
     LimpaCamposInfo();
 
-    if (NomeUsuarioCliente != "") {
-
+    // Verifica se o nome de usuário do cliente foi iserido pelo administrador
+    if (nomeUsuarioCliente.value == "") {
+        EscreveTexto("Entre com o nome de usuário do cliente", "info1");
+    }
+    else {
+        Cliente.nomeUsuario = nomeUsuarioCliente.value;
         let requisicao = new XMLHttpRequest();
-        let recurso = "cadastro/cliente/" + NomeUsuarioCliente;
+        let recurso = "cadastro/cliente/" + Cliente.nomeUsuario;
         requisicao.open("GET", recurso, true);
         requisicao.timeout = 2000;
         EscreveMsgEnvSrv();
@@ -142,112 +147,190 @@ function VerificaCliente() {
                 EscreveTexto("Atualiza", "botaocadastra");
             }
             else {
-                EscreveTexto("Servidor: cliente não cadastrado", "infocom");
-                LimpaCamposInfo();
-                EscreveTexto("Cadastra", "botaocadastra");
-                Atualiza = false;
+              EscreveTexto("Servidor: cliente não cadastrado", "infocom");
+              LimpaCamposInfo();
+              EscreveTexto("Cadastra", "botaocadastra");
+              Atualiza = false;
             }
          };
 
          requisicao.ontimeout = function(e) {
-                EscreveTexto("O servidor não respondeu à requisição", "infocom");
+             EscreveTexto("O servidor não respondeu à requisição", "infocom");
+             console.log("Erro: " + e);
          };
-    }
-    else {
-        LimpaCamposInfo();
-        EscreveTexto("Cadastra", "botaocadastra");
-        EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
-        Atualiza = false;
     }
 
 }
 
 //*********************************************************************************************************************
-// Nome da função: Cadastra                                                                                           *
+// Nome da função: CadastraAtualiza                                                                                   *
 //                                                                                                                    *
 // Data: 10/10/2021                                                                                                   *
 //                                                                                                                    *
-// Função: é chamada cada vez que o usuário Admin pressiona o botão Cadastra. A função envia para o servidor as       *
-//         informações para cadastramento do cliente. O servidor deve responder com os dados do cliente.              *
-//                                                                                                                    *
+// Função: é chamada cada vez que o usuário Admin pressiona o botão Cadastra. Se o cliente não está cadastrado,       *
+//         a função envia para o servidor as informações para cadastramento do cliente. Se o cliente já está          *
+//         cadastrado, atualiza o cadastro. O servidor deve responder com os dados do cliente.                        *
 //                                                                                                                    *
 // Entrada: não tem                                                                                                   *
 //                                                                                                                    *
 // Saída: não tem                                                                                                     *
 //*********************************************************************************************************************
 //
-function Cadastra() {
+function CadastraAtualiza() {
 
-    CarregaVariaveisFormulario();
     LimpaCamposInfo();
 
-    if (NomeUsuarioCliente != "") {
+    if (nomeUsuarioCliente.value == "") {
+        EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
+    }
+    else {
+        Cliente.nomeUsuario = nomeUsuarioCliente.value;
+        Cliente.adminResp = NomeUsuarioAdmin;
+
         if (Atualiza) {
-            if (NomeCliente == "") NomeCliente = "null";
-            if (CelularCliente == "") CelularCliente = "null";
-            if (Obs1Cliente == "") Obs1Cliente = "null";
-            if (Obs2Cliente == "") Obs2Cliente = "null";
-            if (confirm("Confirma a atualização do cadastro do cliente " + NomeUsuarioCliente + "?")) {
-
-                let requisicao = new XMLHttpRequest();
-                recurso = "cadastro/cliente";
-                requisicao.open("PUT", recurso, true);
-                requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-                requisicao.timeout = 2000;
-                EscreveMsgEnvSrv();
-                requisicao.send(MontaMsgJson());
-
-                requisicao.onload = function() {
-                    CarregaDadosCliente(requisicao);
-
-                    if (clienteOK) {
-                        EscreveTexto("O cadastro do cliente foi atualizado", "infocom");
-                        EscreveInfoCliente();
-                    }
-                    else {
-                        LimpaCamposInfo();
-                        EscreveTexto("Servidor: Falha ao atualizar o cadastro do cliente", "infocom");
-                    }
-                };
-            }
+            AtualizaCadastroCliente();
         }
         else {
-            if (NomeCliente != "") {
-                if (CelularCliente != "") {
-                    if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
-
-                        let requisicao = new XMLHttpRequest();
-                        recurso = "cadastro/cliente";
-                        requisicao.open("POST", recurso, true);
-                        requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-                        requisicao.timeout = 2000;
-                        EscreveMsgEnvSrv();
-                        requisicao.send(MontaMsgJson());
-
-                        requisicao.onload = function() {
-                            CarregaDadosCliente(requisicao);
-                            if (clienteOK) {
-                                EscreveTexto("O cliente foi cadastrado", "infocom");
-                                EscreveInfoCliente();
-                            }
-                            else {
-                                LimpaCamposInfo();
-                                EscreveTexto("Servidor: Falha ao cadastrar o cliente", "infocom");
-                            }
-                        };
-                    }
-                }
-                else {
-                    EscreveTexto("Entre com o número do celular do cliente", "infocom");
-                }
+            if (nomeCliente.value == "") {
+                EscreveTexto("Entre com o nome completo do cliente", "infocom");
             }
             else {
-                EscreveTexto("Entre com o nome completo do cliente", "infocom");
+                if (celularCliente.value == "") {
+                    EscreveTexto("Entre com o número do celular do cliente", "infocom");
+                }
+                else {
+                    CadastraCliente();
+                }
             }
         }
     }
-    else {
-        EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
+}
+
+//*********************************************************************************************************************
+// Nome da função: AtualizaCadastroCliente                                                                            *
+//                                                                                                                    *
+// Data: 13/10/2021                                                                                                   *
+//                                                                                                                    *
+// Função: Se o cliente já está cadastrado, atualiza o cadastro. O servidor deve responder com os dados do cliente.   *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function AtualizaCadastroCliente() {
+
+    if (confirm("Confirma a atualização do cadastro do cliente " + Cliente.nomeUsuario + "?")) {
+
+        if (nomeCliente.value == "") Cliente.nome = "null";
+        if (celularCliente.value == "") Cliente.celular = "null";
+        if (obs1Cliente.value == "") {
+            Cliente.obs1 = "null";
+        }
+        else {
+            Cliente.obs1 = obs1Cliente.value;
+        }
+        if (obs2Cliente.value == "") {
+            Cliente.obs2 = "null";
+        }
+        else {
+            Cliente.obs2 = obs2Cliente.value;
+        }
+        Cliente.idoso = idosoCliente.value;
+        Cliente.locomocao = locomocaoCliente.value;
+        Cliente.exigente = exigenteCliente.value;
+        Cliente.genero = generoCliente.value;
+
+        let requisicao = new XMLHttpRequest();
+        let recurso = "cadastro/cliente";
+        requisicao.open("PUT", recurso, true);
+        requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+        requisicao.timeout = 2000;
+        EscreveMsgEnvSrv();
+        requisicao.send(JSON.stringify(Cliente));
+
+        requisicao.onload = function() {
+            CarregaDadosCliente(requisicao);
+
+            if (clienteOK) {
+                EscreveTexto("O cadastro do cliente foi atualizado", "infocom");
+                EscreveInfoCliente();
+            }
+            else {
+                LimpaCamposInfo();
+                EscreveTexto("Servidor: Falha ao atualizar o cadastro do cliente", "infocom");
+            }
+        };
+
+        requisicao.ontimeout = function(e) {
+            EscreveTexto("O servidor não respondeu à requisição", "infocom");
+            console.log("Erro: " + e);
+        };
+
+    }
+}
+
+//*********************************************************************************************************************
+// Nome da função: CadastraCliente                                                                                    *
+//                                                                                                                    *
+// Data: 13/10/2021                                                                                                   *
+//                                                                                                                    *
+// Função: efetua o cadastro de um cliente. O servidor deve responder com os dados do cliente.                        *
+//                                                                                                                    *
+// Entrada: não tem                                                                                                   *
+//                                                                                                                    *
+// Saída: não tem                                                                                                     *
+//*********************************************************************************************************************
+//
+function CadastraCliente() {
+
+    if (confirm("Confirma o cadastro do cliente " + Cliente.nomeUsuario + "?")) {
+
+        Cliente.nome = nomeCliente.value;
+        Cliente.celular = celularCliente.value;
+        if (obs1Cliente.value == "") {
+            Cliente.obs1 = "null";
+        }
+        else {
+            Cliente.obs1 = obs1Cliente.value;
+        }
+        if (obs2Cliente.value == "") {
+            Cliente.obs2 = "null";
+        }
+        else {
+            Cliente.obs2 = obs2Cliente.value;
+        }
+        Cliente.idoso = idosoCliente.value;
+        Cliente.locomocao = locomocaoCliente.value;
+        Cliente.exigente = exigenteCliente.value;
+        Cliente.genero = generoCliente.value;
+
+        let requisicao = new XMLHttpRequest();
+        let recurso = "cadastro/cliente";
+        requisicao.open("POST", recurso, true);
+        requisicao.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+        requisicao.timeout = 2000;
+        EscreveMsgEnvSrv();
+        requisicao.send(JSON.stringify(Cliente));
+
+        requisicao.onload = function() {
+            CarregaDadosCliente(requisicao);
+            if (clienteOK) {
+                EscreveTexto("O cliente foi cadastrado", "infocom");
+                EscreveInfoCliente();
+                Atualiza = true;
+            }
+            else {
+                LimpaCamposInfo();
+                EscreveTexto("Servidor: Falha ao cadastrar o cliente", "infocom");
+                Atualiza = false;
+              }
+        };
+
+        requisicao.ontimeout = function(e) {
+            EscreveTexto("O servidor não respondeu à requisição", "infocom");
+            console.log("Erro: " + e);
+        };
     }
 }
 
@@ -267,15 +350,18 @@ function Cadastra() {
 //
 function ExcluiCadastroCliente() {
 
-    CarregaVariaveisFormulario();
     LimpaCamposInfo();
 
-    if (NomeUsuarioCliente != "") {
+    if (nomeUsuarioCliente.value == "") {
+        EscreveTexto("Entre com o nome de usuário do cliente e verifique", "infocom");
+    }
+    else {
         if (clienteOK) {
-            if (confirm("Confirma a exclusão do cadastro do cliente " + NomeUsuarioCliente + "?")) {
+            Cliente.nomeUsuario = nomeUsuarioCliente.value;
 
+            if (confirm("Confirma a exclusão do cadastro do cliente " + Cliente.nomeUsuario + "?")) {
                 let requisicao = new XMLHttpRequest();
-                recurso = "cadastro/cliente/" + NomeUsuarioCliente;
+                let recurso = "cadastro/cliente/" + Cliente.nomeUsuario;
                 requisicao.open("DELETE", recurso, true);
                 requisicao.timeout = 2000;
                 EscreveMsgEnvSrv();
@@ -298,15 +384,12 @@ function ExcluiCadastroCliente() {
             EscreveTexto("Antes de excluir, verifique o cliente", "infocom");
         }
     }
-    else {
-        EscreveTexto("Entre com o nome de usuário do cliente e verifique", "infocom");
-    }
 }
 
 //*********************************************************************************************************************
 // Nome da função: CarregaDadosCliente                                                                                *
 //                                                                                                                    *
-// Data: 10/10/2021                                                                                                   *
+// Data: 13/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: faz o parsing do arquivo XML recebido do servidor, lê as informações do cliente e carrega nas variáveis    *
 //                                                                                                                    *
@@ -317,64 +400,30 @@ function ExcluiCadastroCliente() {
 //
 function CarregaDadosCliente(respostaJson) {
 
-   let dadosJson = JSON.parse(respostaJson.responseText);
-    NomeUsuarioClienteRec = dadosJson.nomeUsuario;
-    NomeCliente = dadosJson.nome;
-    CelularCliente = dadosJson.celular;
-    Obs1Cliente = dadosJson.obs1;
-    Obs2Cliente = dadosJson.obs2;
-    IdosoCliente = dadosJson.idoso;
-    LocomocaoCliente = dadosJson.locomocao;
-    ExigenteCliente = dadosJson.exigente;
-    GeneroCliente = dadosJson.genero;
-    AdminResp = dadosJson.adminResp;
+    let dadosJson = JSON.parse(respostaJson.responseText);
+    ClienteRec.nomeUsuario = dadosJson.nomeUsuario;
+    ClienteRec.nome = dadosJson.nome;
+    ClienteRec.celular = dadosJson.celular;
+    ClienteRec.obs1 = dadosJson.obs1;
+    ClienteRec.obs2 = dadosJson.obs2;
+    ClienteRec.idoso = dadosJson.idoso;
+    ClienteRec.locomocao = dadosJson.locomocao;
+    ClienteRec.exigente = dadosJson.exigente;
+    ClienteRec.gerero = dadosJson.genero;
+    ClienteRec.adminResp = dadosJson.adminResp;
 
-    if (NomeUsuarioClienteRec == NomeUsuarioCliente) {
-        clienteOK = true;
+    if (ClienteRec.nomeUsuario == Cliente.nomeUsuario) {
+      clienteOK = true;
     }
     else {
-        clienteOK = false;
+      clienteOK = false;
     }
-
-}
-
-//*********************************************************************************************************************
-// Nome da função: MontaMsgServ                                                                                       *
-//                                                                                                                    *
-// Data: 28/09/2021                                                                                                   *
-//                                                                                                                    *
-// Função: monta a mensagem de requisição ao servidor                                                                 *
-//                                                                                                                    *
-// Entrada: código da requisição                                                                                      *
-//                                                                                                                    *
-// Saída: não tem                                                                                                     *
-//*********************************************************************************************************************
-//
-function MontaMsgJson() {
-
-    if (Obs1Cliente == "") Obs1Cliente = "não informada";
-    if (Obs1Cliente == "") Obs1Cliente = "não informada";
-
-    var msgJson = "{\n" +
-                  "  \"nomeUsuario\" : \"" + NomeUsuarioCliente + "\",\n" +
-                  "  \"nome\" : \"" + NomeCliente + "\",\n" +
-                  "  \"celular\" : \"" + CelularCliente + "\",\n" +
-                  "  \"obs1\" : \"" + Obs1Cliente + "\",\n" +
-                  "  \"obs2\" : \"" + Obs2Cliente + "\",\n" +
-                  "  \"idoso\" : \"" + IdosoCliente + "\",\n" +
-                  "  \"locomocao\" : \"" + LocomocaoCliente + "\",\n" +
-                  "  \"exigente\" : \"" + ExigenteCliente + "\",\n" +
-                  "  \"genero\" : \"" + GeneroCliente + "\",\n" +
-                  "  \"adminResp\" : \"" + NomeUsuarioAdmin + "\"\n" +
-                  "}";
-
-    return msgJson;
 }
 
 //*********************************************************************************************************************
 // Nome da função: EscreveInfoCliente                                                                                 *
 //                                                                                                                    *
-// Data: 27/09/2021                                                                                                   *
+// Data: 13/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: escreve as informações do cliente no campo de informações (janela direita)                                 *
 //                                                                                                                    *
@@ -387,19 +436,19 @@ function EscreveInfoCliente() {
 
     LimpaCamposInfo();
     if (clienteOK) {
-        EscreveTexto("Nome de usuário: " + NomeUsuarioCliente, "info1");
-        EscreveTexto("Nome Completo: " + NomeCliente, "info2");
-        EscreveTexto("Celular: " + CelularCliente, "info3");
+        EscreveTexto("Nome de usuário: " + ClienteRec.nomeUsuario, "info1");
+        EscreveTexto("Nome Completo: " + ClienteRec.nome, "info2");
+        EscreveTexto("Celular: " + ClienteRec.celular, "info3");
 
         var sufixo = "o";
-        if (GeneroCliente == "Feminino") sufixo = "a";
-        EscreveTexto("Idos" + sufixo + ": " + IdosoCliente, "info4");
-        EscreveTexto("Dificuldade de locomoção: " + LocomocaoCliente, "info5");
-        EscreveTexto("Exigente: " + ExigenteCliente, "info6");
-        EscreveTexto("Gênero: " + GeneroCliente, "info7");
-        EscreveTexto("Obs 1: " + Obs1Cliente, "info8");
-        EscreveTexto("Obs 2: " + Obs2Cliente, "info9");
-        EscreveTexto("Responsável pelo cadastro: " + AdminResp, "info10");
+        if (Cliente.gerero == "Feminino") sufixo = "a";
+        EscreveTexto("Idos" + sufixo + ": " + ClienteRec.idoso, "info4");
+        EscreveTexto("Dificuldade de locomoção: " + ClienteRec.locomocao, "info5");
+        EscreveTexto("Exigente: " + ClienteRec.exigente, "info6");
+        EscreveTexto("Gênero: " + ClienteRec.gerero, "info7");
+        EscreveTexto("Obs 1: " + ClienteRec.obs1, "info8");
+        EscreveTexto("Obs 2: " + ClienteRec.obs2, "info9");
+        EscreveTexto("Responsável pelo cadastro: " + ClienteRec.adminResp, "info10");
         EscreveTexto("Atualiza", "botaocadastra");
     }
     else {
@@ -408,18 +457,6 @@ function EscreveInfoCliente() {
     }
 }
 
-//*********************************************************************************************************************
-// Nome da função: EscreveTexto                                                                                       *
-//                                                                                                                    *
-// Data: 24/09/2021                                                                                                   *
-//                                                                                                                    *
-// Função: escreve na tela uma mensagem                                                                               *
-//                                                                                                                    *
-// Entrada: string com a mensagem e string com o identificador do campo na tela (*/)id)                               *
-//                                                                                                                    *
-// Saída: não tem                                                                                                     *
-//*********************************************************************************************************************
-//
 function EscreveTexto(texto, idHTML) {
     document.getElementById(idHTML).innerHTML = texto;
 }
