@@ -28,12 +28,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/favicon.ico").permitAll()
                 .antMatchers("/isis").permitAll()
                 .antMatchers("/isis/*").permitAll()
                 .antMatchers("/atualiza").permitAll()
                 .antMatchers("/local001.xml").permitAll()
                 .anyRequest().authenticated()
-
                 .and()
                 .httpBasic()
                 .and()

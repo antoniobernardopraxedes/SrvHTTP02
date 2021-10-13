@@ -8,10 +8,10 @@
 //                                                                                                                    *
 //*********************************************************************************************************************
 //
-var xhttp = new XMLHttpRequest();
-var recurso;
-var i = 0;
-var grupo;
+//var xhttp = new XMLHttpRequest();
+//var recurso;
+//var i = 0;
+//var grupo;
 
 const form = document.getElementById('cadastrocliente');
 const nomeUsuarioCliente = form.elements['username'];
@@ -24,8 +24,8 @@ const locomocaoCliente = form.elements['locomocao'];
 const exigenteCliente = form.elements['exigente'];
 const generoCliente = form.elements['genero'];
 
-var NomeUsuarioAdmin;
-var NomeAdmin;
+//var NomeUsuarioAdmin;
+//var NomeAdmin;
 
 var EstadoConfirma = "null";
 var EstadoData = "null";
@@ -54,7 +54,7 @@ VerificaAdmin()
 // Fim do Programa
 
 function CarregaVariaveisFormulario() {
-    
+
     NomeUsuarioCliente = nomeUsuarioCliente.value;
     NomeCliente = nomeCliente.value;
     CelularCliente = celularCliente.value;
@@ -64,7 +64,7 @@ function CarregaVariaveisFormulario() {
     LocomocaoCliente = locomocaoCliente.value;
     ExigenteCliente = exigenteCliente.value;
     GeneroCliente = generoCliente.value;
-    AdminResp = NomeUsuarioAdmin;
+    //AdminResp = NomeUsuarioAdmin;
 }
 
 //*********************************************************************************************************************
@@ -80,22 +80,23 @@ function CarregaVariaveisFormulario() {
 // Saída: não tem                                                                                                     *
 //*********************************************************************************************************************
 //
-function VerificaAdmin() {    
+function VerificaAdmin() {
 
     let requisicao = new XMLHttpRequest();
-    recurso = "admin/";
+    let recurso = "admin/";
     requisicao.open("GET", recurso, true);
     requisicao.timeout = 2000;
     EscreveMsgEnvSrv();
     requisicao.send(null);
-    
+
     requisicao.onload = function() {
         let dadosJson = JSON.parse(requisicao.responseText);
-        NomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
-        EscreveTexto("Administrador: " + NomeUsuarioAdmin, "nomeadmin");
+        //NomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
+        let nomeUsuarioAdmin = dadosJson.nomeUsuarioAdmin;
+        EscreveTexto("Administrador: " + nomeUsuarioAdmin, "nomeadmin");
         EscreveTexto("Servidor: recebidas informações do administrador", "infocom");
     };
-    
+
     requisicao.ontimeout = function(e) {
         EscreveTexto("O servidor não respondeu à requisição", "infocom");
     };
@@ -116,23 +117,23 @@ function VerificaAdmin() {
 //*********************************************************************************************************************
 //
 function VerificaCliente() {
-    
+
     CarregaVariaveisFormulario();
     clienteOK = false;
     LimpaCamposInfo();
-    
+
     if (NomeUsuarioCliente != "") {
-        
+
         let requisicao = new XMLHttpRequest();
-        recurso = "cadastro/cliente/" + NomeUsuarioCliente;
+        let recurso = "cadastro/cliente/" + NomeUsuarioCliente;
         requisicao.open("GET", recurso, true);
         requisicao.timeout = 2000;
         EscreveMsgEnvSrv();
         requisicao.send(null);
-    
+
         requisicao.onload = function() {
             CarregaDadosCliente(requisicao);
-            
+
             if (clienteOK) {
                 EscreveTexto("Servidor: recebidas informações do cliente", "infocom");
                 LimpaCamposInfo();
@@ -147,7 +148,7 @@ function VerificaCliente() {
                 Atualiza = false;
             }
          };
-         
+
          requisicao.ontimeout = function(e) {
                 EscreveTexto("O servidor não respondeu à requisição", "infocom");
          };
@@ -176,10 +177,10 @@ function VerificaCliente() {
 //*********************************************************************************************************************
 //
 function Cadastra() {
-    
+
     CarregaVariaveisFormulario();
     LimpaCamposInfo();
-    
+
     if (NomeUsuarioCliente != "") {
         if (Atualiza) {
             if (NomeCliente == "") NomeCliente = "null";
@@ -187,7 +188,7 @@ function Cadastra() {
             if (Obs1Cliente == "") Obs1Cliente = "null";
             if (Obs2Cliente == "") Obs2Cliente = "null";
             if (confirm("Confirma a atualização do cadastro do cliente " + NomeUsuarioCliente + "?")) {
-        
+
                 let requisicao = new XMLHttpRequest();
                 recurso = "cadastro/cliente";
                 requisicao.open("PUT", recurso, true);
@@ -195,10 +196,10 @@ function Cadastra() {
                 requisicao.timeout = 2000;
                 EscreveMsgEnvSrv();
                 requisicao.send(MontaMsgJson());
-        
+
                 requisicao.onload = function() {
                     CarregaDadosCliente(requisicao);
-                
+
                     if (clienteOK) {
                         EscreveTexto("O cadastro do cliente foi atualizado", "infocom");
                         EscreveInfoCliente();
@@ -214,7 +215,7 @@ function Cadastra() {
             if (NomeCliente != "") {
                 if (CelularCliente != "") {
                     if (confirm("Confirma o cadastro do cliente " + NomeUsuarioCliente + "?")) {
-        
+
                         let requisicao = new XMLHttpRequest();
                         recurso = "cadastro/cliente";
                         requisicao.open("POST", recurso, true);
@@ -222,7 +223,7 @@ function Cadastra() {
                         requisicao.timeout = 2000;
                         EscreveMsgEnvSrv();
                         requisicao.send(MontaMsgJson());
-        
+
                         requisicao.onload = function() {
                             CarregaDadosCliente(requisicao);
                             if (clienteOK) {
@@ -265,21 +266,21 @@ function Cadastra() {
 //*********************************************************************************************************************
 //
 function ExcluiCadastroCliente() {
-    
+
     CarregaVariaveisFormulario();
     LimpaCamposInfo();
-    
+
     if (NomeUsuarioCliente != "") {
         if (clienteOK) {
             if (confirm("Confirma a exclusão do cadastro do cliente " + NomeUsuarioCliente + "?")) {
-                
+
                 let requisicao = new XMLHttpRequest();
                 recurso = "cadastro/cliente/" + NomeUsuarioCliente;
                 requisicao.open("DELETE", recurso, true);
                 requisicao.timeout = 2000;
                 EscreveMsgEnvSrv();
                 requisicao.send(null);
-        
+
                 requisicao.onload = function() {
                     CarregaDadosCliente(requisicao);
                     if (!clienteOK) {
@@ -315,7 +316,7 @@ function ExcluiCadastroCliente() {
 //*********************************************************************************************************************
 //
 function CarregaDadosCliente(respostaJson) {
-    
+
    let dadosJson = JSON.parse(respostaJson.responseText);
     NomeUsuarioClienteRec = dadosJson.nomeUsuario;
     NomeCliente = dadosJson.nome;
@@ -327,14 +328,14 @@ function CarregaDadosCliente(respostaJson) {
     ExigenteCliente = dadosJson.exigente;
     GeneroCliente = dadosJson.genero;
     AdminResp = dadosJson.adminResp;
-        
+
     if (NomeUsuarioClienteRec == NomeUsuarioCliente) {
         clienteOK = true;
     }
     else {
         clienteOK = false;
     }
-    
+
 }
 
 //*********************************************************************************************************************
@@ -350,10 +351,10 @@ function CarregaDadosCliente(respostaJson) {
 //*********************************************************************************************************************
 //
 function MontaMsgJson() {
-    
+
     if (Obs1Cliente == "") Obs1Cliente = "não informada";
     if (Obs1Cliente == "") Obs1Cliente = "não informada";
-        
+
     var msgJson = "{\n" +
                   "  \"nomeUsuario\" : \"" + NomeUsuarioCliente + "\",\n" +
                   "  \"nome\" : \"" + NomeCliente + "\",\n" +
@@ -364,9 +365,9 @@ function MontaMsgJson() {
                   "  \"locomocao\" : \"" + LocomocaoCliente + "\",\n" +
                   "  \"exigente\" : \"" + ExigenteCliente + "\",\n" +
                   "  \"genero\" : \"" + GeneroCliente + "\",\n" +
-                  "  \"adminResp\" : \"" + AdminResp + "\"\n" +
+                  "  \"adminResp\" : \"" + NomeUsuarioAdmin + "\"\n" +
                   "}";
-                  
+
     return msgJson;
 }
 
@@ -389,9 +390,9 @@ function EscreveInfoCliente() {
         EscreveTexto("Nome de usuário: " + NomeUsuarioCliente, "info1");
         EscreveTexto("Nome Completo: " + NomeCliente, "info2");
         EscreveTexto("Celular: " + CelularCliente, "info3");
-                                
+
         var sufixo = "o";
-        if (GeneroCliente == "Feminino") sufixo = "a";                
+        if (GeneroCliente == "Feminino") sufixo = "a";
         EscreveTexto("Idos" + sufixo + ": " + IdosoCliente, "info4");
         EscreveTexto("Dificuldade de locomoção: " + LocomocaoCliente, "info5");
         EscreveTexto("Exigente: " + ExigenteCliente, "info6");
@@ -462,11 +463,3 @@ function LimpaCamposInfo() {
 function LimpaCampoInfoForm(id) {
     document.getElementById(id).innerHTML = "                          ";
 }
-
-
-
-
-
-
-
-

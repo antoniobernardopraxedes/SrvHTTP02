@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import praxsoft.SrvHTTP02.domain.Cliente;
-import praxsoft.SrvHTTP02.domain.DadosMesa;
 import praxsoft.SrvHTTP02.domain.ReservaMesa;
 
 import java.time.LocalDateTime;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @Service
 public class VlglService {
 
-    private String[][][][] MsgXMLArray = new String[1][4][120][2];
+    //private String[][][][] MsgXMLArray = new String[1][4][120][2];
 
     private String nomeArquivoImpressao;
     private String nomeArquivoRegistro;
@@ -22,9 +21,7 @@ public class VlglService {
         return nomeArquivoImpressao;
     }
 
-    public String getNomeArquivoRegistro() {
-        return nomeArquivoRegistro;
-    }
+    public String getNomeArquivoRegistro() { return nomeArquivoRegistro; }
 
     //******************************************************************************************************************
     // Nome do Método: GeraCadastroCliente                                                                             *
@@ -237,12 +234,10 @@ public class VlglService {
             String letra = "A";
 
             for (int i = 0; i < numMesas; i++) {
-
-                reservaMesas[i] = new ReservaMesa();
-
                 if (i > 8) { letra = "B"; }
                 sufixo = letra + IntToStr2(i);
 
+                reservaMesas[i] = new ReservaMesa();
                 reservaMesas[i].setNomeUsuario(Arquivo.LeParametro(dadosArquivo, "NOU" + sufixo + ":"));
                 reservaMesas[i].setNomeCliente(Arquivo.LeCampo(dadosArquivo, "NOC" + sufixo + ":"));
                 reservaMesas[i].setNumPessoas(Arquivo.LeParametro(dadosArquivo, "NUP" + sufixo + ":"));
@@ -744,307 +739,6 @@ public class VlglService {
     }
 
     //******************************************************************************************************************
-    // Nome do Método: MontaXMLadmin()                                                                                 *
-    //	                                                                                                               *
-    // Data: 22/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes ao administrador que está fazendo as reservas.       *
-    //         As informações do cliente são lidas de um arquivo texto que tem o nome igual ao id do administrador.    *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do administrador (idAdmin). O idAdmin não deve ter espaços nem caracteres *
-    //          especiais.                                                                                             *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLadmin(String idAdmin) {
-
-        int i = 0;
-        int IdNv0 = 0;
-        int IdNv1 = 1;
-        IniciaMsgXML("LOCAL001", 1);
-        MsgXMLArray[IdNv0][IdNv1][i++][0] = "ADMIN";
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", idAdmin);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLCliente()                                                                               *
-    //	                                                                                                               *
-    // Data: 2%/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes do cliente. As informações do cliente são lidas      *
-    //         de um arquivo texto que tem o nome igual ao nome de usuário.                                            *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do cliente                                                                *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLCliente(String nomeUsuario) {
-
-        IniciaMsgXML("LOCAL001", 1);
-        CarregaClienteArray(nomeUsuario, 1);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLData()                                                                                  *
-    //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações referentes à disponibilidade das mesas em uma data. As          *
-    //         informações são lidas de um arquivo do tipo texto que tem o nome no formato DD-MM-AAAA.res              *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva no formato DD/MM/AAAA                                                     *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLData(String dataReserva) {
-
-        IniciaMsgXML("LOCAL001", 1);
-        CarregaDataArray(dataReserva, 1);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLReserva                                                                                 *
-    //	                                                                                                               *
-    // Data: 06/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de reserva de mesa e insere      *
-    //         também as informações de disponibilidade das mesas na data especificada                                 *
-    //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a reserva                                  *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLReserva(ReservaMesa reservaMesa, boolean confirma) {
-
-        String resposta = "nao";
-        if (confirma) { resposta = "reserva"; }
-
-        IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, resposta, 1);
-        CarregaDataArray(reservaMesa.getDataReserva(), 2);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLConsulta                                                                                *
-    //	                                                                                                               *
-    // Data: 06/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado sobre uma requisição de consulta de reserva de mesa   *
-    //         e insere também as informações de disponibilidade das mesas na data especificada                        *
-    //                                                                                                                 *
-    // Entrada: objeto da classe ReservaMesa e boolean confirma confirmando a consulta                                 *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLConsulta(ReservaMesa reservaMesa, boolean confirma) {
-
-        String resposta = "nao";
-        if (confirma) { resposta = "consulta"; }
-
-        IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, resposta, 1);
-        CarregaDataArray(reservaMesa.getDataReserva(), 2);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaXMLExclui                                                                                  *
-    //	                                                                                                               *
-    // Data: 29/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: monta uma string XML com as informações de estado e as informações de disponibilidade das mesas na      *
-    //         data especificada                                                                                       *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva, string com o identificador da mesa e string com o nome de usuário do     *
-    //          administrador que está fazendo a exclusão da reserva                                                   *
-    //                                                                                                                 *
-    // Saida: string com a mensagem XML                                                                                *
-    //******************************************************************************************************************
-    //
-    public String MontaXMLExclui(String dataReserva, String idMesa, String idAdmin) {
-
-        ReservaMesa reservaMesa = new ReservaMesa();
-
-        reservaMesa.setMesaSelecionada(idMesa);
-        reservaMesa.setDataReserva(dataReserva);
-
-        reservaMesa.setNomeUsuario("null");
-        reservaMesa.setNomeCliente("null");
-        reservaMesa.setNumPessoas("null");
-        reservaMesa.setHoraChegada("null");
-
-        reservaMesa.setAdminResp(idAdmin);
-        reservaMesa.setHoraRegistro(ImpHora());
-        reservaMesa.setDataRegistro(ImpData());
-
-        IniciaMsgXML("LOCAL001", 2);
-        CarregaEstadoArray(reservaMesa, "excluida", 1);
-        CarregaDataArray(dataReserva, 2);
-
-        return(StringXML());
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: CarregaEstadoArray                                                                              *
-    //	                                                                                                               *
-    // Data: 25/09/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: carrega as informações de estado no array usado para montar a mensagem XML.                             *
-    //                                                                                                                 *
-    // Entrada: int com o índice do local e int com o índice do grupo                                                  *
-    //                                                                                                                 *
-    // Saida: não tem                                                                                                  *
-    //******************************************************************************************************************
-    //
-    private void CarregaEstadoArray(ReservaMesa reservaMesa, String resposta, int IdNv1) {
-
-        int i = 0;
-        int IdNv0 = 0;
-        MsgXMLArray[IdNv0][IdNv1][i++][0] = "ESTADO";
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("RESPOSTA", resposta);
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("MESA", reservaMesa.getMesaSelecionada());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DATA", reservaMesa.getDataReserva());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", reservaMesa.getNomeUsuario());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", reservaMesa.getNomeCliente());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUMPES", reservaMesa.getNumPessoas());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HORARES", reservaMesa.getHoraChegada());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADMINRESP", reservaMesa.getAdminResp());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HORAREG", ImpHora());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DATAREG", ImpData());
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: CarregaClienteArray                                                                             *
-    //	                                                                                                               *
-    // Data: 02/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: carrega as informações do cliente no array usado para montar a mensagem XML.                            *
-    //                                                                                                                 *
-    // Entrada: string com o nome de usuário do cliente, int com o índice do local e int com o índice do grupo         *
-    //                                                                                                                 *
-    // Saida: não tem                                                                                                  *
-    //******************************************************************************************************************
-    //
-    private void CarregaClienteArray(String nomeUsuario, int IdNv1) {
-
-        Cliente cliente = LeArquivoCadastroCliente(nomeUsuario);
-
-        int i = 0;
-        int IdNv0 = 0;
-        MsgXMLArray[IdNv0][IdNv1][i++][0] = "CLIENTE";
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ID", cliente.getNomeUsuario());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOME", cliente.getNome());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("CELULAR", cliente.getCelular());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS1", cliente.getObs1());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("OBS2", cliente.getObs2());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("IDOSO", cliente.getIdoso());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("LOCOMOCAO", cliente.getLocomocao());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("EXIGENTE", cliente.getExigente());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("GENERO", cliente.getGenero());
-        MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADMINRSP", cliente.getAdminResp());
-        MsgXMLArray[IdNv0][IdNv1][0][1] = IntToStr2(i - 1);
-
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: CarregaDataArray                                                                                *
-    //	                                                                                                               *
-    // Data: 02/10/2021                                                                                                *
-    //                                                                                                                 *
-    // Funcao: carrega as informações das reservas das mesas na data no array usado para montar a mensagem XML.        *
-    //                                                                                                                 *
-    // Entrada: string com a data da reserva, int com o índice do local e int com o índice do grupo                    *
-    //                                                                                                                 *
-    // Saida: não tem                                                                                                  *
-    //******************************************************************************************************************
-    //
-    private void CarregaDataArray(String dataReserva, int IdNv1) {
-
-        //DadosMesa dadosMesa = LeArquivoReservaMesa(dataReserva);
-
-        int numMesas = 17;
-        ReservaMesa[] reservaMesas = LeArquivoReservaMesa(dataReserva);
-
-        //String[] nomeUsuario = dadosMesa.getNomeUsuario();
-        //String[] nomeCompleto = dadosMesa.getNomeCompleto();
-        //String[] numeroPessoas = dadosMesa.getNumeroPessoas();
-        //String[] horaChegada = dadosMesa.getHoraChegada();
-        //String[] adminResponsavel = dadosMesa.getAdminResponsavel();
-        //String[] horaRegistro = dadosMesa.getHoraRegistro();
-        //String[] dataRegistro = dadosMesa.getDataRegistro();
-
-        int i = 0;
-        int IdNv0 = 0;
-        MsgXMLArray[IdNv0][IdNv1][i++][0] = "MESAS";
-
-        for (int k = 0; k < numMesas; k++) {
-            ReservaMesa reservaMesa = reservaMesas[k];
-
-            String letra = "A";
-            if (k > 8) { letra = "B"; }
-            String sufixo = letra + IntToStr2(k);
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOU" + sufixo, reservaMesa.getNomeUsuario());
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NOC" + sufixo, reservaMesa.getNomeCliente());
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("NUP" + sufixo, reservaMesa.getNumPessoas());
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOC" + sufixo, reservaMesa.getHoraChegada());
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("ADR" + sufixo, reservaMesa.getAdminResp());
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("HOR" + sufixo, reservaMesa.getHoraRegistro());
-            MsgXMLArray[IdNv0][IdNv1][i++] = EntTagValue("DTR" + sufixo, reservaMesa.getDataRegistro());
-        }
-        String numElementosGrupo = IntToStr4(i - 1);
-        MsgXMLArray[IdNv0][IdNv1][0][1] = numElementosGrupo;
-
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: StringXML()                                                                                     *
-    //	                                                                                                               *
-    // Funcao: monta uma String com a mensagem XML de resposta inserindo o valor das variáveis                         *
-    //                                                                                                                 *
-    // Entrada: array String com as Tags dos Níveis 0, 1 e 2 e os valores das variáveis de supervisão                  *
-    //                                                                                                                 *
-    // Saida: String com a mensagem XML                                                                                *
-    //	                                                                                                               *
-    //******************************************************************************************************************
-    //
-    private String StringXML() {
-        String MsgXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        MsgXML = MsgXML + "<" + MsgXMLArray[0][0][0][0] + ">\n";
-
-        int NmTagNv1 = Integer.parseInt(MsgXMLArray[0][0][0][1]);
-        for (int i = 1; i <= NmTagNv1; i++) {
-            MsgXML = MsgXML + "  <" + MsgXMLArray[0][i][0][0] + ">\n";
-
-            int NumVar = Integer.parseInt(MsgXMLArray[0][i][0][1]);
-            for (int j = 1; j <= NumVar; j++) {
-                MsgXML = MsgXML + "    <" + MsgXMLArray[0][i][j][0] + ">"
-                                          + MsgXMLArray[0][i][j][1]
-                                   + "</" + MsgXMLArray[0][i][j][0] + ">\n";
-            }
-            MsgXML = MsgXML + "  </" + MsgXMLArray[0][i][0][0] + ">\n";
-        }
-        MsgXML = MsgXML + "</" + MsgXMLArray[0][0][0][0] + ">";
-
-        return (MsgXML);
-    }
-
-    //******************************************************************************************************************
     // Nome do Método: ImpHora                                                                                         *
     //                                                                                                                 *
     // Funcao: gera uma string com a hora recebida em um array de bytes                                                *
@@ -1126,7 +820,7 @@ public class VlglService {
     //                                                                                                                 *
     // Funcao: converte um inteiro positivo na faixa de 0000 a 9999 para uma string                                    *
     //                                                                                                                 *
-    // Entrada: valor inteiro de 0 a 99                                                                                *
+    // Entrada: valor inteiro de 0 a 9999                                                                              *
     //                                                                                                                 *
     // Saida: string de dois dígitos do número (formato 00 a 99). Se o valor estiver fora da faixa retorna 00          *
     //                                                                                                                 *
@@ -1153,77 +847,9 @@ public class VlglService {
         return (valStr);
     }
 
-    //******************************************************************************************************************
-    // Nome do Método: EntTagValue                                                                                     *
-    //                                                                                                                 *
-    // Funcao: monta um array de duas strings a partir de duas strings (Tag e Value).                                  *
-    //                                                                                                                 *
-    // Entrada: string com a Tag e string com o Value                                                                  *
-    //                                                                                                                 *
-    // Saida: array[2] com a string Tag na posição 0 e a string Values na posição 1.                                   *
-    //******************************************************************************************************************
-    //
-    private String[] EntTagValue(String tag, String value) {
-        String[] tagvalue = new String[2];
-        tagvalue[0] = tag;
-        tagvalue[1] = value;
-
-        return (tagvalue);
-    }
-
-    //******************************************************************************************************************
-    // Nome do Método: MontaJson                                                                                       *
-    //                                                                                                                 *
-    // Funcao: monta uma mensagem em formato Json a partir das variáveis de supervisão e carrega em uma string         *
-    //                                                                                                                 *
-    // Entrada: não tem                                                                                                *
-    //                                                                                                                 *
-    // Saida: String com a mensagem em formato Json                                                                    *
-    //                                                                                                                 *
-    //******************************************************************************************************************
-    //
-    private String MontaJson() {
-
-        int numObj = 2;
-        String[][] KeyValue = new String[numObj][2];
-
-        KeyValue[0] = EntKeyValue("ID", "Ingrid");
-        KeyValue[1] = EntKeyValue("NOME", "Ingrid Loyane F. Silva");
-
-        return (JsonString(KeyValue, numObj));
-    }
-
-    private String JsonString(String[][] KeyValue, int numObj) {
-        String MsgJson = "{\n";
-        for (short i = 0; i < numObj; i++) {
-            MsgJson = MsgJson + "\"" + KeyValue[i][0].toLowerCase() + "\"" + " : "
-                    + "\"" + KeyValue[i][1] + "\"";
-
-            if (i < (numObj - 1)) { MsgJson = MsgJson + ",";}
-            MsgJson = MsgJson + "\n";
-        }
-        MsgJson = MsgJson + " }";
-
-        //System.out.println(MsgJson);
-
-        return MsgJson;
-    }
-
-    private String[] EntKeyValue(String Key, String Value) {
-        String[] keyvalue = new String[2];
-        keyvalue[0] = Key;
-        keyvalue[1] = Value;
-        return (keyvalue);
-    }
-
     private String msgArqNaoEncontrado(String nomeArquivo) {
 
         return ("<p></p><h3>File not found: " + nomeArquivo + "</h3>");
-    }
-
-    private void IniciaMsgXML(String tag0, int numGrupos) {
-        MsgXMLArray[0][0][0][0] = tag0;
-        MsgXMLArray[0][0][0][1] = IntToStr2(numGrupos);
     }
 
 }

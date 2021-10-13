@@ -1,0 +1,10 @@
+Executar o comando para gerar o arquivo jar completo:
+
+mvn clean package
+
+Depois executar o arquivo .jar a partir do ditetorio SrvHTTP02 com:
+
+java -jar target/SrvHTTP02-0.0.1-SNAPSHOT.jar
+
+
+(mvn package && java -jar target/SrvHTTP02-0.0.1-SNAPSHOT.jar)
