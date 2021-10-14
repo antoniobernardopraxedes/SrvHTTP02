@@ -19,28 +19,31 @@ public class SupResources {
 
     @GetMapping(value = "/sup")
     public ResponseEntity<?> supHtml(@RequestHeader(value = "User-Agent") String userAgent) {
-        String nomeArquivo = "tabela.html";
 
-        return siteService.LeArquivoMontaResposta("recursos/sup/", nomeArquivo, userAgent);
+        String nomeArquivo = "tabela.html";
+        String caminho = Arquivo.getDiretorioRecursos() + "/sup/";
+
+        return siteService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/sup.{nomeArquivo}")
     public ResponseEntity<?> EnviaHtmlSite(@PathVariable("nomeArquivo") String nomeArquivo,
                                            @RequestHeader(value = "User-Agent") String userAgent) {
 
-        return siteService.LeArquivoMontaResposta("recursos/sup/", nomeArquivo, userAgent);
+        String caminho = Arquivo.getDiretorioRecursos() + "/sup/";
+
+        return siteService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/local001.xml")
     public ResponseEntity<?> atualizaVariaveis() {
+        Auxiliar.Terminal("Recebida Requisição de Atualização do Cliente", false);
 
         if (Arquivo.isOpLocal()) {
             String EndConcArd = Arquivo.getEndIpConc();
             byte[] MsgRec = supService.ClienteCoAPUDP(EndConcArd, "estados", numComando);
             numComando = 0;
         }
-
-        Auxiliar.Terminal("Recebida Requisição de Atualização do Cliente", false);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

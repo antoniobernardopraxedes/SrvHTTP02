@@ -1,6 +1,7 @@
 ModoOp: remoto
 Verbose: true
 EndIpConcArduino: 192.168.0.150
-DiretorioBD: /home/antonio/bd/ 
+DiretorioBD: /home/antonio/bd/
+DiretorioRecursos: /home/antonio/recursos/
 
 

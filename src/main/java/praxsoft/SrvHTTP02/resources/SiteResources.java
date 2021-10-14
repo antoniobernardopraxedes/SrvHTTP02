@@ -3,6 +3,7 @@ package praxsoft.SrvHTTP02.resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import praxsoft.SrvHTTP02.services.Arquivo;
 import praxsoft.SrvHTTP02.services.SiteService;
 
 @RestController
@@ -15,21 +16,24 @@ public class SiteResources {
     public ResponseEntity<?> InicioSite(@RequestHeader(value = "User-Agent") String userAgent) {
         String nomeArquivo = "indice.html";
 
-        return siteService.LeArquivoMontaResposta("recursos/isis/", nomeArquivo, userAgent);
+        String caminho = Arquivo.getDiretorioRecursos() + "/isis/";
+        return siteService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
    }
 
     @GetMapping(value = "/isis/{nomeArquivo}")
     public ResponseEntity<?> EnviaHtmlSite(@PathVariable("nomeArquivo") String nomeArquivo,
                                            @RequestHeader(value = "User-Agent") String userAgent) {
 
-        return siteService.LeArquivoMontaResposta("recursos/isis/", nomeArquivo, userAgent);
+        String caminho = Arquivo.getDiretorioRecursos() + "/isis/";
+        return siteService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/favicon.ico")
     public ResponseEntity<?> EnviaIcone() {
         System.out.println("Enviado arquivo favicon.ico");
 
-        return siteService.LeArquivoMontaResposta("recursos/isis/", "favicon.ico", "null");
+        String caminho = Arquivo.getDiretorioRecursos() + "/isis/";
+        return siteService.LeArquivoMontaResposta(caminho, "favicon.ico", "null");
     }
 
 }

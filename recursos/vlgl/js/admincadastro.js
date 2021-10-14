@@ -2,17 +2,12 @@
 //                                                                                                                    *
 //                       Programa Javascript para rodar no navegador de um administrador                              *
 //                                                                                                                    *
-// Data: 10/10/2021                                                                                                   *
+// Data: 14/10/2021                                                                                                   *
 //                                                                                                                    *
 // Função: permite ao administrador gerenciar o cadastramento dos clientes                                            *
 //                                                                                                                    *
 //*********************************************************************************************************************
 //
-//var xhttp = new XMLHttpRequest();
-//var recurso;
-//var i = 0;
-//var grupo;
-
 const form = document.getElementById('cadastrocliente');
 const nomeUsuarioCliente = form.elements['username'];
 const nomeCliente = form.elements['nome'];
@@ -25,17 +20,6 @@ const exigenteCliente = form.elements['exigente'];
 const generoCliente = form.elements['genero'];
 
 var NomeUsuarioAdmin = "null";
-//var NomeUsuarioCliente = "null";
-//var NomeUsuarioClienteRec = "null";
-//var NomeCliente = "null";
-//var CelularCliente = "null";
-//var Obs1Cliente = "null";
-//var Obs2Cliente = "null";
-//var IdosoCliente = "null";
-//var LocomocaoCliente = "null";
-//var ExigenteCliente = "null";
-//var GeneroCliente = "null";
-//var AdminResp = "null";
 
 // Objeto que recebe as informações do cliente locais (lidas do formulário e do ambiente local)
 const Cliente = { nomeUsuario: "null",
@@ -63,7 +47,6 @@ const ClienteRec = { nomeUsuario: "null",
 
 var ClienteOK = false;
 var Atualiza = false;
-
 
 VerificaAdmin()
 
@@ -123,7 +106,6 @@ function VerificaCliente() {
     clienteOK = false;
     LimpaCamposInfo();
 
-    // Verifica se o nome de usuário do cliente foi iserido pelo administrador
     if (nomeUsuarioCliente.value == "") {
         EscreveTexto("Entre com o nome de usuário do cliente", "info1");
     }
@@ -187,10 +169,10 @@ function CadastraAtualiza() {
         Cliente.nomeUsuario = nomeUsuarioCliente.value;
         Cliente.adminResp = NomeUsuarioAdmin;
 
-        if (Atualiza) {
+        if (Atualiza) { // Se o cliente está cadastrado, atualiza o cadastro com os dados
             AtualizaCadastroCliente();
         }
-        else {
+        else { // Se o cliente não está cadastrado, é obrigatório entrar com o nome e o número do celular
             if (nomeCliente.value == "") {
                 EscreveTexto("Entre com o nome completo do cliente", "infocom");
             }
@@ -222,20 +204,18 @@ function AtualizaCadastroCliente() {
 
     if (confirm("Confirma a atualização do cadastro do cliente " + Cliente.nomeUsuario + "?")) {
 
-        if (nomeCliente.value == "") Cliente.nome = "null";
-        if (celularCliente.value == "") Cliente.celular = "null";
-        if (obs1Cliente.value == "") {
-            Cliente.obs1 = "null";
-        }
-        else {
-            Cliente.obs1 = obs1Cliente.value;
-        }
-        if (obs2Cliente.value == "") {
-            Cliente.obs2 = "null";
-        }
-        else {
-            Cliente.obs2 = obs2Cliente.value;
-        }
+        if (nomeCliente.value == "") { Cliente.nome = "null"; }
+        else { Cliente.nome = nomeCliente.value; }
+
+        if (celularCliente.value == "") { Cliente.celular = "null"; }
+        else { Cliente.celular = celularCliente.value; }
+
+        if (obs1Cliente.value == "") { Cliente.obs1 = "null"; }
+        else { Cliente.obs1 = obs1Cliente.value; }
+
+        if (obs2Cliente.value == "") { Cliente.obs2 = "null"; }
+        else { Cliente.obs2 = obs2Cliente.value; }
+
         Cliente.idoso = idosoCliente.value;
         Cliente.locomocao = locomocaoCliente.value;
         Cliente.exigente = exigenteCliente.value;
@@ -253,12 +233,12 @@ function AtualizaCadastroCliente() {
             CarregaDadosCliente(requisicao);
 
             if (clienteOK) {
-                EscreveTexto("O cadastro do cliente foi atualizado", "infocom");
+                EscreveTexto("Servidor: o cadastro do cliente foi atualizado", "infocom");
                 EscreveInfoCliente();
             }
             else {
                 LimpaCamposInfo();
-                EscreveTexto("Servidor: Falha ao atualizar o cadastro do cliente", "infocom");
+                EscreveTexto("Servidor: falha ao atualizar o cadastro do cliente", "infocom");
             }
         };
 
@@ -288,18 +268,13 @@ function CadastraCliente() {
 
         Cliente.nome = nomeCliente.value;
         Cliente.celular = celularCliente.value;
-        if (obs1Cliente.value == "") {
-            Cliente.obs1 = "null";
-        }
-        else {
-            Cliente.obs1 = obs1Cliente.value;
-        }
-        if (obs2Cliente.value == "") {
-            Cliente.obs2 = "null";
-        }
-        else {
-            Cliente.obs2 = obs2Cliente.value;
-        }
+
+        if (obs1Cliente.value == "") { Cliente.obs1 = "null"; }
+        else { Cliente.obs1 = obs1Cliente.value; }
+
+        if (obs2Cliente.value == "") { Cliente.obs2 = "null"; }
+        else { Cliente.obs2 = obs2Cliente.value; }
+
         Cliente.idoso = idosoCliente.value;
         Cliente.locomocao = locomocaoCliente.value;
         Cliente.exigente = exigenteCliente.value;
@@ -316,13 +291,13 @@ function CadastraCliente() {
         requisicao.onload = function() {
             CarregaDadosCliente(requisicao);
             if (clienteOK) {
-                EscreveTexto("O cliente foi cadastrado", "infocom");
+                EscreveTexto("Servidor: o cliente foi cadastrado", "infocom");
                 EscreveInfoCliente();
                 Atualiza = true;
             }
             else {
                 LimpaCamposInfo();
-                EscreveTexto("Servidor: Falha ao cadastrar o cliente", "infocom");
+                EscreveTexto("Servidor: falha ao cadastrar o cliente", "infocom");
                 Atualiza = false;
               }
         };

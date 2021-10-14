@@ -14,6 +14,7 @@ public class Arquivo {
     private static boolean verbose = false;
     private static String endIpConc = "192.168.0.170";
     private static String diretorioBd = "/home/bernardo/bd/";
+    private static String diretorioRecursos = "recursos/";
 
     private static int numMaxUsuarios = 5;
     private static int numUsuarios = 3;
@@ -27,6 +28,8 @@ public class Arquivo {
     public static String getEndIpConc() { return endIpConc; }
 
     public static String getDiretorioBd() { return diretorioBd; }
+
+    public static String getDiretorioRecursos() { return diretorioRecursos; }
 
     public static int getNumUsuarios() { return numUsuarios; }
 
@@ -62,6 +65,7 @@ public class Arquivo {
 
             endIpConc = LeParametro(arquivoConf, "EndIpConcArduino:");
             diretorioBd = LeParametro(arquivoConf, "DiretorioBD:");
+            diretorioRecursos = LeParametro(arquivoConf, "DiretorioRecursos:");
             resultado = true;
         }
         return resultado;
@@ -354,6 +358,7 @@ public class Arquivo {
             }
             System.out.println("Endereço IP do Concentrador: " + endIpConc);
             System.out.println("Diretorio do banco de dados: " + diretorioBd);
+            System.out.println("Diretorio de recursos: " + diretorioRecursos);
             System.out.println("");
         }
     }

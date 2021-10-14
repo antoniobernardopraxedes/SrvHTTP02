@@ -41,8 +41,9 @@ public class VlglResources {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String nomeArquivo = "adminreservas.html";
+        String caminho = Arquivo.getDiretorioRecursos() + "/vlgl/";
 
-        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+        return vlglService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/vlgl/reservas/data/{dataReserva}")
@@ -121,6 +122,7 @@ public class VlglResources {
     @GetMapping(value = "/vlgl/reserva/impressao")
     public ResponseEntity<?> EnviaArquivoImpressao() {
         vlglService.Terminal("Solicitação do arquivo de impressão", false);
+
         String caminho = Arquivo.getDiretorioBd() + "relatorios/";
         String nomeArquivo = vlglService.getNomeArquivoImpressao();
         String arquivoImpressao = Arquivo.LeTexto(caminho, nomeArquivo);
@@ -144,8 +146,9 @@ public class VlglResources {
     public ResponseEntity<?> CadastroVlgl(@RequestHeader(value = "User-Agent") String userAgent) {
 
         String nomeArquivo = "admincadastro.html";
+        String caminho = Arquivo.getDiretorioRecursos() + "/vlgl/";
 
-        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+        return vlglService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
     }
 
     @GetMapping(value = "/vlgl/cadastro/cliente/{nomeUsuario}")
@@ -227,8 +230,9 @@ public class VlglResources {
                                               @RequestHeader(value = "User-Agent") String userAgent) {
 
         vlglService.Terminal("Método GET - Recurso solicitado: /vlgl/aux/" + nomeArquivo, false);
+        String caminho = Arquivo.getDiretorioRecursos() + "/vlgl/";
 
-        return vlglService.LeArquivoMontaResposta("recursos/vlgl/", nomeArquivo, userAgent);
+        return vlglService.LeArquivoMontaResposta(caminho, nomeArquivo, userAgent);
     }
 
 }
