@@ -104,7 +104,6 @@ function VerificaAdmin() {
 function VerificaCliente() {
 
     clienteOK = false;
-    LimpaCamposInfo();
 
     if (nomeUsuarioCliente.value == "") {
         EscreveTexto("Entre com o nome de usuário do cliente", "info1");
@@ -123,15 +122,14 @@ function VerificaCliente() {
 
             if (clienteOK) {
                 EscreveTexto("Servidor: recebidas informações do cliente", "infocom");
-                LimpaCamposInfo();
                 EscreveInfoCliente();
                 Atualiza = true;
                 EscreveTexto("Atualiza", "botaocadastra");
             }
             else {
               EscreveTexto("Servidor: cliente não cadastrado", "infocom");
-              LimpaCamposInfo();
               EscreveTexto("Cadastra", "botaocadastra");
+              LimpaCamposForm();
               Atualiza = false;
             }
          };
@@ -159,8 +157,6 @@ function VerificaCliente() {
 //*********************************************************************************************************************
 //
 function CadastraAtualiza() {
-
-    LimpaCamposInfo();
 
     if (nomeUsuarioCliente.value == "") {
         EscreveTexto("Entre com o nome de usuário do cliente", "infocom");
@@ -325,8 +321,6 @@ function CadastraCliente() {
 //
 function ExcluiCadastroCliente() {
 
-    LimpaCamposInfo();
-
     if (nomeUsuarioCliente.value == "") {
         EscreveTexto("Entre com o nome de usuário do cliente e verifique", "infocom");
     }
@@ -349,7 +343,6 @@ function ExcluiCadastroCliente() {
                         EscreveInfoCliente();
                     }
                     else {
-                        LimpaCamposInfo();
                         EscreveTexto("Servidor: Falha ao excluir o cliente", "infocom");
                     }
                 };
@@ -384,7 +377,7 @@ function CarregaDadosCliente(respostaJson) {
     ClienteRec.idoso = dadosJson.idoso;
     ClienteRec.locomocao = dadosJson.locomocao;
     ClienteRec.exigente = dadosJson.exigente;
-    ClienteRec.gerero = dadosJson.genero;
+    ClienteRec.genero = dadosJson.genero;
     ClienteRec.adminResp = dadosJson.adminResp;
 
     if (ClienteRec.nomeUsuario == Cliente.nomeUsuario) {
@@ -409,21 +402,16 @@ function CarregaDadosCliente(respostaJson) {
 //
 function EscreveInfoCliente() {
 
-    LimpaCamposInfo();
     if (clienteOK) {
-        EscreveTexto("Nome de usuário: " + ClienteRec.nomeUsuario, "info1");
-        EscreveTexto("Nome Completo: " + ClienteRec.nome, "info2");
-        EscreveTexto("Celular: " + ClienteRec.celular, "info3");
-
-        var sufixo = "o";
-        if (Cliente.gerero == "Feminino") sufixo = "a";
-        EscreveTexto("Idos" + sufixo + ": " + ClienteRec.idoso, "info4");
-        EscreveTexto("Dificuldade de locomoção: " + ClienteRec.locomocao, "info5");
-        EscreveTexto("Exigente: " + ClienteRec.exigente, "info6");
-        EscreveTexto("Gênero: " + ClienteRec.gerero, "info7");
-        EscreveTexto("Obs 1: " + ClienteRec.obs1, "info8");
-        EscreveTexto("Obs 2: " + ClienteRec.obs2, "info9");
-        EscreveTexto("Responsável pelo cadastro: " + ClienteRec.adminResp, "info10");
+        document.cadastro.nomecliente.value = ClienteRec.nome;
+        document.cadastro.celularcliente.value = ClienteRec.celular;
+        document.cadastro.obs1cliente.value = ClienteRec.obs1;
+        document.cadastro.obs2cliente.value = ClienteRec.obs2;
+        document.cadastro.idoso.value = ClienteRec.idoso;
+        document.cadastro.locomocao.value = ClienteRec.locomocao;
+        document.cadastro.exigente.value = ClienteRec.exigente;
+        document.cadastro.genero.value = ClienteRec.genero;
+        EscreveTexto(ClienteRec.adminResp, "infoadminrec");
         EscreveTexto("Atualiza", "botaocadastra");
     }
     else {
@@ -454,24 +442,14 @@ function EscreveMsgErrSrv() {
     document.getElementById("infocom").style.color = "#23257e";
 }
 
-function LimpaCampoInfo(id) {
-    document.getElementById(id).innerHTML = "                      ";
-}
-
-function LimpaCamposInfo() {
-    document.getElementById("info1").innerHTML = "                                 ";
-    document.getElementById("info2").innerHTML = "                                 ";
-    document.getElementById("info3").innerHTML = "                                 ";
-    document.getElementById("info4").innerHTML = "                                 ";
-    document.getElementById("info5").innerHTML = "                                 ";
-    document.getElementById("info6").innerHTML = "                                 ";
-    document.getElementById("info7").innerHTML = "                                 ";
-    document.getElementById("info8").innerHTML = "                                 ";
-    document.getElementById("info9").innerHTML = "                                 ";
-    document.getElementById("info10").innerHTML = "                                ";
-    document.getElementById("info12").innerHTML = "                                ";
-}
-
-function LimpaCampoInfoForm(id) {
-    document.getElementById(id).innerHTML = "                          ";
+function LimpaCamposForm() {
+  document.cadastro.nomecliente.value = "";
+  document.cadastro.celularcliente.value = "";
+  document.cadastro.obs1cliente.value = "";
+  document.cadastro.obs2cliente.value = "";
+  document.cadastro.idoso.value = "null";
+  document.cadastro.locomocao.value = "null";
+  document.cadastro.exigente.value = "null";
+  document.cadastro.genero.value = "null";
+  EscreveTexto("                                        ", "infoadminrec");
 }

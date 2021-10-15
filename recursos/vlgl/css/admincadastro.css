@@ -6,7 +6,7 @@ body{
 
 .linhaesq {
   display: flex;  /* aligns all child elements (flex items) in a row */
-  max-width: 570px;
+  max-width: 900px;
 }
 
 .linhadir {
@@ -17,7 +17,7 @@ body{
 
 .colesq {
   flex: 1;        /* distributes space on the line equally among items */
-  width: 570px;
+  width: 770px;
   margin-left: 50px;
   margin-right: 10px;
   align-content: center;
@@ -67,11 +67,22 @@ body{
   height: 25px;
   width: 400px;
   margin-top: 10px;
-  margin-left: 10px;
+  margin-left: 15px;
   margin-right: 0px;
   padding-left: 15px;
   padding-top: 11px;
   padding-bottom: 10px;
+}
+
+.campocadastraatualiza {
+  width: 550px;
+  height: 20px;
+  margin-top: 7px;
+  padding-left: 10px;
+  font-size: 15px;
+  border-top: solid;
+  border-width: 1px;
+  border-color: gray;
 }
 
 .campoformselectinf {
@@ -93,7 +104,7 @@ body{
   height: 30px;
   width: 95px;
   margin-top: 7px;
-  margin-left: 20px;
+  margin-left: 10px;
 }
 
 .campoform2 {
@@ -162,7 +173,7 @@ body{
 }
 
 .campoinfocom {
-  width: 550px;
+  width: 900px;
   height: 20px;
   margin-top: 15px;
   padding-left: 10px;
@@ -173,5 +184,3 @@ body{
   border-width: 1px;
   border-color: gray;
 }
-
-

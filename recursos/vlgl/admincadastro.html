@@ -21,29 +21,34 @@
             </tr>
           </table>
           <table>
-            <form id="cadastrocliente">
+            <form id="cadastrocliente" name="cadastro">
               <tr>
+                <td class="camponomeadmin">Nome de usuário do cliente</td>
                 <td>
                   <label for="username"></label>
-                  <input type="text" id="username" name="username" placeholder="Nome de usuário do cliente" class = "campoform">
+                  <input type="text" id="username" name="nomeusuario" value="" class = "campoform">
                   <small></small>
                 </td>
                 <td class="campo5">
                   <button type="button" onclick="VerificaCliente()" class="botaoentraresq">Verifica</button>
                 </td>
               </tr>
+              <td>
+              </td>
               <tr>
+                <td class="camponomeadmin">Nome completo do cliente</td>
                 <td>
                   <label for="nome"></label>
-                  <input type="text" id="nome" name="nome" placeholder="Nome completo do cliente" class = "campoform">
+                  <input type="text" id="nome" name="nomecliente" value="" class = "campoform">
                   <small></small>
                 </td>
                 <td><input type="reset" value="Limpa" class="botaoentraresq" id="limpa"></td>
               </tr>
               <tr>
+                <td class="camponomeadmin">Celular (WhatsApp) do cliente</td>
                 <td>
                   <label for="celular"></label>
-                  <input type="text" id="celular" name="celular" placeholder="Número do celular (WhatsApp) do cliente" class="campoform">
+                  <input type="text" id="celular" name="celularcliente" value="" class="campoform">
                   <small></small>
                 </td>
                 <td class="campo5">
@@ -53,16 +58,18 @@
                 </td>
               </tr>
               <tr>
+                <td class="camponomeadmin">Observação 1 sobre o cliente</td>
                 <td>
                   <label for="obs1"></label>
-                  <input type="text" id="obs1" name="obs1" placeholder="Observação 1 sobre o cliente" class="campoform">
+                  <input type="text" id="obs1" name="obs1cliente" value="" class="campoform">
                   <small></small>
                 </td>
               </tr>
               <tr>
+                <td class="camponomeadmin">Observação 2 sobre o cliente</td>
                 <td>
                   <label for="obs2"></label>
-                  <input type="text" id="obs2" name="obs2" placeholder="Observação 2 sobre o cliente" class="campoform">
+                  <input type="text" id="obs2" name="obs2cliente" value="" class="campoform">
                   <small></small>
                 </td>
                 <td></td>
@@ -76,6 +83,8 @@
                     <option value="Sim">Sim</option>
                   </select>
                 </td>
+                <td>
+                </td>
               </tr>
               <tr>
                 <td class="campoformselect">O cliente tem dificuldade de locomoção?</td>
@@ -85,6 +94,8 @@
                     <option value="Não">Não</option>
                     <option value="Sim">Sim</option>
                   </select>
+                </td>
+                <td>
                 </td>
               </tr>
               <tr>
@@ -96,9 +107,11 @@
                     <option value="Sim">Sim</option>
                   </select>
                 </td>
+                <td>
+                </td>
               </tr>
               <tr>
-                <td class="campoformselect">Gênero?</td>
+                <td class="campoformselect">Qual o gênero do cliente?</td>
                 <td>
                   <select name="genero" class="select">
                     <option value="null"></option>
@@ -106,10 +119,13 @@
                     <option value="Masculino">Masculino</option>
                   </select>
                 </td>
+                <td>
+                </td>
               </tr>
             </form>
               <tr>
-                <td class="campoformselect"</td>
+                <td class="campoformselect">Responsável pelo cadastro:</td>
+                <td class="campoformselect" id="infoadminrec"></td>
                 <td>
                   <button type="button" onclick="CadastraAtualiza()" class="botaoentraresq" id="botaocadastra">
                     Cadastra
@@ -122,31 +138,6 @@
               <td class="campoinfocom" id="infocom"></td>
             </tr>
           </table>
-        </div>
-        <div class="linhadir">
-          <div class="coldir">
-            <table>
-            <tr><td class="campotituloinfo">Informações do Cliente</td></tr>
-            <tr></tr>
-            <tr><td class="campoinfo" id="info1"></td></tr>
-            <tr><td class="campoinfo" id="info2"></td></tr>
-            <tr><td class="campoinfo" id="info3"></td></tr>
-            <tr><td class="campoinfo" id="info4"></td></tr>
-            <tr><td class="campoinfo" id="info5"></td></tr>
-            <tr><td class="campoinfo" id="info6"></td></tr>
-            <tr><td class="campoinfo" id="info7"></td></tr>
-            <tr><td class="campoinfo" id="info8"></td></tr>
-            <tr><td class="campoinfo" id="info9"></td></tr>
-            <tr><td class="campoinfo" id="info10"></td></tr>
-            <tr><td class="campoinfo" id="info11"></td></tr>
-            <tr><td class="campoinfo" id="info12"></td></tr>
-            <tr><td class="campoinfo" id="info13"></td></tr>
-            <tr><td class="campoinfo" id="info14"></td></tr>
-            <tr><td class="campoinfo" id="info15"></td></tr>
-            <tr><td class="campoinfo" id="info16"></td></tr>
-            <tr><td class="campoinfo" id="info17"></td></tr>
-          </table>
-          </div>
         </div>
     </body>
     </html>
